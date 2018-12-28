@@ -256,6 +256,8 @@ export default {
         let address = account.getAddressString("HX");
         account.address = address;
         appState.changeCurrentAccount(account);
+        this.currentAccount = account;
+        this.loadCurrentAccountInfo();
         // save to storage
         try {
           if (typeof localStorage !== "undefined") {
