@@ -129,7 +129,7 @@
           <i class="el-icon-loading"></i>
         </div>
         <div style="margin-top: 10pt; font-size: 10pt; color: #261932;">
-          <p style="height: auto;">{{$('transferPage.tx_making_and_will_refresh_after_done')}}</p>
+          <p style="height: auto;">{{$t('transferPage.tx_making_and_will_refresh_after_done')}}</p>
           <p>{{$t('transferPage.you_can_also_query_tx_by_tx_hash')}}</p>
         </div>
         <div>

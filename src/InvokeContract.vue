@@ -115,34 +115,39 @@
                 <div class="grid-content label-font">{{$t('transferPage.to_address')}}</div>
               </el-col>
               <el-col :span="18">
-                <div class="grid-content label-font value-label">{{contractForm.toAddress}}</div>
+                <div class="grid-content label-font value-label">{{contractForm.contractAddress}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
               <el-col :span="6">
-                <div class="grid-content label-font">{{$t('transferPage.transfer_amount')}}</div>
+                <div class="grid-content label-font">{{$t('contractPage.contract_api')}}</div>
               </el-col>
               <el-col :span="18">
-                <div class="grid-content label-font value-label">{{contractForm.amount}}</div>
+                <div class="grid-content label-font value-label">{{contractForm.apiName}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
               <el-col :span="6">
-                <div class="grid-content label-font">{{$t('contractPage.fee')}}</div>
+                <div class="grid-content label-font">{{$t('contractPage.contract_arg')}}</div>
               </el-col>
               <el-col :span="18">
-                <div class="grid-content label-font value-label">0.001HX</div>
+                <div class="grid-content label-font value-label">{{contractForm.apiArg}}</div>
               </el-col>
             </el-row>
-            <el-row>
+            <el-row style="margin-bottom: 15pt;">
               <el-col :span="6">
-                <div class="grid-content label-font">{{$t('contractPage.memo_info')}}</div>
+                <div class="grid-content label-font">Gas Price</div>
               </el-col>
               <el-col :span="18">
-                <div
-                  class="grid-content label-font value-label"
-                  style="text-overflow: ellipsis; overflow-x: hidden;"
-                >{{contractForm.memo}}</div>
+                <div class="grid-content label-font value-label">{{contractForm.gasPrice}}</div>
+              </el-col>
+            </el-row>
+            <el-row style="margin-bottom: 15pt;">
+              <el-col :span="6">
+                <div class="grid-content label-font">Gas Limit</div>
+              </el-col>
+              <el-col :span="18">
+                <div class="grid-content label-font value-label">{{contractForm.gasLimit}}</div>
               </el-col>
             </el-row>
           </div>
@@ -165,7 +170,7 @@
           <i class="el-icon-loading"></i>
         </div>
         <div style="margin-top: 10pt; font-size: 10pt; color: #261932;">
-          <p style="height: auto;">{{$('transferPage.tx_making_and_will_refresh_after_done')}}</p>
+          <p style="height: auto;">{{$t('transferPage.tx_making_and_will_refresh_after_done')}}</p>
           <p>{{$t('transferPage.you_can_also_query_tx_by_tx_hash')}}</p>
         </div>
         <div>

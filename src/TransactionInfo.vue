@@ -218,7 +218,11 @@ export default {
       if (!txTimeString) {
         return "";
       }
-      return distanceInWordsToNow(new Date(Date.parse(txTimeString))) + " ago";
+      return (
+        distanceInWordsToNow(
+          utils.formatTimezone(new Date(Date.parse(txTimeString)))
+        ) + " ago"
+      );
     },
     getOperationTypeName(opType) {
       return utils.getOperationTypeName(opType);

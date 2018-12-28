@@ -113,6 +113,16 @@ export default {
         const str = String.fromCharCode.apply(null, bytes);
         return str;
     },
+    formatTimezone(date) {
+        const offset = date.getTimezoneOffset();
+        let result = new Date(
+            date.getTime() +
+            (Math.sign(offset) !== -1
+                ? -60000 * offset
+                : 60000 * Math.abs(offset))
+        );
+        return result;
+    },
     emptyHxBalance: {
         assetId: "1.3.0",
         assetSymbol: "HX",
