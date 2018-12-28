@@ -1,0 +1,199 @@
+<template>
+  <div>
+    <div v-if="!checkTxDone" class="hx-main-container hx-check-tx-container">
+      <div class="-check-tx-title">{{$t('checkTxPage.title')}}</div>
+      <div>
+        <el-input
+          class="-input-address"
+          v-bind:placeholder="$t('checkTxPage.please_input_txid_or_address')"
+          type="text"
+          v-model="checkTxForm.address"
+          style="width: 100pt;"
+        ></el-input>
+      </div>
+      <div style="margin-top: 30pt;">
+        <el-button
+          type="primary"
+          class="hxwallet-form-btn"
+          v-on:click="toQueryTx(checkTxForm.address)"
+        >{{$t('checkTxPage.query_now')}}</el-button>
+      </div>
+    </div>
+    <div v-if="checkTxDone" class="hx-check-tx-done-container">
+      <div v-if="checkTxForm.isTxId">
+        <TransactionInfo style="margin-top: 5pt;" :txid="data.trxid"></TransactionInfo>
+      </div>
+      <div v-if="checkTxForm.isHxAccountAddr && data">
+        <AccountInfo style="margin-top: 5pt;" :accountAddress="data.addr" :myself="false"></AccountInfo>
+      </div>
+      <div v-if="checkTxForm.isHxContractAddr && data">
+        <ContractInfoPanel style="margin-top: 5pt;" :contractAddress="data.id"></ContractInfoPanel>
+      </div>
+      <div
+        v-if="!checkTxForm.isTxId && !checkTxForm.isHxAccountAddr && !checkTxForm.isHxContractAddr"
+      >Not supported address type</div>
+    </div>
+  </div>
+</template>
+
+<script>
+import _ from "lodash";
+import appState from "./appState";
+import AccountInfo from "./AccountInfo.vue";
+import ContractInfoPanel from "./ContractInfoPanel.vue";
+import TransactionInfo from "./TransactionInfo.vue";
+let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
+
+export default {
+  name: "CheckTx",
+  components: { AccountInfo, ContractInfoPanel, TransactionInfo },
+  data() {
+    return {
+      checkTxForm: {},
+
+      checkTxDone: false,
+      data: null
+    };
+  },
+  created() {
+    const tabParams = appState.getCurrentTabParams();
+    if (tabParams && tabParams.length > 0) {
+      const txidOrAddress = tabParams[0];
+      this.checkTxForm.address = txidOrAddress;
+      console.log("to check tx ", txidOrAddress);
+    }
+  },
+  mounted() {
+    if (this.checkTxForm.address) {
+      this.toQueryTx(this.checkTxForm.address);
+    }
+  },
+  beforeDestroy() {},
+  methods: {
+    showError(e) {
+      if (e && e.message) {
+        e = e.message;
+      }
+      e = (e || "error").toString();
+      this.$message({
+        showClose: true,
+        message: e,
+        type: "error"
+      });
+    },
+    showSuccess(info) {
+      this.$message({
+        showClose: true,
+        message: (info || "success").toString(),
+        type: "success"
+      });
+    },
+    toQueryTx(txidOrAddress) {
+      txidOrAddress = (txidOrAddress || "").trim();
+      if (txidOrAddress.length < 1) {
+        this.showError("输入格式错误");
+        return;
+      }
+      let isTxId = txidOrAddress.length === 40;
+      let isHxAccountAddr =
+        txidOrAddress.indexOf("HX") === 0 &&
+        txidOrAddress.indexOf("HXC") !== 0 &&
+        txidOrAddress.length > 20;
+      let isHxContractAddr =
+        txidOrAddress.indexOf("HXC") === 0 && txidOrAddress.length > 20;
+      this.checkTxForm.isTxId = isTxId;
+      this.checkTxForm.isHxAccountAddr = isHxAccountAddr;
+      this.checkTxForm.isHxContractAddr = isHxContractAddr;
+      const apisInstance = appState.getApisInstance();
+      appState
+        .withApis()
+        .then(() => {
+          if (isTxId) {
+            return TransactionHelper.getTransactionById(
+              apisInstance,
+              txidOrAddress
+            );
+          } else if (isHxAccountAddr) {
+            return TransactionHelper.getAccountByAddresss(
+              apisInstance,
+              txidOrAddress
+            );
+          } else if (isHxContractAddr) {
+            return TransactionHelper.getSimpleContractInfo(
+              apisInstance,
+              txidOrAddress
+            );
+          } else {
+            // account name
+            return TransactionHelper.getAccount(apisInstance, txidOrAddress);
+          }
+        })
+        .then(data => {
+          if (!data) {
+            data = {
+              addr: txidOrAddress
+            };
+          }
+          this.data = data;
+          this.checkTxDone = true;
+          if (!isTxId && !isHxAccountAddr && !isHxContractAddr) {
+            isHxAccountAddr = true;
+            this.checkTxForm.isHxAccountAddr = isHxAccountAddr;
+          }
+          return data;
+        })
+        .catch(this.showError);
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.hx-check-tx-container1 {
+  .label-font {
+    color: #a99eb4;
+    font-size: 8pt;
+  }
+}
+.hx-check-tx-container2 {
+  .label-font {
+    color: #a99eb4;
+    font-size: 8pt;
+  }
+}
+.hx-check-tx-container,
+.hx-check-tx-done-container {
+  min-width: 400px;
+  min-height: 266pt;
+  .-check-tx-title {
+    font-size: 20pt;
+    color: #261932;
+    margin-bottom: 40pt;
+  }
+  .-address-rule-desc {
+    font-size: 8pt;
+    color: #cccccc;
+    margin-top: 10pt;
+    margin-left: 50pt;
+    text-align: left;
+    p {
+      padding: 0;
+      margin: 4px;
+      line-height: 18px;
+      height: 18px;
+    }
+  }
+  label {
+    font-size: 10pt;
+    color: #261932;
+  }
+  .el-input {
+    width: 220pt !important;
+  }
+  .el-input__inner {
+    border: 0 !important;
+    border-bottom: solid 1px #cccccc !important;
+    border-radius: 0 !important;
+  }
+}
+</style>

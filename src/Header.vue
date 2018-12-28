@@ -1,0 +1,106 @@
+<template>
+  <div class="header-wrapper">
+    <el-row style="max-width: 1000px; margin: 0 auto;">
+      <el-col :span="12">
+        <div class="grid-content">
+          <img :src="'images/header-logo.png'" class="header-logo" alt>
+        </div>
+      </el-col>
+      <el-col :span="12" style="text-align: right;">
+        <div class="grid-content">
+          <el-select
+            v-model="network"
+            @change="onChangeNetwork"
+            placeholder="Network"
+            class="network-select hx-select"
+          >
+            <el-option label="Mainnet" value="mainnet"></el-option>
+            <el-option label="Testnet" value="testnet"></el-option>
+            <el-option label="localhost" value="localhost"></el-option>
+          </el-select>
+          <el-select
+            v-model="language"
+            @change="onChangeLang"
+            placeholder="Language"
+            class="language-select hx-select"
+          >
+            <el-option label="English" value="english"></el-option>
+            <el-option label="中文" value="chinese"></el-option>
+          </el-select>
+        </div>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+import EventEmitter from "eventemitter3";
+import appState from "./appState.js";
+
+export default {
+  name: "PageHeader",
+  data() {
+    return {
+      network: appState.getCurrentNetwork(),
+      language: appState.getCurrentLanguage()
+    };
+  },
+  methods: {
+    onChangeNetwork(network) {
+      this.network = network;
+      appState.changeCurrentNetwork(this.network);
+    },
+    onChangeLang(lang) {
+      this.language = lang;
+      appState.changeCurrentLanguage(this.language);
+      if (this.$i18n) {
+        this.$i18n.locale = lang;
+      }
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.header-wrapper {
+  height: 29pt;
+  line-height: 29pt;
+  background: linear-gradient(#a64eb5, #7951b3);
+  .header-logo {
+    width: 103pt;
+    height: 20pt;
+    margin-top: 4pt;
+    margin-right: 5px;
+    display: inline-block;
+    float: left;
+  }
+}
+li.el-select-dropdown__item {
+  display: block;
+  height: 19pt;
+  line-height: 19pt;
+  margin: 0;
+}
+li.el-select-dropdown__item.selected {
+  background: #7c51b3;
+  color: white;
+}
+.hx-select {
+  font-size: 8pt;
+  .el-input__inner {
+    padding: 0 10px;
+    background: rgba(0, 0, 0, 0);
+    border: 0;
+    color: white;
+  }
+}
+.network-select {
+  width: 65pt;
+}
+.language-select {
+  width: 65pt;
+}
+.el-select-dropdown {
+  top: 32px;
+}
+</style>
