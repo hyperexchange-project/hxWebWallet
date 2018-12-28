@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!registerDone" class="hx-main-container hx-register-account-container">
-      <div class="-register-account-title">注册账户</div>
+      <div class="-register-account-title">{{$t('registerAccount.register_account')}}</div>
       <el-form
         :model="registerAccountForm"
         status-icon
@@ -9,39 +9,52 @@
         label-width="100pt"
         class="hx-register-account-inner-container"
       >
-        <el-form-item label="账户名称" prop="name">
+        <el-form-item v-bind:label="$t('registerAccount.account_name')" prop="name">
           <el-input
             class="-input-account-name"
-            placeholder="请输入账户名称"
+            v-bind:placeholder="$t('registerAccount.please_input_account_name')"
             type="text"
             v-model="registerAccountForm.name"
             autocomplete="off"
             style="width: 100pt;"
           ></el-input>
           <div class="-account-name-rule-desc">
-            <p>1. 2-63位字符</p>
-            <p>2. 仅可输入小写字母或数字或-</p>
-            <p>3. 需小写字母开头</p>
+            <p>{{$t('registerAccount.account_name_rule1')}}</p>
+            <p>{{$t('registerAccount.account_name_rule2')}}</p>
+            <p>{{$t('registerAccount.account_name_rule3')}}</p>
           </div>
         </el-form-item>
-        <el-form-item label="手续费" prop="feeAmount">
+        <el-form-item v-bind:label="$t('registerAccount.fee')" prop="feeAmount">
           <div style="text-align: left; padding-left: 50pt;">5HX</div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="-register-account-btn" v-on:click="registerAccount">立即注册</el-button>
+          <el-button
+            type="primary"
+            class="-register-account-btn"
+            v-on:click="registerAccount"
+          >{{$t('registerAccount.register_now')}}</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div v-if="registerDone" class="hx-main-container hx-register-account-done-container">
-      <div class="-register-account-title" style="color: #261932;">注册请求已发出，请等5秒后刷新界面</div>
+      <div
+        class="-register-account-title"
+        style="color: #261932;"
+      >{{$t('registerAccount.register_request_sent_please_refresh_later')}}</div>
       <div>
-        <div style="color: #261932;font-size: 10pt; padding-top: 35pt;">您的账户名</div>
+        <div
+          style="color: #261932;font-size: 10pt; padding-top: 35pt;"
+        >{{$t('registerAccount.your_account_name')}}</div>
         <div
           style="color: #261932; font-size: 15pt; padding-top: 15pt;"
         >{{registerAccountForm.name}}</div>
       </div>
       <div style="margin-top: 40pt;">
-        <el-button type="primary" class="hxwallet-form-btn" v-on:click="backToWallet">返 回</el-button>
+        <el-button
+          type="primary"
+          class="hxwallet-form-btn"
+          v-on:click="backToWallet"
+        >{{$t('registerAccount.return_with_space')}}</el-button>
       </div>
     </div>
   </div>
@@ -107,7 +120,7 @@ export default {
         name.length > 63 ||
         !/^[a-zA-Z][a-zA-Z\d\-]*$/.test(name)
       ) {
-        this.showError("账户名格式错误");
+        this.showError(this.$t("registerAccount.invalid_account_format"));
         return;
       }
       const apisInstance = appState.getApisInstance();
@@ -118,7 +131,9 @@ export default {
         .then(() => {
           return TransactionHelper.getAccount(apisInstance, name)
             .then(r => {
-              throw new Error("此账户名已被注册");
+              throw new Error(
+                this.$t("registerAccount.account_registered_before")
+              );
             })
             .catch(() => {
               // account not registered
@@ -147,7 +162,7 @@ export default {
             })
             .catch(e => {
               this.showError(
-                "注册失败，可能余额不足够支付注册手续费，或者账户名已被注册"
+                this.$t("registerAccount.register_account_error_with_reason")
               );
             });
         })

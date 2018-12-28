@@ -487,8 +487,7 @@ export default {
                       })
                       .catch(e => {
                         this.step = "transfer_fail";
-                        this.transferFailError =
-                          "交易尚未上链，请稍后查询此交易ID";
+                        this.transferFailError = this.$t("contractPage.tx_not_on_chain_please_query_later");
                       });
                   }, 6000);
                 })

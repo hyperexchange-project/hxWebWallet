@@ -474,37 +474,37 @@ export default {
     doSubmitTransferToContract() {
       this.showConfirmDialog = false;
       if (this.emulateState !== "success") {
-        this.showError("请先测试执行");
+        this.showError(this.$t('contractPage.please_emulate_first'));
         return;
       }
       if (!this.currentAccount) {
-        this.showError("请先打开并解锁钱包");
+        this.showError(this.$t('contractPage.please_open_and_unlock_your_wallet_first'));
         return;
       }
       const contractId = this.contractForm.contractAddress;
       if (!contractId) {
-        this.showError("请输入合约地址");
+        this.showError(this.$t('contractPage.please_input_contract_address'));
         return;
       }
       const gasLimit = parseInt(this.contractForm.gasLimit);
       const gasPriceNu = new BigNumber(this.contractForm.gasPrice);
       if (gasPriceNu.isNaN()) {
-        this.showError("不正确的gas price格式");
+        this.showError(this.$t("contractPage.invalid_gas_price_format"));
         return;
       }
       const gasPrice = parseInt(
         gasPriceNu.multipliedBy(Math.pow(10, appState.hxPrecision)).toFixed(0)
       );
       if (new BigNumber(gasLimit).isNaN() || gasLimit < 0) {
-        this.showError("不正确的gas limit格式");
+        this.showError(this.$t("contractPage.invalid_gas_limit_format"));
         return;
       }
       if (gasLimit > 1000000) {
-        this.showError("过大的gas limit");
+        this.showError(this.$t('contractPage.too_large_gas_limit'));
         return;
       }
       if (!gasPrice || gasPrice <= 0) {
-        this.showError("不正确的gas price格式");
+        this.showError(this.$t("contractPage.invalid_gas_price_format"));
         return;
       }
       let amount = this.contractForm.amount;
@@ -560,7 +560,7 @@ export default {
                   })
                   .catch(e => {
                     this.step = "contract_fail";
-                    this.transferFailError = "交易尚未上链，请稍后查询此交易ID";
+                    this.transferFailError = this.$t("contractPage.tx_not_on_chain_please_query_later");
                   });
               }, 6000);
             })
