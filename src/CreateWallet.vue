@@ -9,7 +9,7 @@
         label-width="100pt"
         class="hx-create-wallet-inner-container"
       >
-        <el-form-item v-bind:label="$t('createWalletPage.set_wallet_password')" prop="password">
+        <el-form-item v-bind:label="$t('createWalletPage.set_wallet_password')" class="-password-panel" prop="password">
           <el-input
             class="-input-password"
             v-bind:placeholder="$t('createWalletPage.please_set_password')"
@@ -189,6 +189,21 @@ export default {
       margin: 4px;
       line-height: 18px;
       height: 18px;
+    }
+  }
+}
+@media (max-width: 600px) {
+  .hx-create-wallet-container {
+    .hx-create-wallet-inner-container {
+      width: 400px;
+      .-password-panel {
+        .el-form-item__label {
+          width: 60pt;
+        }
+      }
+      .-wallet-password-rule-desc {
+        margin-left: 20px;
+      }
     }
   }
 }

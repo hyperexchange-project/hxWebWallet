@@ -10,6 +10,7 @@
     >
       <div class="-item-text">{{$t(item.label)}}</div>
     </div>
+    <div class="clearfix"></div>
   </div>
 </template>
 

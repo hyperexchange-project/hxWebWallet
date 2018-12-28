@@ -73,7 +73,7 @@
             </el-input>
           </el-form-item>
 
-          <el-form-item>
+          <el-form-item class="-control-panel">
             <el-button
               type="primary"
               class="hxwallet-form-btn"
@@ -740,6 +740,46 @@ export default {
       margin: 4px;
       line-height: 18px;
       height: 18px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .hx-transfer-contract-container {
+    padding: 0;
+    .el-input {
+      width: auto !important;
+    }
+    .el-form-item {
+      max-width: 400px;
+    }
+    .el-form-item__content {
+      margin-left: 10pt;
+    }
+    .-confirm-contract-address-btn {
+      width: 120px;
+    }
+
+    .-contract-address-panel {
+      max-width: 375px;
+    }
+    .-contract-api-panel {
+    }
+    .-contract-arg-panel {
+    }
+    .-left-side {
+      padding-left: 0;
+    }
+    .hx-transfer-contract-inner-container {
+      margin: 0;
+      padding: 0;
+    }
+    .-control-panel {
+      width: 400px;
+      button {
+        max-width: 80px;
+
+      }
     }
   }
 }

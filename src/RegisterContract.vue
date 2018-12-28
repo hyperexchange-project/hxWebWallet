@@ -57,7 +57,7 @@
               <template slot="append">HX</template>
             </el-input>
           </el-form-item>
-          <el-form-item>
+          <el-form-item class="-control-panel">
             <el-button
               type="primary"
               class="hxwallet-form-btn"
@@ -409,16 +409,20 @@ export default {
     doSubmitDeployContract() {
       this.showConfirmDialog = false;
       if (this.emulateState !== "success") {
-        this.showError(this.$t('contractPage.please_emulate_first'));
+        this.showError(this.$t("contractPage.please_emulate_first"));
         return;
       }
       if (!this.currentAccount) {
-        this.showError(this.$t('contractPage.please_open_and_unlock_your_wallet_first'));
+        this.showError(
+          this.$t("contractPage.please_open_and_unlock_your_wallet_first")
+        );
         return;
       }
       const gpcHex = this.contractForm.contractGpcHex;
       if (!gpcHex) {
-        this.showError(this.$t("contractPage.please_select_contract_file_first"));
+        this.showError(
+          this.$t("contractPage.please_select_contract_file_first")
+        );
         return;
       }
       const gasLimit = parseInt(this.contractForm.gasLimit);
@@ -435,7 +439,7 @@ export default {
         return;
       }
       if (gasLimit > 1000000) {
-        this.showError(this.$t('contractPage.too_large_gas_limit'));
+        this.showError(this.$t("contractPage.too_large_gas_limit"));
         return;
       }
       if (!gasPrice || gasPrice <= 0) {
@@ -482,7 +486,9 @@ export default {
                   })
                   .catch(e => {
                     this.step = "contract_fail";
-                    this.transferFailError = this.$t("contractPage.tx_not_on_chain_please_query_later");
+                    this.transferFailError = this.$t(
+                      "contractPage.tx_not_on_chain_please_query_later"
+                    );
                   });
               }, 6000);
             })
@@ -612,7 +618,7 @@ export default {
   }
   .hx-address-or-select-wallet-input {
     .-address-show-label {
-      padding-left: 120pt !important;
+      padding-left: 120pt;
     }
   }
 }
@@ -675,6 +681,63 @@ export default {
       line-height: 18px;
       height: 18px;
     }
+  }
+}
+
+@media (max-width: 600px) {
+  .hx-register-contract-container {
+    padding: 0;
+    .el-input {
+      width: auto !important;
+    }
+    .el-form-item__content {
+      margin-left: 10pt;
+    }
+    .el-form-item {
+      max-width: 400px;
+    }
+    .-confirm-contract-address-btn {
+      width: 120px;
+    }
+    .hx-address-or-select-wallet-input {
+      max-width: 375px;
+      .el-form-item__content {
+        margin-left: 0 !important;
+      }
+      .address-show-label {
+        float: right !important;
+        padding-left: 0 !important;
+      }
+      .-change-wallet-btn {
+        float: right !important;
+      }
+    }
+
+    .-contract-address-panel {
+      max-width: 375px;
+    }
+    .-contract-api-panel {
+    }
+    .-contract-arg-panel {
+    }
+    .-left-side {
+      padding-left: 0;
+    }
+    .hx-register-contract-inner-container {
+      margin: 0;
+      padding: 5px 15px;
+    }
+    .-control-panel {
+      width: 400px;
+      button {
+        max-width: 80px;
+      }
+    }
+  }
+  .hx-register-contract-container
+    .hx-address-or-select-wallet-input
+    .-address-show-label {
+    padding-left: 0;
   }
 }
 </style>

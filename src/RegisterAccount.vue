@@ -9,7 +9,11 @@
         label-width="100pt"
         class="hx-register-account-inner-container"
       >
-        <el-form-item v-bind:label="$t('registerAccount.account_name')" prop="name">
+        <el-form-item
+          v-bind:label="$t('registerAccount.account_name')"
+          class="-name-panel"
+          prop="name"
+        >
           <el-input
             class="-input-account-name"
             v-bind:placeholder="$t('registerAccount.please_input_account_name')"
@@ -24,7 +28,7 @@
             <p>{{$t('registerAccount.account_name_rule3')}}</p>
           </div>
         </el-form-item>
-        <el-form-item v-bind:label="$t('registerAccount.fee')" prop="feeAmount">
+        <el-form-item v-bind:label="$t('registerAccount.fee')" class="-fee-panel" prop="feeAmount">
           <div style="text-align: left; padding-left: 50pt;">5HX</div>
         </el-form-item>
         <el-form-item>
@@ -235,6 +239,27 @@ export default {
     border: 0;
     border-radius: 0;
     margin-left: -80pt;
+  }
+}
+@media (max-width: 600px) {
+  .hx-register-account-container,
+  .hx-register-account-done-container {
+    .hx-register-account-inner-container {
+      width: 400px;
+      .-name-panel {
+        .el-form-item__label {
+          width: 60pt;
+        }
+      }
+      .-fee-panel {
+        .el-form-item__label {
+          width: 60pt;
+        }
+      }
+      .-account-name-rule-desc {
+        margin-left: 20px;
+      }
+    }
   }
 }
 </style>

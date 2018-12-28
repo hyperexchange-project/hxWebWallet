@@ -647,4 +647,9 @@ export default {
     }
   }
 }
+@media (max-width: 600px) {
+  .hx-transfer-container {
+    
+  }
+}
 </style>

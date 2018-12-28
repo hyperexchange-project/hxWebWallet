@@ -420,4 +420,30 @@ export default {
     }
   }
 }
+@media (max-width: 600px) {
+  .hx-contract-container {
+    .-nav-side {
+      float: none;
+      width: 100%;
+      margin: 0 20pt;
+      .hx-nav-side {
+        width: 400px;
+        margin-left: 0 auto;
+        .hx-nav-item {
+          float: left;
+          margin: 0 5pt;
+        }
+      }
+    }
+    .hx-invoke-contract-container {
+      float: none;
+    }
+    .hx-register-contract-container {
+      float: none;
+    }
+    .hx-transfer-contract-container {
+      float: none;
+    }
+  }
+}
 </style>

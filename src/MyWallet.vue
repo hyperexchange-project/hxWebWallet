@@ -16,7 +16,10 @@
               :filename="unlockWalletForm.keystoreFile"
             ></KeystoreInput>
           </el-form-item>
-          <el-form-item v-bind:label="$t('myWalletPage.please_input_wallet_password')" prop="password">
+          <el-form-item
+            v-bind:label="$t('myWalletPage.please_input_wallet_password')"
+            prop="password"
+          >
             <el-input
               v-bind:placeholder="$t('myWalletPage.please_input_wallet_password')"
               type="password"
@@ -43,15 +46,15 @@
           <el-col :span="4">
             <div class="grid-content label-font">{{$t('myWalletPage.my_address')}}</div>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="8" class="-current-address-panel">
             <div class="grid-content label-font">
               <div>{{currentAddress}}</div>
             </div>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="4" class="-current-account-name-label-panel">
             <div class="grid-content label-font">{{$t('myWalletPage.account_name')}}</div>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="8" class="-account-name-and-change-wallet-panel">
             <div class="grid-content label-font" style="text-align: left;">
               <div v-if="currentAccountInfo.name">{{currentAccountInfo.name}}</div>
               <div
@@ -59,7 +62,6 @@
                 class="-not-registered-account-btn"
                 v-on:click="toRegisterAccount()"
               >{{$t('myWalletPage.not_registered')}}</div>
-              <!-- TODO: how to change wallet -->
               <span
                 style="color: #A64EB5; float: right; margin-top: -18px; margin-right: 30px;"
                 v-on:click="opened=false"
@@ -366,6 +368,25 @@ export default {
     border: 0;
     border-radius: 0;
     margin-left: -80pt;
+  }
+}
+@media (max-width: 600px) {
+  .hx-my-opened-wallet-container1 {
+    .-current-address-panel {
+      width: 60%;
+    }
+    .-current-account-name-label-panel {
+      width: 30%;
+      text-align: left;
+      padding-left: 10pt;
+      padding-top: 10pt;
+    }
+    .-account-name-and-change-wallet-panel {
+      width: 55%;
+      padding-top: 10pt;
+    }
+  }
+  .hx-my-opened-wallet-container2 {
   }
 }
 </style>

@@ -1,9 +1,15 @@
 <template>
   <div class="hx-address-or-select-wallet-input">
     <div v-if="currentAddress && walletUnlocked">
-      <el-form-item v-bind:label="$t('keystoreInput.from_address')" ng-if="false" prop="currentAddress" style="text-align: left;">
-        <span class="label-font -address-show-label" style="padding-left: 50pt; float: left;">{{currentAddress}}</span>
-        <span class="-change-wallet-btn"
+      <el-form-item
+        v-bind:label="$t('keystoreInput.from_address')"
+        ng-if="false"
+        prop="currentAddress"
+        style="text-align: left;"
+      >
+        <span class="label-font -address-show-label">{{currentAddress}}</span>
+        <span
+          class="-change-wallet-btn"
           style="color: #A64EB5; float: left; padding-left: 10pt;"
           v-on:click="walletUnlocked=false"
         >{{$t('keystoreInput.change_wallet')}}</span>
@@ -146,6 +152,15 @@ export default {
     border: 0;
     border-radius: 0;
     margin-left: -80pt;
+  }
+  .-address-show-label {
+    padding-left: 50pt;
+    float: left;
+  }
+}
+@media (max-width: 600px) {
+  .hx-address-or-select-wallet-input {
+    max-width: 400px;
   }
 }
 </style>

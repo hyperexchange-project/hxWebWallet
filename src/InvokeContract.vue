@@ -9,7 +9,11 @@
           label-width="60pt"
           class="hx-invoke-contract-inner-container"
         >
-          <el-form-item v-bind:label="$t('contractPage.contract_address')" prop="toAddress">
+          <el-form-item
+            class="-contract-address-panel"
+            v-bind:label="$t('contractPage.contract_address')"
+            prop="toAddress"
+          >
             <el-input
               class="-input-contract-address"
               v-bind:placeholder="$t('contractPage.please_input_contract_address')"
@@ -24,7 +28,11 @@
               style
             >{{$t('contractPage.confirm')}}</el-button>
           </el-form-item>
-          <el-form-item v-bind:label="$t('contractPage.contract_api')" prop="toAddress">
+          <el-form-item
+            class="-contract-api-panel"
+            v-bind:label="$t('contractPage.contract_api')"
+            prop="apiName"
+          >
             <el-select
               v-model="contractForm.apiName"
               filterable
@@ -38,7 +46,11 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item v-bind:label="$t('contractPage.contract_arg')" prop="toAddress">
+          <el-form-item
+            class="-contract-arg-panel"
+            v-bind:label="$t('contractPage.contract_arg')"
+            prop="apiArg"
+          >
             <el-input
               class="-input-contract-arg"
               v-bind:placeholder="$t('contractPage.please_input_invoke_arg')"
@@ -84,7 +96,7 @@
             </el-input>
           </el-form-item>
 
-          <div style="text-align: center;padding: 10pt;">
+          <div class="-control-panel" style="text-align: center;padding: 10pt;">
             <el-button
               type="primary"
               class="hxwallet-form-btn"
@@ -502,21 +514,25 @@ export default {
     doSubmitInvokeContract() {
       this.showConfirmDialog = false;
       if (this.emulateState !== "success") {
-        this.showError(this.$t('contractPage.please_emulate_first'));
+        this.showError(this.$t("contractPage.please_emulate_first"));
         return;
       }
       if (!this.currentAccount) {
-        this.showError(this.$t('contractPage.please_open_and_unlock_your_wallet_first'));
+        this.showError(
+          this.$t("contractPage.please_open_and_unlock_your_wallet_first")
+        );
         return;
       }
       const contractId = this.contractForm.contractAddress;
       if (!contractId) {
-        this.showError(this.$t('contractPage.please_input_contract_address'));
+        this.showError(this.$t("contractPage.please_input_contract_address"));
         return;
       }
       const apiName = this.contractForm.apiName;
       if (!apiName) {
-        this.showError(this.$t("contractPage.please_input_to_invoke_contract_api"));
+        this.showError(
+          this.$t("contractPage.please_input_to_invoke_contract_api")
+        );
         return;
       }
       const apiArg = this.contractForm.apiArg || "";
@@ -534,7 +550,7 @@ export default {
         return;
       }
       if (gasLimit > 1000000) {
-        this.showError(this.$t('contractPage.too_large_gas_limit'));
+        this.showError(this.$t("contractPage.too_large_gas_limit"));
         return;
       }
       if (!gasPrice || gasPrice <= 0) {
@@ -583,7 +599,9 @@ export default {
                   })
                   .catch(e => {
                     this.step = "contract_fail";
-                    this.transferFailError = this.$t("contractPage.tx_not_on_chain_please_query_later");
+                    this.transferFailError = this.$t(
+                      "contractPage.tx_not_on_chain_please_query_later"
+                    );
                   });
               }, 6000);
             })
@@ -783,6 +801,43 @@ export default {
   .el-form-item__content {
     text-align: left;
     padding-left: 30pt;
+  }
+}
+
+@media (max-width: 600px) {
+  .hx-invoke-contract-container {
+    padding: 0;
+    .el-input {
+      width: auto !important;
+    }
+    .el-form-item__content {
+      margin-left: 10pt;
+    }
+    .-confirm-contract-address-btn {
+      width: 120px;
+    }
+
+    .-contract-address-panel {
+      max-width: 375px;
+    }
+    .-contract-api-panel {
+    }
+    .-contract-arg-panel {
+    }
+    .-left-side {
+      padding-left: 0;
+    }
+    .hx-invoke-contract-inner-container {
+      margin: 0;
+      padding: 0;
+    }
+    .-control-panel {
+      width: 400px;
+      button {
+        max-width: 80px;
+
+      }
+    }
   }
 }
 </style>
