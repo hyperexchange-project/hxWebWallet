@@ -95,7 +95,7 @@ export default {
       return utils.getOperationTypeName(opType);
     },
     hexToString(hexStr) {
-      return utils.hexToUnicodeString(hexStr);
+      return utils.hexToUtf8(hexStr);
     },
   }
 };

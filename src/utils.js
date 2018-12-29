@@ -94,6 +94,9 @@ export default {
     bytesToHex(bytes) {
         return TransactionHelper.bytes_to_hex(bytes);
     },
+    hexToUtf8(s) {
+        return TransactionHelper.hexToUtf8(s);
+    },
     hexToUnicodeString(s) {
         var escaped = "";
         var hex = "";
