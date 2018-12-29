@@ -288,6 +288,7 @@ export default {
   },
   created() {
     let account = appState.getCurrentAccount();
+      this.currentAccount = account;
     if (account) {
       this.walletUnlocked = true;
       this.currentAddress = account.address;
@@ -295,7 +296,6 @@ export default {
     } else {
       this.walletUnlocked = false;
     }
-    this.currentAccount = account;
   },
   mounted() {
     appState.onChangeCurrentAccount(this.onChangeCurrentAccount);
