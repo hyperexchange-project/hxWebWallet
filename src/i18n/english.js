@@ -81,7 +81,7 @@ export default {
         deploy_nav: 'Deploy',
         invoke_nav: 'Invoke',
         transfer_to_contract_nav: 'Transfer to contract',
-        select_contract_file: 'Select contract file',
+        select_contract_file: 'Contract file',
         please_select_contract_gpc_file: 'Please select contract gpc file',
         balance: 'Balance',
         test: 'Test',

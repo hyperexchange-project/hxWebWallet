@@ -652,4 +652,12 @@ export default {
     
   }
 }
+
+.chrome-ext-app-container {
+  .hx-transfer-container {
+    .-change-wallet-btn {
+      padding-left: 50pt;
+    }
+  }
+}
 </style>

@@ -10,7 +10,6 @@
         <span class="label-font -address-show-label">{{currentAddress}}</span>
         <span
           class="-change-wallet-btn"
-          style="color: #A64EB5; float: left; padding-left: 10pt;"
           v-on:click="walletUnlocked=false"
         >{{$t('keystoreInput.change_wallet')}}</span>
       </el-form-item>
@@ -156,6 +155,11 @@ export default {
   .-address-show-label {
     padding-left: 50pt;
     float: left;
+  }
+  .-change-wallet-btn {
+    color: #a64eb5;
+    float: left;
+    padding-left: 10pt;
   }
 }
 @media (max-width: 600px) {

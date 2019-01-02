@@ -153,4 +153,10 @@ a {
 .el-switch.is-checked .el-switch__core:after {
   background-color: #653699;
 }
+
+.chrome-ext-app-container {
+  .hx-main-container {
+    width: 500px;
+  }
+}
 </style>

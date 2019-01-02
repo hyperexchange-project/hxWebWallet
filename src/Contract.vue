@@ -424,8 +424,11 @@ export default {
   .hx-contract-container {
     .-nav-side {
       float: none;
-      width: 100%;
-      margin: 0 20pt;
+      // width: 100%;
+      // margin: 0 20pt;
+      width: 460px;
+      padding: 0 30px;
+      margin: 0;
       .hx-nav-side {
         width: 400px;
         margin-left: 0 auto;
@@ -443,6 +446,17 @@ export default {
     }
     .hx-transfer-contract-container {
       float: none;
+    }
+  }
+}
+
+.chrome-ext-app-container {
+  .hx-contract-container {
+    .-change-wallet-btn {
+      padding-left: 50pt;
+    }
+    .el-input {
+      width: 140pt !important;
     }
   }
 }

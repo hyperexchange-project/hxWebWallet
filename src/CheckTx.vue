@@ -196,4 +196,11 @@ export default {
     border-radius: 0 !important;
   }
 }
+
+.chrome-ext-app-container {
+  .hx-check-tx-container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
 </style>

@@ -103,4 +103,10 @@ li.el-select-dropdown__item.selected {
 .el-select-dropdown {
   top: 32px;
 }
+
+.chrome-ext-app-container {
+  .header-wrapper .header-logo {
+    margin-left: 20px;
+  }
+}
 </style>

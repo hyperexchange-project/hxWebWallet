@@ -207,4 +207,12 @@ export default {
     }
   }
 }
+
+.chrome-ext-app-container {
+  .hx-create-wallet-container {
+  }
+  .hx-create-wallet-inner-container {
+    width: auto;
+  }
+}
 </style>

@@ -23,13 +23,7 @@
             @change-current-account="onChangeSelectedAccount"
           ></AddressOrSelectWalletInput>
           <el-form-item v-bind:label="$t('contractPage.transfer_amount')" prop="amount">
-            <el-input
-              class="-input-amount"
-              placeholder
-              type="text"
-              v-model="contractForm.amount"
-              style="width: 170pt !important;"
-            ></el-input>
+            <el-input class="-input-amount" placeholder type="text" v-model="contractForm.amount"></el-input>
             <el-select
               class="transfer-asset-select"
               v-model="contractForm.transferAssetId"
@@ -474,16 +468,18 @@ export default {
     doSubmitTransferToContract() {
       this.showConfirmDialog = false;
       if (this.emulateState !== "success") {
-        this.showError(this.$t('contractPage.please_emulate_first'));
+        this.showError(this.$t("contractPage.please_emulate_first"));
         return;
       }
       if (!this.currentAccount) {
-        this.showError(this.$t('contractPage.please_open_and_unlock_your_wallet_first'));
+        this.showError(
+          this.$t("contractPage.please_open_and_unlock_your_wallet_first")
+        );
         return;
       }
       const contractId = this.contractForm.contractAddress;
       if (!contractId) {
-        this.showError(this.$t('contractPage.please_input_contract_address'));
+        this.showError(this.$t("contractPage.please_input_contract_address"));
         return;
       }
       const gasLimit = parseInt(this.contractForm.gasLimit);
@@ -500,7 +496,7 @@ export default {
         return;
       }
       if (gasLimit > 1000000) {
-        this.showError(this.$t('contractPage.too_large_gas_limit'));
+        this.showError(this.$t("contractPage.too_large_gas_limit"));
         return;
       }
       if (!gasPrice || gasPrice <= 0) {
@@ -560,7 +556,9 @@ export default {
                   })
                   .catch(e => {
                     this.step = "contract_fail";
-                    this.transferFailError = this.$t("contractPage.tx_not_on_chain_please_query_later");
+                    this.transferFailError = this.$t(
+                      "contractPage.tx_not_on_chain_please_query_later"
+                    );
                   });
               }, 6000);
             })
@@ -694,6 +692,9 @@ export default {
     font-size: 8pt;
     padding: 20pt;
   }
+  .-input-amount {
+    width: 170pt !important;
+  }
 }
 
 @media (max-width: 960px) {
@@ -778,7 +779,39 @@ export default {
       width: 400px;
       button {
         max-width: 80px;
+      }
+    }
+  }
+}
 
+.chrome-ext-app-container {
+  .hx-transfer-contract-container {
+    .-input-amount {
+      width: 88pt !important;
+    }
+    .el-form-item__label {
+      width: 75pt !important;
+    }
+    .el-form-item__content {
+      margin-left: 75pt !important;
+      padding-left: 20px;
+      text-align: left;
+    }
+    .-change-wallet-btn,
+    .-address-show-label {
+      padding-left: 10px;
+    }
+    .-control-panel {
+      .el-form-item__content {
+        text-align: center;
+      }
+    }
+    .hx-transfer-contract-inner-container {
+      margin: 0 !important;
+      padding: 5px 15px !important;
+      width: 400px !important;
+      .el-form-item__label {
+        text-align: left;
       }
     }
   }

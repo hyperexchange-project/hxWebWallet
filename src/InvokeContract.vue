@@ -828,14 +828,45 @@ export default {
       padding-left: 0;
     }
     .hx-invoke-contract-inner-container {
-      margin: 0;
-      padding: 0;
+      margin: 0 !important;
+      padding: 5px 15px !important;
+      width: 400px !important;
+      .el-form-item__label {
+        text-align: left;
+      }
     }
     .-control-panel {
       width: 400px;
       button {
         max-width: 80px;
 
+      }
+    }
+  }
+}
+
+.chrome-ext-app-container {
+  .hx-invoke-contract-container {
+    .-input-amount {
+      width: 88pt !important;
+    }
+    .el-form-item__label {
+      width: 75pt !important;
+    }
+    .el-form-item__content {
+      margin-left: 75pt !important;
+      padding-left: 20px;
+      text-align: left;
+    }
+    .-change-wallet-btn,
+    .-address-show-label {
+      padding-left: 10px !important;
+      text-align: left;
+      float: none !important;
+    }
+    .-control-panel {
+      .el-form-item__content {
+        text-align: center;
       }
     }
   }

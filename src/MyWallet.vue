@@ -389,4 +389,10 @@ export default {
   .hx-my-opened-wallet-container2 {
   }
 }
+
+.chrome-ext-app-container {
+  .hx-my-wallet-inner-container {
+    width: auto;
+  }
+}
 </style>
