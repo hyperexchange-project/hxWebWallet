@@ -280,11 +280,25 @@ export default {
   },
   mounted() {
     appState.onChangeCurrentAccount(this.onChangeCurrentAccount);
+    const flashTxMessage = appState.getFlashTxOnce();
+    if (flashTxMessage) {
+      this.onFlashTxMessage(flashTxMessage);
+    }
+    appState.onPushFlashTxMessage(this.onFlashTxMessage);
   },
   beforeDestroy() {
     appState.offChangeCurrentAccount(this.onChangeCurrentAccount);
+    appState.offPushFlashTxMessage(this.onFlashTxMessage);
   },
   methods: {
+    onFlashTxMessage(txMsg) {
+      this.contractForm.transferAssetId = txMsg.currency || "1.3.0";
+      this.contractForm.contractAddress = txMsg.to || '';
+      this.contractForm.amount = txMsg.valueRaw || '';
+      this.contractForm.memo = txMsg.memo;
+      this.contractForm.gasLimit = txMsg.gasLimit || 10000;
+      this.contractForm.gasPrice = txMsg.gasPrice || '0.00001';
+    },
     showError(e) {
       if (e && e.message) {
         e = e.message;

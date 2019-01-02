@@ -37,6 +37,8 @@ const state = {
     apisInstance: null,
 
     systemAssets: [], // [{id: ..., symbol: ..., precision: ..., issuer: ..., options: ..., current_feed: ...}]
+
+    flashTxMessage: null, // received tx message from postMessage 
 };
 
 // TODO: read current account from chrome.storage
@@ -92,14 +94,56 @@ const changeCurrentNetworkEventName = "changeCurrentNetwork";
 const changeCurrentLanguageEventName = "changeCurrentLanguage";
 const changeCurrentAccountEventName = "changeCurrentAccount";
 const changeCurrentAddressEventName = "changeCurrentAddress";
+const pushFlashTxMessageEventName = "pushFlashTxMessage";
 
 const languageConfigStorageKey = "languageConfig";
 
 state.currentLanguage = getStorage(languageConfigStorageKey) || "chinese";
 
+function getLocationHash() {
+    if(typeof(location) !== 'undefined') {
+        return location.hash;
+    } else {
+        return '';
+    }
+}
+
+// TODO: receive params
+switch(getLocationHash()) {
+    case '#transfer': {
+        state.currentTab = 'transfer';
+    } break;
+    case '#invoke_contract': {
+        state.currentTab = 'contract';
+    } break;
+    case '#transfer_to_contract': {
+        state.currentTab = 'contract';
+    } break;
+    case '#check_tx': {
+        state.currentTab = 'check_tx';
+        state.currentTabParams = [];
+    } break;
+}
+
 export default {
     EE,
     hxPrecision: 5,
+    pushFlashTx(txMsg) {
+        state.flashTxMessage = txMsg;
+        console.log("receive flash tx message", txMsg);
+        EE.emit(pushFlashTxMessageEventName, txMsg);
+    },
+    getFlashTxOnce() {
+        const msg = state.flashTxMessage;
+        state.flashTxMessage = null;
+        return msg;
+    },
+    onPushFlashTxMessage(listener) {
+        EE.on(pushFlashTxMessageEventName, listener);
+    },
+    offPushFlashTxMessage(listener) {
+        EE.off(pushFlashTxMessageEventName, listener);
+    },
     changeCurrentTab(tabKey, params) {
         state.currentTab = tabKey;
         state.currentTabParams = params;

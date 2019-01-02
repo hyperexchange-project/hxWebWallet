@@ -277,11 +277,24 @@ export default {
   },
   mounted() {
     appState.onChangeCurrentAccount(this.onChangeCurrentAccount);
+
+    const flashTxMessage = appState.getFlashTxOnce();
+    if (flashTxMessage) {
+      this.onFlashTxMessage(flashTxMessage);
+    }
+    appState.onPushFlashTxMessage(this.onFlashTxMessage);
   },
   beforeDestroy() {
     appState.offChangeCurrentAccount(this.onChangeCurrentAccount);
+    appState.offPushFlashTxMessage(this.onFlashTxMessage);
   },
   methods: {
+    onFlashTxMessage(txMsg) {
+      this.transferForm.transferAssetId = txMsg.currency || "1.3.0";
+      this.transferForm.amount = txMsg.valueRaw;
+      this.transferForm.toAddress = txMsg.to;
+      this.transferForm.memo = txMsg.memo;
+    },
     showError(e) {
       if (e && e.message) {
         e = e.message;
@@ -487,7 +500,9 @@ export default {
                       })
                       .catch(e => {
                         this.step = "transfer_fail";
-                        this.transferFailError = this.$t("contractPage.tx_not_on_chain_please_query_later");
+                        this.transferFailError = this.$t(
+                          "contractPage.tx_not_on_chain_please_query_later"
+                        );
                       });
                   }, 6000);
                 })
@@ -649,7 +664,6 @@ export default {
 }
 @media (max-width: 600px) {
   .hx-transfer-container {
-    
   }
 }
 

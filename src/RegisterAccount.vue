@@ -262,4 +262,10 @@ export default {
     }
   }
 }
+
+.chrome-ext-app-container {
+  .hx-register-account-inner-container {
+    width: auto;
+  }
+}
 </style>

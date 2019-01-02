@@ -21,6 +21,7 @@ Vue.use(VueI18n);
 //   i18n.locale = lang;
 // });
 
+window.hxAppState = appState;
 
 import App from './App.vue'
 import "bootstrap/dist/css/bootstrap.min.css"
