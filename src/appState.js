@@ -202,6 +202,10 @@ export default {
         if (networkObj) {
             const chainRpcUrl = networkObj.url;
             state.apisInstance = Apis.instance(chainRpcUrl, true);
+            if(typeof(localSave) !== 'undefined') {
+                localSave.setItem("apiPrefix", chainRpcUrl);
+                localSave.setItem("chainId", networkObj.chainId);
+            }
         }
         EE.emit(changeCurrentNetworkEventName, state.currentNetwork);
     },
