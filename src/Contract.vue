@@ -247,6 +247,10 @@ export default {
             .toString("hex")
             .substr(0, 40);
           this.lastSentTxId = txid;
+          console.log("tx hash:", txid);
+          if(typeof(messageToBackground) !== 'undefined') {
+            messageToBackground("txhash",txid);
+          }
           tr.broadcast(function() {})
             .then(() => {
               this.step = "contract_sent";

@@ -293,11 +293,11 @@ export default {
   methods: {
     onFlashTxMessage(txMsg) {
       this.contractForm.transferAssetId = txMsg.currency || "1.3.0";
-      this.contractForm.contractAddress = txMsg.to || '';
-      this.contractForm.amount = txMsg.valueRaw || '';
+      this.contractForm.contractAddress = txMsg.to || "";
+      this.contractForm.amount = txMsg.valueRaw || "";
       this.contractForm.memo = txMsg.memo;
       this.contractForm.gasLimit = txMsg.gasLimit || 10000;
-      this.contractForm.gasPrice = txMsg.gasPrice || '0.00001';
+      this.contractForm.gasPrice = txMsg.gasPrice || "0.00001";
     },
     showError(e) {
       if (e && e.message) {
@@ -559,6 +559,10 @@ export default {
             .toString("hex")
             .substr(0, 40);
           this.lastSentTxId = txid;
+          console.log("tx hash:", txid);
+          if (typeof messageToBackground !== "undefined") {
+            messageToBackground("txhash", txid);
+          }
           tr.broadcast(function() {})
             .then(() => {
               setTimeout(() => {
