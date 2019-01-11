@@ -74,7 +74,7 @@ if (typeof localStorage !== "undefined") {
     try {
         let fileJson = localStorage.getItem("keyInfo");
         let password = localStorage.getItem("keyPassword");
-        if (fileJson && password) {
+        if (fileJson && fileJson !== 'null' && password) {
             fileJson = JSON.parse(fileJson);
             let account = account_utils.NewAccount();
             account.fromKey(fileJson, password);
