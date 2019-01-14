@@ -23,7 +23,6 @@
                 class="-not-registered-account-btn"
                 v-on:click="toRegisterAccount()"
               >{{$t('accountInfoPage.not_registered')}}</div>
-              <!-- TODO: how to change wallet -->
               <span
                 style="color: #A64EB5; float: right; margin-top: -18px; margin-right: 30px;"
                 v-if="myself"
@@ -38,8 +37,8 @@
           :defaultLimit="showAccountBalancesLimit"
         ></AccountBalancesSidebar>
         
-        <!-- TODO: 质押资产 -->
       </div>
+      <AccountLockBalancesPanel v-if="infoAccountInfo && infoAccountInfo.name" :currentAccount="myself?infoAccount:null" :accountName="infoAccountInfo.name" :myself="myself"></AccountLockBalancesPanel>
     </div>
   </div>
 </template>
@@ -50,12 +49,13 @@ import appState from "./appState";
 import utils from "./utils";
 import KeystoreInput from "./KeystoreInput.vue";
 import AccountBalancesSidebar from "./AccountBalancesSidebar.vue";
+import AccountLockBalancesPanel from "./components/AccountLockBalancesPanel.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
   name: "AccountInfo",
   props: ["accountAddress", "myself"],
-  components: { KeystoreInput, AccountBalancesSidebar },
+  components: { KeystoreInput, AccountBalancesSidebar, AccountLockBalancesPanel },
   data() {
     return {
       infoAccount: "",

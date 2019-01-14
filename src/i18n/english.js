@@ -126,4 +126,15 @@ export default {
         account_registered_before: 'This account name has been registered',
         register_account_error_with_reason: 'Registration failed, the balance may not be enough to pay the registration fee, or the account name has been registered',
     },
+    account_lock_balances: {
+        pledge_information: 'Pledge information',
+        pledge_citizen: 'Citizen',
+        pledge_currency: 'Currency',
+        pledge_amount: 'Amount',
+        operations: 'Operations',
+        append: 'Append',
+        redeem: 'Redeem',
+        pledge: 'Pledge',
+        back: 'Back',
+    },
 };

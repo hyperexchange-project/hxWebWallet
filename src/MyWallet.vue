@@ -75,6 +75,7 @@
           :defaultLimit="showAccountBalancesLimit"
         ></AccountBalancesSidebar>
       </div>
+      <AccountLockBalancesPanel v-if="currentAccountInfo && currentAccountInfo.name" :currentAccount="currentAccount" :accountName="currentAccountInfo.name" :myself="true"></AccountLockBalancesPanel>
       <div class="hx-main-container hx-my-opened-wallet-container2" style="display: none;">TODO</div>
     </div>
   </div>
@@ -85,11 +86,16 @@ import _ from "lodash";
 import appState from "./appState";
 import KeystoreInput from "./KeystoreInput.vue";
 import AccountBalancesSidebar from "./AccountBalancesSidebar.vue";
+import AccountLockBalancesPanel from "./components/AccountLockBalancesPanel.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
   name: "HxMyWallet",
-  components: { KeystoreInput, AccountBalancesSidebar },
+  components: {
+    KeystoreInput,
+    AccountBalancesSidebar,
+    AccountLockBalancesPanel
+  },
   data() {
     return {
       opened: false,

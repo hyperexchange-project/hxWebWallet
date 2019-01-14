@@ -127,4 +127,15 @@ export default {
         account_registered_before: '此账户名已被注册',
         register_account_error_with_reason: '注册失败，可能余额不足够支付注册手续费，或者账户名已被注册',
     },
+    account_lock_balances: {
+        pledge_information: '质押信息',
+        pledge_citizen: '质押Citizen',
+        pledge_currency: '质押币种',
+        pledge_amount: '质押数量',
+        operations: '操作',
+        append: '追加',
+        redeem: '赎回',
+        pledge: '质押',
+        back: '返回',
+    }
 };
