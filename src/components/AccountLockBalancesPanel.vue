@@ -62,7 +62,7 @@
                   >{{$t('account_lock_balances.append')}}</el-button>
                   <el-button
                     type="primary"
-                    @click="toCancelLockBalance(balance.id)"
+                    @click="toCancelLockBalance(balance.lockto_miner_account, balance.lock_asset_id)"
                     class="-ctrl-btn hxwallet-form-btn"
                   >{{$t('account_lock_balances.redeem')}}</el-button>
                 </div>
@@ -130,8 +130,60 @@
       </div>
     </div>
     <div v-show="step==='redeem'">
-      <div class="-panel-title">{{$t('account_lock_balances.redeem')}}</div>
-      <div></div>
+      <div class="hx-panel" style="padding-top: 10px;">
+        <div class="-panel-title">{{$t('account_lock_balances.redeem')}}</div>
+        <div class="-simple-form-panel">
+          <el-form label-width="90pt" :model="redeemForm">
+            <el-form-item
+              v-bind:label="$t('account_lock_balances.pledge_citizen')"
+              prop="citizenId"
+            >
+              <el-select
+                class="-citizen-select"
+                filterable
+                v-model="redeemForm.citizenId"
+                v-bind:placeholder="$t('account_lock_balances.pledge_citizen')"
+              >
+                <el-option
+                  v-for="citizenBase in systemCitizens"
+                  :key="citizenBase[1]"
+                  :label="citizenBase[0]"
+                  :value="citizenBase[1]"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-bind:label="$t('account_lock_balances.pledge_currency')" prop="assetId">
+              <el-input class="-input-amount" placeholder type="text" v-model="redeemForm.amount"></el-input>
+              <el-select
+                class="-asset-select -transfer-asset-select"
+                v-model="redeemForm.assetId"
+                v-bind:placeholder="$t('account_lock_balances.pledge_currency')"
+              >
+                <el-option
+                  v-for="asset in systemAssets"
+                  :key="asset.id"
+                  :label="asset.symbol"
+                  :value="asset.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item class="-control-panel">
+              <el-button
+                type="primary"
+                class="hxwallet-form-btn"
+                @click="redeemFromCitizen"
+                style="width: 100px;"
+              >{{$t('account_lock_balances.redeem')}}</el-button>
+              <el-button
+                type="primary"
+                class="hxwallet-form-btn"
+                @click="backToList"
+                style="width: 100px;"
+              >{{$t('account_lock_balances.back')}}</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -182,25 +234,28 @@ export default {
       }
       return {};
     },
+    loadSystemCitizens() {
+      const apisInstance = appState.getApisInstance();
+      appState
+        .withApis()
+        .then(() => {
+          return TransactionHelper.getCitizensCount(apisInstance);
+        })
+        .then(citizensCount => {
+          return TransactionHelper.listCitizens(
+            apisInstance,
+            "",
+            citizensCount
+          );
+        })
+        .then(citizens => {
+          this.systemCitizens = citizens;
+        })
+        .catch(this.showError);
+    },
     toMortgageToCitizen(selectedCitizenId, assetId) {
       if (this.systemCitizens.length < 1) {
-        const apisInstance = appState.getApisInstance();
-        appState
-          .withApis()
-          .then(() => {
-            return TransactionHelper.getCitizensCount(apisInstance);
-          })
-          .then(citizensCount => {
-            return TransactionHelper.listCitizens(
-              apisInstance,
-              "",
-              citizensCount
-            );
-          })
-          .then(citizens => {
-            this.systemCitizens = citizens;
-          })
-          .catch(this.showError);
+        this.loadSystemCitizens();
       }
       this.mortgageForm = {
         citizenId: selectedCitizenId,
@@ -291,9 +346,96 @@ export default {
         })
         .catch(this.showError);
     },
-    toCancelLockBalance(lockBalanceId) {
+    redeemFromCitizen() {
+      if (!this.currentAccount || !this.accountInfo) {
+        this.showError("you can only control your own wallet");
+        return;
+      }
+      const citizenId = this.redeemForm.citizenId;
+      const assetId = this.redeemForm.assetId;
+      const amount = this.redeemForm.amount;
+      const amountBn = new BigNumber(amount);
+      if (!citizenId || !assetId) {
+        this.showError("Invalid citizen or asset");
+        return;
+      }
+      const asset = this.assetById(assetId);
+      if (!asset || !asset.id) {
+        this.showError("Can't find this asset");
+        return;
+      }
+      if (!amountBn || amountBn.isNaN() || amountBn.lte(0)) {
+        this.showError("Invalid amount format");
+        return;
+      }
+      const amountFull = parseInt(
+        amountBn.multipliedBy(Math.pow(10, asset.precision)).toFixed(0)
+      );
+      const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
+      const pubkey = pkey.toPublicKey();
+      const callerAddress = this.currentAccount.address;
+      const apisInstance = appState.getApisInstance();
+
+      appState
+        .withApis()
+        .then(() => {
+          let tr = new TransactionBuilder();
+          let op = TransactionHelper.new_forclose_balance_from_citizen_operation(
+            callerAddress,
+            this.accountInfo.id,
+            citizenId,
+            assetId,
+            amountFull
+          );
+          tr.add_type_operation("foreclose_balance", op);
+          tr.set_expire_seconds(0);
+          return tr.set_required_fees().then(() => {
+            return tr.finalize().then(() => tr);
+          });
+        })
+        .then(tr => {
+          tr.add_signer(pkey, pubkey);
+          tr.sign();
+          let txid = tr
+            .sha256(tr.tr_buffer)
+            .toString("hex")
+            .substr(0, 40);
+          this.lastSentTxId = txid;
+          console.log("tx hash:", txid);
+          this.showSuccess("Transaction sent, please wait for seconds");
+          if (typeof messageToBackground !== "undefined") {
+            messageToBackground("txhash", txid);
+          }
+          tr.broadcast(function() {})
+            .then(() => {
+              setTimeout(() => {
+                this.getTransaction(txid)
+                  .then(tx => {
+                    console.log("tx: ", tx);
+                    this.step = "list";
+                    this.showSuccess("Redeem successfully");
+                    this.loadLockBalances();
+                  })
+                  .catch(e => {
+                    console.log("redeem error", e);
+                    this.showError("Redeem failed");
+                  });
+              }, 6000);
+            })
+            .catch(e => {
+              console.log("redeem error", e);
+              this.showError("Redeem failed");
+            });
+        })
+        .catch(this.showError);
+    },
+    toCancelLockBalance(citizenId, assetId) {
+      if (this.systemCitizens.length < 1) {
+        this.loadSystemCitizens();
+      }
       this.redeemForm = {
-        lockBalanceId: lockBalanceId
+        citizenId: citizenId,
+        assetId: assetId
       };
       this.step = "redeem";
     },
