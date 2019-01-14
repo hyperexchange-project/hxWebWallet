@@ -2,11 +2,13 @@ var path = require('path')
 var webpack = require('webpack')
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 
+const env = process.env.NODE_ENV;
+
 module.exports = {
   entry: './src/main.js',
   output: {
     path: path.resolve(__dirname, './dist'),
-    publicPath: '../dist/',
+    publicPath: env==='production' ? '../dist/' : '/dist/',
     filename: 'build.js'
   },
   module: {
