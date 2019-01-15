@@ -131,11 +131,16 @@ export default {
         pledge_information: '质押信息',
         pledge_citizen: '质押Citizen',
         pledge_currency: '质押币种',
+        currency: '币种',
+        income: '收益',
         pledge_amount: '质押数量',
         operations: '操作',
         append: '追加',
         redeem: '赎回',
         pledge: '质押',
         back: '返回',
+        receive: '领取',
+        receive_all: '领取全部',
+        pledge_income: '质押收益',
     }
 };

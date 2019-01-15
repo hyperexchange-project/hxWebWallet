@@ -30,7 +30,7 @@
             </el-col>
             <el-col :span="9">
               <div class="grid-content">
-                <div class="label-font">{{$t('account_lock_balances.operations')}}</div>
+                <div class="label-font" v-if="myself">{{$t('account_lock_balances.operations')}}</div>
               </div>
             </el-col>
           </el-row>
@@ -70,7 +70,73 @@
             </el-col>
           </el-row>
         </div>
-        <!-- TODO: 质押收益和领取收益 -->
+      </div>
+      <!-- 质押收益和领取收益 -->
+      <div class="hx-panel" style="padding-top: 10px;">
+        <div class="-panel-title">{{$t('account_lock_balances.pledge_income')}}</div>
+        <div v-if="myself" class="-top-control-panel">
+          <el-button
+            type="primary"
+            @click="receivePayBack(accountPayBacks)"
+            class="-ctrl-btn hxwallet-form-btn"
+          >{{$t('account_lock_balances.receive_all')}}</el-button>
+        </div>
+        <div>
+          <el-row style="margin-bottom: 20pt;" class="-table-header-row">
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{$t('account_lock_balances.pledge_citizen')}}</div>
+              </div>
+            </el-col>
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{$t('account_lock_balances.currency')}}</div>
+              </div>
+            </el-col>
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{$t('account_lock_balances.income')}}</div>
+              </div>
+            </el-col>
+            <el-col :span="9">
+              <div class="grid-content">
+                <div class="label-font" v-if="myself">{{$t('account_lock_balances.operations')}}</div>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row
+            class="-table-body-row"
+            v-for="payBack in accountPayBacks"
+            :key="payBack.citizenName"
+          >
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{payBack.citizenName}}</div>
+              </div>
+            </el-col>
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{payBack.asset.symbol}}</div>
+              </div>
+            </el-col>
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{payBack.amountBnStr}}</div>
+              </div>
+            </el-col>
+            <el-col :span="9">
+              <div class="grid-content">
+                <div class="label-font" v-if="myself">
+                  <el-button
+                    type="primary"
+                    @click="receivePayBack([payBack])"
+                    class="-ctrl-btn hxwallet-form-btn"
+                  >{{$t('account_lock_balances.receive')}}</el-button>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
       </div>
     </div>
     <div v-show="step==='mortgage'">
@@ -203,6 +269,7 @@ export default {
   data() {
     return {
       accountLockBalances: [],
+      accountPayBacks: [],
       accountInfo: null,
       citizensAccountCache: {},
       systemAssets: [],
@@ -262,6 +329,89 @@ export default {
         assetId: assetId
       };
       this.step = "mortgage";
+    },
+    receivePayBack(payBacks) {
+      if (!this.currentAccount || !this.accountInfo) {
+        this.showError("you can only control your own wallet");
+        return;
+      }
+      if (!payBacks) {
+        this.showError("Please select at least one pay back");
+        return;
+      }
+      const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
+      const pubkey = pkey.toPublicKey();
+      const callerAddress = this.currentAccount.address;
+      const apisInstance = appState.getApisInstance();
+      const takePayBackItems = [];
+      for (const item of payBacks) {
+        if (item.amount < 100) {
+          continue;
+        }
+        takePayBackItems.push([
+          item.citizenName,
+          { amount: item.amount, asset_id: item.assetId }
+        ]);
+      }
+      if (takePayBackItems.length < 1) {
+        this.showError(
+          "at least take pay back with amount >= " +
+            new BigNumber(100)
+              .div(Math.pow(10, appState.hxPrecision))
+              .toFixed(appState.hxPrecision)
+        );
+        return;
+      }
+
+      appState
+        .withApis()
+        .then(() => {
+          let tr = new TransactionBuilder();
+          let op = TransactionHelper.new_take_payback_from_citizen_operation(
+            callerAddress,
+            takePayBackItems
+          );
+          tr.add_type_operation("pay_back", op);
+          tr.set_expire_seconds(0);
+          return tr.set_required_fees().then(() => {
+            return tr.finalize().then(() => tr);
+          });
+        })
+        .then(tr => {
+          tr.add_signer(pkey, pubkey);
+          tr.sign();
+          let txid = tr
+            .sha256(tr.tr_buffer)
+            .toString("hex")
+            .substr(0, 40);
+          this.lastSentTxId = txid;
+          console.log("tx hash:", txid);
+          this.showSuccess("Transaction sent, please wait for seconds");
+          if (typeof messageToBackground !== "undefined") {
+            messageToBackground("txhash", txid);
+          }
+          tr.broadcast(function() {})
+            .then(() => {
+              setTimeout(() => {
+                this.getTransaction(txid)
+                  .then(tx => {
+                    console.log("tx: ", tx);
+                    this.step = "list";
+                    this.showSuccess("take paybacks successfully");
+                    this.loadLockBalances();
+                  })
+                  .catch(e => {
+                    console.log("take paybacks error", e);
+                    this.showError("take paybacks failed");
+                  });
+              }, 6000);
+            })
+            .catch(e => {
+              console.log("take paybacks error", e);
+              this.showError("take paybacks failed");
+            });
+        })
+        .catch(this.showError);
     },
     mortageToCitizen() {
       if (!this.currentAccount || !this.accountInfo) {
@@ -502,6 +652,36 @@ export default {
                 }
               })
               .catch(this.showError.bind(this));
+            TransactionHelper.getAddressPayBackBalance(
+              apisInstance,
+              account.addr
+            )
+              .then(payBacks => {
+                this.accountPayBacks = [];
+                for (let item of payBacks) {
+                  const assetId = item[1].asset_id;
+                  const asset = this.assetById(assetId);
+                  if (!asset) {
+                    continue;
+                  }
+                  const amount = item[1].amount;
+                  const amountBn = new BigNumber(amount).div(
+                    Math.pow(10, asset.precision)
+                  );
+                  const amountBnStr = amountBn.toFixed(asset.precision);
+                  const obj = {
+                    citizenName: item[0],
+                    asset: asset,
+                    assetId: assetId,
+                    amount: amount,
+                    amountBn: amountBn,
+                    amountBnStr: amountBnStr
+                  };
+                  this.accountPayBacks.push(obj);
+                }
+                console.log("payBacks", payBacks);
+              })
+              .catch(this.showError.bind(this));
             return account;
           });
         })
@@ -598,8 +778,9 @@ export default {
   }
   .-top-control-panel {
     margin: 2px 0 10px 0;
-    text-align: right;
-    margin-right: 30px;
+    text-align: left;
+    margin-left: 10px;
+    padding-bottom: 10px;
   }
 }
 </style>
