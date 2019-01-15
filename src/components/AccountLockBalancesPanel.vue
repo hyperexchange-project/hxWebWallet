@@ -30,7 +30,7 @@
             </el-col>
             <el-col :span="9">
               <div class="grid-content">
-                <div class="label-font">{{$t('account_lock_balances.operations')}}</div>
+                <div class="label-font" v-if="myself">{{$t('account_lock_balances.operations')}}</div>
               </div>
             </el-col>
           </el-row>
@@ -62,7 +62,7 @@
                   >{{$t('account_lock_balances.append')}}</el-button>
                   <el-button
                     type="primary"
-                    @click="toCancelLockBalance(balance.id)"
+                    @click="toCancelLockBalance(balance.lockto_miner_account, balance.lock_asset_id)"
                     class="-ctrl-btn hxwallet-form-btn"
                   >{{$t('account_lock_balances.redeem')}}</el-button>
                 </div>
@@ -70,7 +70,73 @@
             </el-col>
           </el-row>
         </div>
-        <!-- TODO: 质押收益和领取收益 -->
+      </div>
+      <!-- 质押收益和领取收益 -->
+      <div class="hx-panel" style="padding-top: 10px;">
+        <div class="-panel-title">{{$t('account_lock_balances.pledge_income')}}</div>
+        <div v-if="myself" class="-top-control-panel">
+          <el-button
+            type="primary"
+            @click="receivePayBack(accountPayBacks)"
+            class="-ctrl-btn hxwallet-form-btn"
+          >{{$t('account_lock_balances.receive_all')}}</el-button>
+        </div>
+        <div>
+          <el-row style="margin-bottom: 20pt;" class="-table-header-row">
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{$t('account_lock_balances.pledge_citizen')}}</div>
+              </div>
+            </el-col>
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{$t('account_lock_balances.currency')}}</div>
+              </div>
+            </el-col>
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{$t('account_lock_balances.income')}}</div>
+              </div>
+            </el-col>
+            <el-col :span="9">
+              <div class="grid-content">
+                <div class="label-font" v-if="myself">{{$t('account_lock_balances.operations')}}</div>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row
+            class="-table-body-row"
+            v-for="payBack in accountPayBacks"
+            :key="payBack.citizenName"
+          >
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{payBack.citizenName}}</div>
+              </div>
+            </el-col>
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{payBack.asset.symbol}}</div>
+              </div>
+            </el-col>
+            <el-col :span="5">
+              <div class="grid-content">
+                <div class="label-font">{{payBack.amountBnStr}}</div>
+              </div>
+            </el-col>
+            <el-col :span="9">
+              <div class="grid-content">
+                <div class="label-font" v-if="myself">
+                  <el-button
+                    type="primary"
+                    @click="receivePayBack([payBack])"
+                    class="-ctrl-btn hxwallet-form-btn"
+                  >{{$t('account_lock_balances.receive')}}</el-button>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
       </div>
     </div>
     <div v-show="step==='mortgage'">
@@ -130,8 +196,60 @@
       </div>
     </div>
     <div v-show="step==='redeem'">
-      <div class="-panel-title">{{$t('account_lock_balances.redeem')}}</div>
-      <div></div>
+      <div class="hx-panel" style="padding-top: 10px;">
+        <div class="-panel-title">{{$t('account_lock_balances.redeem')}}</div>
+        <div class="-simple-form-panel">
+          <el-form label-width="90pt" :model="redeemForm">
+            <el-form-item
+              v-bind:label="$t('account_lock_balances.pledge_citizen')"
+              prop="citizenId"
+            >
+              <el-select
+                class="-citizen-select"
+                filterable
+                v-model="redeemForm.citizenId"
+                v-bind:placeholder="$t('account_lock_balances.pledge_citizen')"
+              >
+                <el-option
+                  v-for="citizenBase in systemCitizens"
+                  :key="citizenBase[1]"
+                  :label="citizenBase[0]"
+                  :value="citizenBase[1]"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item v-bind:label="$t('account_lock_balances.pledge_currency')" prop="assetId">
+              <el-input class="-input-amount" placeholder type="text" v-model="redeemForm.amount"></el-input>
+              <el-select
+                class="-asset-select -transfer-asset-select"
+                v-model="redeemForm.assetId"
+                v-bind:placeholder="$t('account_lock_balances.pledge_currency')"
+              >
+                <el-option
+                  v-for="asset in systemAssets"
+                  :key="asset.id"
+                  :label="asset.symbol"
+                  :value="asset.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item class="-control-panel">
+              <el-button
+                type="primary"
+                class="hxwallet-form-btn"
+                @click="redeemFromCitizen"
+                style="width: 100px;"
+              >{{$t('account_lock_balances.redeem')}}</el-button>
+              <el-button
+                type="primary"
+                class="hxwallet-form-btn"
+                @click="backToList"
+                style="width: 100px;"
+              >{{$t('account_lock_balances.back')}}</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -151,6 +269,7 @@ export default {
   data() {
     return {
       accountLockBalances: [],
+      accountPayBacks: [],
       accountInfo: null,
       citizensAccountCache: {},
       systemAssets: [],
@@ -182,31 +301,117 @@ export default {
       }
       return {};
     },
+    loadSystemCitizens() {
+      const apisInstance = appState.getApisInstance();
+      appState
+        .withApis()
+        .then(() => {
+          return TransactionHelper.getCitizensCount(apisInstance);
+        })
+        .then(citizensCount => {
+          return TransactionHelper.listCitizens(
+            apisInstance,
+            "",
+            citizensCount
+          );
+        })
+        .then(citizens => {
+          this.systemCitizens = citizens;
+        })
+        .catch(this.showError);
+    },
     toMortgageToCitizen(selectedCitizenId, assetId) {
       if (this.systemCitizens.length < 1) {
-        const apisInstance = appState.getApisInstance();
-        appState
-          .withApis()
-          .then(() => {
-            return TransactionHelper.getCitizensCount(apisInstance);
-          })
-          .then(citizensCount => {
-            return TransactionHelper.listCitizens(
-              apisInstance,
-              "",
-              citizensCount
-            );
-          })
-          .then(citizens => {
-            this.systemCitizens = citizens;
-          })
-          .catch(this.showError);
+        this.loadSystemCitizens();
       }
       this.mortgageForm = {
         citizenId: selectedCitizenId,
         assetId: assetId
       };
       this.step = "mortgage";
+    },
+    receivePayBack(payBacks) {
+      if (!this.currentAccount || !this.accountInfo) {
+        this.showError("you can only control your own wallet");
+        return;
+      }
+      if (!payBacks) {
+        this.showError("Please select at least one pay back");
+        return;
+      }
+      const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
+      const pubkey = pkey.toPublicKey();
+      const callerAddress = this.currentAccount.address;
+      const apisInstance = appState.getApisInstance();
+      const takePayBackItems = [];
+      for (const item of payBacks) {
+        if (item.amount < 100) {
+          continue;
+        }
+        takePayBackItems.push([
+          item.citizenName,
+          { amount: item.amount, asset_id: item.assetId }
+        ]);
+      }
+      if (takePayBackItems.length < 1) {
+        this.showError(
+          "at least take pay back with amount >= " +
+            new BigNumber(100)
+              .div(Math.pow(10, appState.hxPrecision))
+              .toFixed(appState.hxPrecision)
+        );
+        return;
+      }
+
+      appState
+        .withApis()
+        .then(() => {
+          let tr = new TransactionBuilder();
+          let op = TransactionHelper.new_take_payback_from_citizen_operation(
+            callerAddress,
+            takePayBackItems
+          );
+          tr.add_type_operation("pay_back", op);
+          tr.set_expire_seconds(0);
+          return tr.set_required_fees().then(() => {
+            return tr.finalize().then(() => tr);
+          });
+        })
+        .then(tr => {
+          tr.add_signer(pkey, pubkey);
+          tr.sign();
+          let txid = tr
+            .sha256(tr.tr_buffer)
+            .toString("hex")
+            .substr(0, 40);
+          this.lastSentTxId = txid;
+          console.log("tx hash:", txid);
+          this.showSuccess("Transaction sent, please wait for seconds");
+          if (typeof messageToBackground !== "undefined") {
+            messageToBackground("txhash", txid);
+          }
+          tr.broadcast(function() {})
+            .then(() => {
+              setTimeout(() => {
+                this.getTransaction(txid)
+                  .then(tx => {
+                    console.log("tx: ", tx);
+                    this.step = "list";
+                    this.showSuccess("take paybacks successfully");
+                    this.loadLockBalances();
+                  })
+                  .catch(e => {
+                    console.log("take paybacks error", e);
+                    this.showError("take paybacks failed");
+                  });
+              }, 6000);
+            })
+            .catch(e => {
+              console.log("take paybacks error", e);
+              this.showError("take paybacks failed");
+            });
+        })
+        .catch(this.showError);
     },
     mortageToCitizen() {
       if (!this.currentAccount || !this.accountInfo) {
@@ -291,9 +496,96 @@ export default {
         })
         .catch(this.showError);
     },
-    toCancelLockBalance(lockBalanceId) {
+    redeemFromCitizen() {
+      if (!this.currentAccount || !this.accountInfo) {
+        this.showError("you can only control your own wallet");
+        return;
+      }
+      const citizenId = this.redeemForm.citizenId;
+      const assetId = this.redeemForm.assetId;
+      const amount = this.redeemForm.amount;
+      const amountBn = new BigNumber(amount);
+      if (!citizenId || !assetId) {
+        this.showError("Invalid citizen or asset");
+        return;
+      }
+      const asset = this.assetById(assetId);
+      if (!asset || !asset.id) {
+        this.showError("Can't find this asset");
+        return;
+      }
+      if (!amountBn || amountBn.isNaN() || amountBn.lte(0)) {
+        this.showError("Invalid amount format");
+        return;
+      }
+      const amountFull = parseInt(
+        amountBn.multipliedBy(Math.pow(10, asset.precision)).toFixed(0)
+      );
+      const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
+      const pubkey = pkey.toPublicKey();
+      const callerAddress = this.currentAccount.address;
+      const apisInstance = appState.getApisInstance();
+
+      appState
+        .withApis()
+        .then(() => {
+          let tr = new TransactionBuilder();
+          let op = TransactionHelper.new_forclose_balance_from_citizen_operation(
+            callerAddress,
+            this.accountInfo.id,
+            citizenId,
+            assetId,
+            amountFull
+          );
+          tr.add_type_operation("foreclose_balance", op);
+          tr.set_expire_seconds(0);
+          return tr.set_required_fees().then(() => {
+            return tr.finalize().then(() => tr);
+          });
+        })
+        .then(tr => {
+          tr.add_signer(pkey, pubkey);
+          tr.sign();
+          let txid = tr
+            .sha256(tr.tr_buffer)
+            .toString("hex")
+            .substr(0, 40);
+          this.lastSentTxId = txid;
+          console.log("tx hash:", txid);
+          this.showSuccess("Transaction sent, please wait for seconds");
+          if (typeof messageToBackground !== "undefined") {
+            messageToBackground("txhash", txid);
+          }
+          tr.broadcast(function() {})
+            .then(() => {
+              setTimeout(() => {
+                this.getTransaction(txid)
+                  .then(tx => {
+                    console.log("tx: ", tx);
+                    this.step = "list";
+                    this.showSuccess("Redeem successfully");
+                    this.loadLockBalances();
+                  })
+                  .catch(e => {
+                    console.log("redeem error", e);
+                    this.showError("Redeem failed");
+                  });
+              }, 6000);
+            })
+            .catch(e => {
+              console.log("redeem error", e);
+              this.showError("Redeem failed");
+            });
+        })
+        .catch(this.showError);
+    },
+    toCancelLockBalance(citizenId, assetId) {
+      if (this.systemCitizens.length < 1) {
+        this.loadSystemCitizens();
+      }
       this.redeemForm = {
-        lockBalanceId: lockBalanceId
+        citizenId: citizenId,
+        assetId: assetId
       };
       this.step = "redeem";
     },
@@ -358,6 +650,36 @@ export default {
                       console.log("load citizen error ", e);
                     });
                 }
+              })
+              .catch(this.showError.bind(this));
+            TransactionHelper.getAddressPayBackBalance(
+              apisInstance,
+              account.addr
+            )
+              .then(payBacks => {
+                this.accountPayBacks = [];
+                for (let item of payBacks) {
+                  const assetId = item[1].asset_id;
+                  const asset = this.assetById(assetId);
+                  if (!asset) {
+                    continue;
+                  }
+                  const amount = item[1].amount;
+                  const amountBn = new BigNumber(amount).div(
+                    Math.pow(10, asset.precision)
+                  );
+                  const amountBnStr = amountBn.toFixed(asset.precision);
+                  const obj = {
+                    citizenName: item[0],
+                    asset: asset,
+                    assetId: assetId,
+                    amount: amount,
+                    amountBn: amountBn,
+                    amountBnStr: amountBnStr
+                  };
+                  this.accountPayBacks.push(obj);
+                }
+                console.log("payBacks", payBacks);
               })
               .catch(this.showError.bind(this));
             return account;
@@ -456,8 +778,9 @@ export default {
   }
   .-top-control-panel {
     margin: 2px 0 10px 0;
-    text-align: right;
-    margin-right: 30px;
+    text-align: left;
+    margin-left: 10px;
+    padding-bottom: 10px;
   }
 }
 </style>
