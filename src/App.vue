@@ -17,14 +17,14 @@
 </template>
 
 <script>
-import PageHeader from "./Header.vue";
-import HxToolbar from "./Toolbar.vue";
-import HxMyWallet from "./MyWallet.vue";
-import RegisterAccount from "./RegisterAccount.vue";
-import CreateWallet from "./CreateWallet.vue";
-import Transfer from "./Transfer.vue";
-import CheckTx from "./CheckTx.vue";
-import Contract from "./Contract.vue";
+import PageHeader from "./components/Header.vue";
+import HxToolbar from "./components/Toolbar.vue";
+import HxMyWallet from "./pages/MyWallet.vue";
+import RegisterAccount from "./pages/RegisterAccount.vue";
+import CreateWallet from "./pages/CreateWallet.vue";
+import Transfer from "./pages/Transfer.vue";
+import CheckTx from "./pages/CheckTx.vue";
+import Contract from "./pages/Contract.vue";
 import appState from "./appState.js";
 
 export default {

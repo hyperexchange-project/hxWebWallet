@@ -239,10 +239,10 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
-import utils from "./utils";
-import KeystoreInput from "./KeystoreInput.vue";
-import AddressOrSelectWalletInput from "./AddressOrSelectWalletInput.vue";
+import appState from "../appState";
+import utils from "../utils";
+import KeystoreInput from "../components/KeystoreInput.vue";
+import AddressOrSelectWalletInput from "../components/AddressOrSelectWalletInput.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {

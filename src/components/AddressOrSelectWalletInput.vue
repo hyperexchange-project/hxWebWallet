@@ -39,10 +39,10 @@
 </template>
 
 <script>
+import appState from "../appState";
+import utils from "../utils";
 import FileInput from "./FileInput.vue";
 import KeystoreInput from "./KeystoreInput.vue";
-import appState from "./appState";
-import utils from "./utils";
 
 export default {
   name: "AddressOrSelectWalletInput",

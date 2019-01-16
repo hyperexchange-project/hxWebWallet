@@ -123,8 +123,8 @@
 <script>
 import _ from "lodash";
 import { format, distanceInWordsToNow } from "date-fns";
-import appState from "./appState";
-import utils from "./utils";
+import appState from "../appState";
+import utils from "../utils";
 import TransferToContractOpDetail from "./TransferToContractOpDetail.vue";
 import TransferOpDetail from "./TransferOpDetail.vue";
 import RegisterContractOpDetail from "./RegisterContractOpDetail.vue";

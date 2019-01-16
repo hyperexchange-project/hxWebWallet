@@ -38,10 +38,10 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
+import appState from "../appState";
 import AccountInfo from "./AccountInfo.vue";
-import ContractInfoPanel from "./ContractInfoPanel.vue";
-import TransactionInfo from "./TransactionInfo.vue";
+import ContractInfoPanel from "../components/ContractInfoPanel.vue";
+import TransactionInfo from "../components/TransactionInfo.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {

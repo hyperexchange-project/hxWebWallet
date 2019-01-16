@@ -6,7 +6,7 @@
       </el-col>
       <el-col :span="20">
         <div class="grid-content label-font">
-          <div>{{assetAmountToString({amount: operation.lock_asset_amount, asset_id: operation.lock_asset_id})}}</div>
+          <div>{{assetAmountToString(operation.amount)}}</div>
         </div>
       </el-col>
     </el-row>
@@ -16,7 +16,7 @@
       </el-col>
       <el-col :span="9">
         <div class="grid-content label-font">
-          <div>{{operation.lock_balance_addr}}</div>
+          <div>{{operation.from_addr}}</div>
         </div>
       </el-col>
       <el-col :span="2">
@@ -26,7 +26,7 @@
       </el-col>
       <el-col :span="9">
         <div class="grid-content label-font">
-          <div>Citizen {{operation.lockto_miner_account}}</div>
+          <div>{{operation.to_addr}}</div>
         </div>
       </el-col>
     </el-row>
@@ -42,16 +42,6 @@
     </el-row>
     <el-row class="-info-line-row">
       <el-col :span="4">
-        <div class="grid-content label-font">Citizen</div>
-      </el-col>
-      <el-col :span="20">
-        <div class="grid-content label-font">
-          <div>{{operation.lockto_miner_account}}</div>
-        </div>
-      </el-col>
-    </el-row>
-    <el-row class="-info-line-row">
-      <el-col :span="4">
         <div class="grid-content label-font">Memo</div>
       </el-col>
       <el-col :span="20">
@@ -62,9 +52,8 @@
               :rows="4"
               placeholder
               :readonly="true"
-              v-model="operation.memo"
+              :value="operation.memo && hexToString(operation.memo.message)"
             >
-              <!-- TODO: memo from hex to string(if valid string) -->
             </el-input>
           </div>
         </div>
@@ -76,13 +65,13 @@
 <script>
 import _ from "lodash";
 import { format, distanceInWordsToNow } from "date-fns";
-import appState from "./appState";
-import utils from "./utils";
+import appState from "../appState";
+import utils from "../utils";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 window.datefns = require("date-fns");
 
 export default {
-  name: "LockBalanceOpDetail",
+  name: "TransferOpDetail",
   props: ["operation"],
   components: {},
   data() {
@@ -104,7 +93,10 @@ export default {
     },
     getOperationTypeName(opType) {
       return utils.getOperationTypeName(opType);
-    }
+    },
+    hexToString(hexStr) {
+      return utils.hexToUtf8(hexStr);
+    },
   }
 };
 </script>

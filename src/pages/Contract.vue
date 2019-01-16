@@ -17,10 +17,10 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
-import utils from "./utils";
-import KeystoreInput from "./KeystoreInput.vue";
-import SideNavbar from "./SideNavbar.vue";
+import appState from "../appState";
+import utils from "../utils";
+import KeystoreInput from "../components/KeystoreInput.vue";
+import SideNavbar from "../components/SideNavbar.vue";
 import TransferToContract from "./TransferToContract.vue";
 import RegisterContract from "./RegisterContract.vue";
 import InvokeContract from "./InvokeContract.vue";
