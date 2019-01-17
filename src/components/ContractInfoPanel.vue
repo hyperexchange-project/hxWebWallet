@@ -176,12 +176,11 @@ export default {
       if (!this.contractAddress) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(assets => {
-          return TransactionHelper.getContractBalances(
-            apisInstance,
+          return nodeClient.getContractBalances(
             this.contractAddress
           ).then(balances => {
             this.contractBalances.length = 0;
@@ -204,8 +203,7 @@ export default {
           });
         })
         .then(() => {
-          return TransactionHelper.getSimpleContractInfo(
-            apisInstance,
+          return nodeClient.getSimpleContractInfo(
             this.contractAddress
           ).then(accountInfo => {
             if (accountInfo) {

@@ -70,14 +70,11 @@ export default {
         }
         return assetAmount.amount + " " + assetAmount.asset_id;
     },
-    getContractTxReceipts(apisInstance, txid) {
-        return TransactionHelper.getContractTxReceipt(apisInstance, txid);
-    },
-    getTxReceiptStatus(apisInstance, tx) {
+    getTxReceiptStatus(nodeClient, tx) {
         const txType = this.getTxType(tx);
         if (["contract_register", "contract_invoke", "transfer_contract"].indexOf(txType) >= 0) {
             const txid = tx.trxid;
-            return this.getContractTxReceipts(apisInstance, txid)
+            return nodeClient.getContractTxReceipt(txid)
                 .then((receipts) => {
                     const receipt = receipts[0]
                     if (receipt && receipt.exec_succeed) {

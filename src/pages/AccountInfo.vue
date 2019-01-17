@@ -124,12 +124,11 @@ export default {
       if (!this.accountAddress) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(assets => {
-          return TransactionHelper.getAddrBalances(
-            apisInstance,
+          return nodeClient.getAddrBalances(
             this.accountAddress
           ).then(balances => {
             this.infoAccountBalances.length = 0;
@@ -152,8 +151,7 @@ export default {
           });
         })
         .then(() => {
-          return TransactionHelper.getAccountByAddresss(
-            apisInstance,
+          return nodeClient.getAccountByAddresss(
             this.accountAddress
           ).then(accountInfo => {
             if (accountInfo) {

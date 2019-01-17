@@ -228,7 +228,13 @@ import KeystoreInput from "../components/KeystoreInput.vue";
 import SideNavbar from "../components/SideNavbar.vue";
 import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
 import AddressOrSelectWalletInput from "../components/AddressOrSelectWalletInput.vue";
-let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
+let {
+  PrivateKey,
+  key,
+  TransactionBuilder,
+  TransactionHelper,
+  NodeClient
+} = hx_js;
 
 export default {
   name: "TransferToContract",
@@ -335,49 +341,47 @@ export default {
       if (!this.currentAccount) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(assets => {
-          return TransactionHelper.getAddrBalances(
-            apisInstance,
-            this.currentAccount.address
-          ).then(balances => {
-            this.currentAccountBalances.length = 0;
-            for (let asset of assets) {
-              let balance = balances.filter(b => b.asset_id === asset.id)[0];
-              let item = {
-                assetId: asset.id,
-                assetSymbol: asset.symbol,
-                amount: balance ? balance.amount : 0,
-                precision: asset.precision,
-                amountNu: balance
-                  ? new BigNumber(balance.amount).div(
-                      Math.pow(10, asset.precision)
-                    )
-                  : new BigNumber(0)
-              };
-              this.currentAccountBalances.push(item);
-              if (asset.id === "1.3.0") {
-                this.currentAccountHxBalance = item.amountNu.toFixed(
-                  asset.precision
-                );
+          return nodeClient
+            .getAddrBalances(this.currentAccount.address)
+            .then(balances => {
+              this.currentAccountBalances.length = 0;
+              for (let asset of assets) {
+                let balance = balances.filter(b => b.asset_id === asset.id)[0];
+                let item = {
+                  assetId: asset.id,
+                  assetSymbol: asset.symbol,
+                  amount: balance ? balance.amount : 0,
+                  precision: asset.precision,
+                  amountNu: balance
+                    ? new BigNumber(balance.amount).div(
+                        Math.pow(10, asset.precision)
+                      )
+                    : new BigNumber(0)
+                };
+                this.currentAccountBalances.push(item);
+                if (asset.id === "1.3.0") {
+                  this.currentAccountHxBalance = item.amountNu.toFixed(
+                    asset.precision
+                  );
+                }
               }
-            }
-            return balances;
-          });
+              return balances;
+            });
         })
         .then(() => {
-          return TransactionHelper.getAccountByAddresss(
-            apisInstance,
-            this.currentAddress
-          ).then(accountInfo => {
-            if (accountInfo) {
-              this.currentAccountInfo = accountInfo;
-            } else {
-              this.currentAccountInfo = {};
-            }
-          });
+          return nodeClient
+            .getAccountByAddresss(this.currentAddress)
+            .then(accountInfo => {
+              if (accountInfo) {
+                this.currentAccountInfo = accountInfo;
+              } else {
+                this.currentAccountInfo = {};
+              }
+            });
         })
         .catch(this.showError.bind(this));
     },
@@ -446,12 +450,11 @@ export default {
       const apiArg = this.contractForm.apiArg || "";
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubkey = pkey.toPublicKey();
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withApis()
         .then(() => {
-          TransactionHelper.transferToContractTesting(
-            apisInstance,
+          nodeClient.transferToContractTesting(
             pubkey,
             contractId,
             amountFull,
@@ -529,7 +532,7 @@ export default {
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubkey = pkey.toPublicKey();
       const callerAddress = this.currentAccount.address;
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
 
       appState
         .withApis()
@@ -589,9 +592,9 @@ export default {
         .catch(this.showError);
     },
     getTransaction(txid) {
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       return appState.withApis().then(() => {
-        return TransactionHelper.getTransactionById(apisInstance, txid);
+        return nodeClient.getTransactionById(txid);
       });
     },
     filterBalances(balances, skipZero = false, limit = null) {

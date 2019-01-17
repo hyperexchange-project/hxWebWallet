@@ -302,15 +302,14 @@ export default {
       return {};
     },
     loadSystemCitizens() {
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withApis()
         .then(() => {
-          return TransactionHelper.getCitizensCount(apisInstance);
+          return nodeClient.getCitizensCount();
         })
         .then(citizensCount => {
-          return TransactionHelper.listCitizens(
-            apisInstance,
+          return nodeClient.listCitizens(
             "",
             citizensCount
           );
@@ -342,7 +341,7 @@ export default {
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubkey = pkey.toPublicKey();
       const callerAddress = this.currentAccount.address;
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       const takePayBackItems = [];
       for (const item of payBacks) {
         if (item.amount < 100) {
@@ -441,7 +440,7 @@ export default {
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubkey = pkey.toPublicKey();
       const callerAddress = this.currentAccount.address;
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
 
       appState
         .withApis()
@@ -524,7 +523,7 @@ export default {
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubkey = pkey.toPublicKey();
       const callerAddress = this.currentAccount.address;
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
 
       appState
         .withApis()
@@ -590,26 +589,25 @@ export default {
       this.step = "redeem";
     },
     getTransaction(txid) {
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       return appState.withApis().then(() => {
-        return TransactionHelper.getTransactionById(apisInstance, txid);
+        return nodeClient.getTransactionById(txid);
       });
     },
     loadLockBalances() {
       if (!this.accountName) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(assets => {
           this.systemAssets = assets;
-          return TransactionHelper.getAccountByName(
-            apisInstance,
+          return nodeClient.getAccountByName(
             this.accountName
           ).then(account => {
             this.accountInfo = account;
-            TransactionHelper.getAccountLockBalances(apisInstance, account.id)
+            nodeClient.getAccountLockBalances(account.id)
               .then(balances => {
                 this.accountLockBalances.length = 0;
                 const usingCitizenIds = [];
@@ -636,10 +634,9 @@ export default {
                   if (this.citizensAccountCache[citizenId]) {
                     continue;
                   }
-                  TransactionHelper.getCitizen(apisInstance, citizenId)
+                  nodeClient.getCitizen(citizenId)
                     .then(citizen => {
-                      return TransactionHelper.getAccount(
-                        apisInstance,
+                      return nodeClient.getAccount(
                         citizen.miner_account
                       );
                     })
@@ -652,8 +649,7 @@ export default {
                 }
               })
               .catch(this.showError.bind(this));
-            TransactionHelper.getAddressPayBackBalance(
-              apisInstance,
+            nodeClient.getAddressPayBackBalance(
               account.addr
             )
               .then(payBacks => {

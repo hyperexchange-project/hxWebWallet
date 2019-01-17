@@ -104,28 +104,25 @@ export default {
       this.checkTxForm.isTxId = isTxId;
       this.checkTxForm.isHxAccountAddr = isHxAccountAddr;
       this.checkTxForm.isHxContractAddr = isHxContractAddr;
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withApis()
         .then(() => {
           if (isTxId) {
-            return TransactionHelper.getTransactionById(
-              apisInstance,
+            return nodeClient.getTransactionById(
               txidOrAddress
             );
           } else if (isHxAccountAddr) {
-            return TransactionHelper.getAccountByAddresss(
-              apisInstance,
+            return nodeClient.getAccountByAddresss(
               txidOrAddress
             );
           } else if (isHxContractAddr) {
-            return TransactionHelper.getSimpleContractInfo(
-              apisInstance,
+            return nodeClient.getSimpleContractInfo(
               txidOrAddress
             );
           } else {
             // account name
-            return TransactionHelper.getAccount(apisInstance, txidOrAddress);
+            return nodeClient.getAccount(txidOrAddress);
           }
         })
         .then(data => {

@@ -350,12 +350,11 @@ export default {
       if (!contractAddress) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withApis()
         .then(() => {
-          return TransactionHelper.getSimpleContractInfo(
-            apisInstance,
+          return nodeClient.getSimpleContractInfo(
             contractAddress
           );
         })
@@ -402,12 +401,11 @@ export default {
       if (!this.currentAccount) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(assets => {
-          return TransactionHelper.getAddrBalances(
-            apisInstance,
+          return nodeClient.getAddrBalances(
             this.currentAccount.address
           ).then(balances => {
             this.currentAccountBalances.length = 0;
@@ -435,8 +433,7 @@ export default {
           });
         })
         .then(() => {
-          return TransactionHelper.getAccountByAddresss(
-            apisInstance,
+          return nodeClient.getAccountByAddresss(
             this.currentAddress
           ).then(accountInfo => {
             if (accountInfo) {
@@ -494,12 +491,11 @@ export default {
       const apiArg = this.contractForm.apiArg || "";
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubkey = pkey.toPublicKey();
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withApis()
         .then(() => {
-          TransactionHelper.invokeContractTesting(
-            apisInstance,
+          nodeClient.invokeContractTesting(
             pubkey,
             contractId,
             apiName,
@@ -574,7 +570,7 @@ export default {
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubkey = pkey.toPublicKey();
       const callerAddress = this.currentAccount.address;
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withApis()
         .then(() => {
@@ -632,9 +628,9 @@ export default {
         .catch(this.showError);
     },
     getTransaction(txid) {
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       return appState.withApis().then(() => {
-        return TransactionHelper.getTransactionById(apisInstance, txid);
+        return nodeClient.getTransactionById(txid);
       });
     },
     filterBalances(balances, skipZero = false, limit = null) {
