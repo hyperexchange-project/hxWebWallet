@@ -110,8 +110,9 @@ function getLocationHash() {
     }
 }
 
-// TODO: receive params
-switch(getLocationHash()) {
+// receive params
+const locationHash = getLocationHash();
+switch(locationHash) {
     case '#transfer': {
         state.currentTab = 'transfer';
     } break;
@@ -125,7 +126,15 @@ switch(getLocationHash()) {
         state.currentTab = 'check_tx';
         state.currentTabParams = [];
     } break;
+    default: {
+        if(locationHash && locationHash.indexOf('#locktocitizen=')===0) {
+            const lockToCitizenName = locationHash.substr('#locktocitizen='.length);
+            state.currentTab = 'my_wallet';
+            state.currentTabParams = ['locktocitizen', lockToCitizenName];
+        }
+    }
 }
+location.hash = '';
 
 export default {
     EE,
@@ -162,6 +171,9 @@ export default {
     },
     getCurrentTabParams() {
         return state.currentTabParams;
+    },
+    clearCurrentTabParams() {
+        state.currentTabParams.length = 0;
     },
 
     changeCurrentAccount(account) {

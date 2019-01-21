@@ -287,6 +287,32 @@ export default {
   },
   mounted() {
     this.loadLockBalances();
+
+    const currentTabParams = appState.getCurrentTabParams();
+    if (currentTabParams && currentTabParams.length > 0) {
+      if (
+        currentTabParams.length >= 2 &&
+        currentTabParams[0] === "locktocitizen"
+      ) {
+        const lockToCitizenName = currentTabParams[1];
+        // TODO
+        const nodeClient = appState.getNodeClient();
+        if (lockToCitizenName) {
+          appState
+            .withApis()
+            .then(() => {
+              return nodeClient.getCitizen(lockToCitizenName);
+            })
+            .then(citizen => {
+              this.toMortgageToCitizen(citizen.id, null);
+            })
+            .catch(this.showError);
+        } else {
+          this.toMortgageToCitizen(null, null);
+        }
+        appState.clearCurrentTabParams();
+      }
+    }
   },
   beforeDestroy() {},
   methods: {
@@ -309,10 +335,7 @@ export default {
           return nodeClient.getCitizensCount();
         })
         .then(citizensCount => {
-          return nodeClient.listCitizens(
-            "",
-            citizensCount
-          );
+          return nodeClient.listCitizens("", citizensCount);
         })
         .then(citizens => {
           this.systemCitizens = citizens;
@@ -603,11 +626,10 @@ export default {
         .withSystemAssets()
         .then(assets => {
           this.systemAssets = assets;
-          return nodeClient.getAccountByName(
-            this.accountName
-          ).then(account => {
+          return nodeClient.getAccountByName(this.accountName).then(account => {
             this.accountInfo = account;
-            nodeClient.getAccountLockBalances(account.id)
+            nodeClient
+              .getAccountLockBalances(account.id)
               .then(balances => {
                 this.accountLockBalances.length = 0;
                 const usingCitizenIds = [];
@@ -634,11 +656,10 @@ export default {
                   if (this.citizensAccountCache[citizenId]) {
                     continue;
                   }
-                  nodeClient.getCitizen(citizenId)
+                  nodeClient
+                    .getCitizen(citizenId)
                     .then(citizen => {
-                      return nodeClient.getAccount(
-                        citizen.miner_account
-                      );
+                      return nodeClient.getAccount(citizen.miner_account);
                     })
                     .then(account => {
                       this.$set(this.citizensAccountCache, citizenId, account);
@@ -649,9 +670,8 @@ export default {
                 }
               })
               .catch(this.showError.bind(this));
-            nodeClient.getAddressPayBackBalance(
-              account.addr
-            )
+            nodeClient
+              .getAddressPayBackBalance(account.addr)
               .then(payBacks => {
                 this.accountPayBacks = [];
                 for (let item of payBacks) {
