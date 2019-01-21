@@ -13,7 +13,7 @@
 
 <script>
 import EventEmitter from "eventemitter3";
-import appState from "./appState.js";
+import appState from "../appState.js";
 
 export default {
   name: "HxToolbar",

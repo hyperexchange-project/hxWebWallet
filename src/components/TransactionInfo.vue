@@ -123,8 +123,8 @@
 <script>
 import _ from "lodash";
 import { format, distanceInWordsToNow } from "date-fns";
-import appState from "./appState";
-import utils from "./utils";
+import appState from "../appState";
+import utils from "../utils";
 import TransferToContractOpDetail from "./TransferToContractOpDetail.vue";
 import TransferOpDetail from "./TransferOpDetail.vue";
 import RegisterContractOpDetail from "./RegisterContractOpDetail.vue";
@@ -231,11 +231,11 @@ export default {
       if (!this.txid) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(() => {
-          return TransactionHelper.getTransactionById(apisInstance, this.txid)
+          return nodeClient.getTransactionById(this.txid)
             .then(tx => {
               console.log("tx", tx);
               if (tx) {
@@ -250,8 +250,8 @@ export default {
               return tx;
             })
             .then(tx => {
-              return utils
-                .getContractTxReceipts(apisInstance, this.txid)
+              return nodeClient
+                .getContractTxReceipt(this.txid)
                 .then(receipts => {
                   // TODO: receipt by operation index
                   this.txReceipts = receipts;
@@ -260,7 +260,7 @@ export default {
                 });
             })
             .then(tx => {
-              return utils.getTxReceiptStatus(apisInstance, tx);
+              return utils.getTxReceiptStatus(nodeClient, tx);
             })
             .then(txReceiptStatus => {
               this.txReceiptStatus = txReceiptStatus;

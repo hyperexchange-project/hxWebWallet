@@ -1,41 +1,50 @@
 <template>
   <div>
-    <div class="hx-panel hx-register-contract-container">
+    <div class="hx-panel hx-transfer-contract-container">
       <div class="-left-side" v-if="step==='transfer'">
         <el-form
           :model="contractForm"
           status-icon
           ref="contractForm"
           label-width="90pt"
-          class="hx-register-contract-inner-container"
+          class="hx-transfer-contract-inner-container"
         >
-          <el-form-item v-bind:label="$t('contractPage.select_contract_file')" prop="keystoreFile">
-            <div>
-              <FileInput
-                @select-file="onSelectContractFile"
-                :filename="contractForm.contractFilename"
-                :fileFormat="'binary'"
-                :accept="'.gpc'"
-                :placeholder="$t('contractPage.please_select_contract_gpc_file')"
-              ></FileInput>
-            </div>
+          <el-form-item v-bind:label="$t('contractPage.contract_address')" prop="contractAddress">
+            <el-input
+              class="-input-contract-address"
+              v-bind:placeholder="$t('contractPage.please_input_contract_address')"
+              type="text"
+              v-model="contractForm.contractAddress"
+              style
+            ></el-input>
           </el-form-item>
           <AddressOrSelectWalletInput
             :currentAddress="currentAccount && currentAccount.address"
             @change-current-account="onChangeSelectedAccount"
           ></AddressOrSelectWalletInput>
-
-          <el-form-item v-bind:label="$t('contractPage.balance')" prop="amount">
+          <el-form-item v-bind:label="$t('contractPage.transfer_amount')" prop="amount">
+            <el-input class="-input-amount" placeholder type="text" v-model="contractForm.amount"></el-input>
+            <el-select
+              class="transfer-asset-select"
+              v-model="contractForm.transferAssetId"
+              v-bind:placeholder="$t('contractPage.please_select')"
+            >
+              <el-option
+                v-for="item in currentAccountBalances"
+                :key="item.assetSymbol"
+                :label="item.assetSymbol"
+                :value="item.assetId"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item v-bind:label="$t('contractPage.memo_info')" prop="memo">
             <el-input
-              class="-input-amount"
+              class="-input-memo"
               placeholder
               type="text"
-              :readonly="true"
-              v-model="currentAccountHxBalance"
-              style
-            >
-              <template slot="append">HX</template>
-            </el-input>
+              v-model="contractForm.memo"
+              style="width: 100pt;"
+            ></el-input>
           </el-form-item>
           <el-form-item label="Gas Limit" prop="gasLimit">
             <el-input
@@ -57,19 +66,20 @@
               <template slot="append">HX</template>
             </el-input>
           </el-form-item>
+
           <el-form-item class="-control-panel">
             <el-button
               type="primary"
               class="hxwallet-form-btn"
-              @click="emulateDeployContract"
+              @click="emulateTransferToContract"
               style="margin-left: -80pt;"
             >{{$t('contractPage.test')}}</el-button>
             <el-button
               type="primary"
               class="hxwallet-form-btn"
-              @click="toSubmitDeployContract"
+              @click="toSubmitTransferToContract"
               style="margin-left: 0;"
-            >{{$t('contractPage.submit')}}</el-button>
+            >{{$t('contractPage.transferWithSpace')}}</el-button>
           </el-form-item>
         </el-form>
         <el-dialog
@@ -77,7 +87,6 @@
           :visible.sync="showConfirmDialog"
           width="300pt"
           height="187pt"
-          class="-register-contract-confirm-dialog"
           :show-close="true"
           :before-close="closeConfirmDialog"
           center
@@ -85,18 +94,18 @@
           <div>
             <el-row style="margin-bottom: 15pt;">
               <el-col :span="6">
-                <div class="grid-content label-font">Gas Limit</div>
+                <div class="grid-content label-font">{{$t('contractPage.contract_address')}}</div>
               </el-col>
               <el-col :span="18">
-                <div class="grid-content label-font value-label">{{contractForm.gasLimit}}</div>
+                <div class="grid-content label-font value-label">{{contractForm.contractAddress}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
               <el-col :span="6">
-                <div class="grid-content label-font">Gas Price</div>
+                <div class="grid-content label-font">{{$t('contractPage.transfer_amount')}}</div>
               </el-col>
               <el-col :span="18">
-                <div class="grid-content label-font value-label">{{contractForm.gasPrice}}</div>
+                <div class="grid-content label-font value-label">{{contractForm.amount}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
@@ -104,9 +113,18 @@
                 <div class="grid-content label-font">{{$t('contractPage.fee')}}</div>
               </el-col>
               <el-col :span="18">
+                <div class="grid-content label-font value-label">0.001HX</div>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="6">
+                <div class="grid-content label-font">{{$t('contractPage.memo_info')}}</div>
+              </el-col>
+              <el-col :span="18">
                 <div
                   class="grid-content label-font value-label"
-                >{{hxAmountToString(contractForm.fee && contractForm.fee.amount)}} HX</div>
+                  style="text-overflow: ellipsis; overflow-x: hidden;"
+                >{{contractForm.memo}}</div>
               </el-col>
             </el-row>
           </div>
@@ -114,7 +132,7 @@
             <el-button
               class="hxwallet-form-btn"
               type="primary"
-              @click="doSubmitDeployContract"
+              @click="doSubmitTransferToContract"
             >{{$t('contractPage.confirmWithSpace')}}</el-button>
           </span>
         </el-dialog>
@@ -192,6 +210,11 @@
           <el-button class="hxwallet-form-btn" @click="backToTransfer">{{$t('contractPage.return')}}</el-button>
         </div>
       </div>
+
+      <div class="-right-side">
+        <AccountBalancesSidebar :accountBalances="currentAccountBalances" :defaultLimit="null"></AccountBalancesSidebar>
+      </div>
+
       <div class="clearfix"></div>
     </div>
   </div>
@@ -199,20 +222,26 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
-import utils from "./utils";
-import KeystoreInput from "./KeystoreInput.vue";
-import FileInput from "./FileInput.vue";
-import SideNavbar from "./SideNavbar.vue";
-import AddressOrSelectWalletInput from "./AddressOrSelectWalletInput.vue";
-let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
+import appState from "../appState";
+import utils from "../utils";
+import KeystoreInput from "../components/KeystoreInput.vue";
+import SideNavbar from "../components/SideNavbar.vue";
+import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
+import AddressOrSelectWalletInput from "../components/AddressOrSelectWalletInput.vue";
+let {
+  PrivateKey,
+  key,
+  TransactionBuilder,
+  TransactionHelper,
+  NodeClient
+} = hx_js;
 
 export default {
-  name: "RegisterContract",
+  name: "TransferToContract",
   components: {
     KeystoreInput,
-    FileInput,
     SideNavbar,
+    AccountBalancesSidebar,
     AddressOrSelectWalletInput
   },
   data() {
@@ -224,16 +253,24 @@ export default {
       walletUnlocked: false,
       hideZeroAssets: true,
       contractForm: {
-        contractFilename: "",
         filename: appState.getCurrentAddress(),
         transferAssetId: "1.3.0",
         gasLimit: 10000,
         gasPrice: "0.00001",
-        contractGpcHex: null
+        apiResult: null
       },
-      currentAccountBalances: [],
+      currentAccountBalances: [
+        {
+          assetId: "1.3.0",
+          assetSymbol: "HX",
+          amount: 0,
+          precision: appState.hxPrecision,
+          amountNu: new BigNumber(0)
+        }
+      ],
       currentAccountHxBalance: 0,
-      currentAccountInfo: {}
+      currentAccountInfo: {},
+      emulateState: null
     };
   },
   created() {
@@ -249,11 +286,25 @@ export default {
   },
   mounted() {
     appState.onChangeCurrentAccount(this.onChangeCurrentAccount);
+    const flashTxMessage = appState.getFlashTxOnce();
+    if (flashTxMessage) {
+      this.onFlashTxMessage(flashTxMessage);
+    }
+    appState.onPushFlashTxMessage(this.onFlashTxMessage);
   },
   beforeDestroy() {
     appState.offChangeCurrentAccount(this.onChangeCurrentAccount);
+    appState.offPushFlashTxMessage(this.onFlashTxMessage);
   },
   methods: {
+    onFlashTxMessage(txMsg) {
+      this.contractForm.transferAssetId = txMsg.currency || "1.3.0";
+      this.contractForm.contractAddress = txMsg.to || "";
+      this.contractForm.amount = txMsg.valueRaw || "";
+      this.contractForm.memo = txMsg.memo;
+      this.contractForm.gasLimit = txMsg.gasLimit || 10000;
+      this.contractForm.gasPrice = txMsg.gasPrice || "0.00001";
+    },
     showError(e) {
       if (e && e.message) {
         e = e.message;
@@ -281,11 +332,6 @@ export default {
     onSelectNavbarItem(item) {
       this.selectedNavbarItem = item.key;
     },
-    onSelectContractFile(fileBytes, filename) {
-      this.contractForm.contractFilename = filename;
-      let gpcHex = utils.bytesToHex(fileBytes);
-      this.contractForm.contractGpcHex = gpcHex;
-    },
     onChangeSelectedAccount(account) {
       this.currentAccount = account;
       this.currentAddress = account.address;
@@ -295,49 +341,47 @@ export default {
       if (!this.currentAccount) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(assets => {
-          return TransactionHelper.getAddrBalances(
-            apisInstance,
-            this.currentAccount.address
-          ).then(balances => {
-            this.currentAccountBalances.length = 0;
-            for (let asset of assets) {
-              let balance = balances.filter(b => b.asset_id === asset.id)[0];
-              let item = {
-                assetId: asset.id,
-                assetSymbol: asset.symbol,
-                amount: balance ? balance.amount : 0,
-                precision: asset.precision,
-                amountNu: balance
-                  ? new BigNumber(balance.amount).div(
-                      Math.pow(10, asset.precision)
-                    )
-                  : new BigNumber(0)
-              };
-              this.currentAccountBalances.push(item);
-              if (asset.id === "1.3.0") {
-                this.currentAccountHxBalance = item.amountNu.toFixed(
-                  asset.precision
-                );
+          return nodeClient
+            .getAddrBalances(this.currentAccount.address)
+            .then(balances => {
+              this.currentAccountBalances.length = 0;
+              for (let asset of assets) {
+                let balance = balances.filter(b => b.asset_id === asset.id)[0];
+                let item = {
+                  assetId: asset.id,
+                  assetSymbol: asset.symbol,
+                  amount: balance ? balance.amount : 0,
+                  precision: asset.precision,
+                  amountNu: balance
+                    ? new BigNumber(balance.amount).div(
+                        Math.pow(10, asset.precision)
+                      )
+                    : new BigNumber(0)
+                };
+                this.currentAccountBalances.push(item);
+                if (asset.id === "1.3.0") {
+                  this.currentAccountHxBalance = item.amountNu.toFixed(
+                    asset.precision
+                  );
+                }
               }
-            }
-            return balances;
-          });
+              return balances;
+            });
         })
         .then(() => {
-          return TransactionHelper.getAccountByAddresss(
-            apisInstance,
-            this.currentAddress
-          ).then(accountInfo => {
-            if (accountInfo) {
-              this.currentAccountInfo = accountInfo;
-            } else {
-              this.currentAccountInfo = {};
-            }
-          });
+          return nodeClient
+            .getAccountByAddresss(this.currentAddress)
+            .then(accountInfo => {
+              if (accountInfo) {
+                this.currentAccountInfo = accountInfo;
+              } else {
+                this.currentAccountInfo = {};
+              }
+            });
         })
         .catch(this.showError.bind(this));
     },
@@ -361,7 +405,7 @@ export default {
     closeConfirmDialog() {
       this.showConfirmDialog = false;
     },
-    emulateDeployContract() {
+    emulateTransferToContract() {
       this.emulateState = null;
       if (!this.currentAccount) {
         this.showError(
@@ -369,29 +413,61 @@ export default {
         );
         return;
       }
-      const gpcHex = this.contractForm.contractGpcHex;
-      if (!gpcHex) {
-        this.showError(
-          this.$t("contractPage.please_select_contract_file_first")
-        );
+      const contractId = this.contractForm.contractAddress;
+      if (!contractId) {
+        this.showError("请输入合约地址");
         return;
       }
+      const gasLimit = parseInt(this.contractForm.gasLimit);
+      const gasPriceNu = new BigNumber(this.contractForm.gasPrice);
+      if (gasPriceNu.isNaN()) {
+        this.showError("不正确的gas price格式");
+        return;
+      }
+      const gasPrice = parseInt(
+        gasPriceNu.multipliedBy(Math.pow(10, appState.hxPrecision)).toFixed(0)
+      );
+      if (new BigNumber(gasLimit).isNaN() || gasLimit < 0) {
+        this.showError("不正确的gas limit格式");
+        return;
+      }
+      if (gasLimit > 1000000) {
+        this.showError("过大的gas limit");
+        return;
+      }
+      if (!gasPrice || gasPrice <= 0) {
+        this.showError("不正确的gas price格式");
+        return;
+      }
+      let amount = this.contractForm.amount;
+      let amountNu = new BigNumber(amount);
+      let assetId = this.contractForm.transferAssetId;
+      let asset = appState.getAssetLocal(assetId);
+      let memo = (this.contractForm.memo || "").trim();
+      let amountFull = parseInt(
+        amountNu.multipliedBy(Math.pow(10, asset.precision)).toFixed(0)
+      );
+      const apiArg = this.contractForm.apiArg || "";
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubkey = pkey.toPublicKey();
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withApis()
         .then(() => {
-          TransactionHelper.registerContractTesting(
-            apisInstance,
+          nodeClient.transferToContractTesting(
             pubkey,
-            gpcHex
+            contractId,
+            amountFull,
+            asset.symbol,
+            memo
           )
             .then(data => {
-              console.log(data);
               const fee = data[0];
               const gasCount = data[1];
               this.contractForm.gasLimit = parseInt(gasCount * 1.1);
+              if (this.contractForm.gasLimit === 0) {
+                this.contractForm.gasLimit += 100;
+              }
               this.contractForm.fee = fee;
               this.emulateState = "success";
               this.showSuccess("Emulate successfully");
@@ -403,10 +479,10 @@ export default {
         })
         .catch(this.showError);
     },
-    toSubmitDeployContract() {
+    toSubmitTransferToContract() {
       this.showConfirmDialog = true;
     },
-    doSubmitDeployContract() {
+    doSubmitTransferToContract() {
       this.showConfirmDialog = false;
       if (this.emulateState !== "success") {
         this.showError(this.$t("contractPage.please_emulate_first"));
@@ -418,11 +494,9 @@ export default {
         );
         return;
       }
-      const gpcHex = this.contractForm.contractGpcHex;
-      if (!gpcHex) {
-        this.showError(
-          this.$t("contractPage.please_select_contract_file_first")
-        );
+      const contractId = this.contractForm.contractAddress;
+      if (!contractId) {
+        this.showError(this.$t("contractPage.please_input_contract_address"));
         return;
       }
       const gasLimit = parseInt(this.contractForm.gasLimit);
@@ -434,7 +508,7 @@ export default {
       const gasPrice = parseInt(
         gasPriceNu.multipliedBy(Math.pow(10, appState.hxPrecision)).toFixed(0)
       );
-      if (!gasLimit || gasLimit <= 0) {
+      if (new BigNumber(gasLimit).isNaN() || gasLimit < 0) {
         this.showError(this.$t("contractPage.invalid_gas_limit_format"));
         return;
       }
@@ -446,22 +520,35 @@ export default {
         this.showError(this.$t("contractPage.invalid_gas_price_format"));
         return;
       }
+      let amount = this.contractForm.amount;
+      let amountNu = new BigNumber(amount);
+      let assetId = this.contractForm.transferAssetId;
+      let asset = appState.getAssetLocal(assetId);
+      let memo = (this.contractForm.memo || "").trim();
+      let amountFull = parseInt(
+        amountNu.multipliedBy(Math.pow(10, asset.precision)).toFixed(0)
+      );
+
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubkey = pkey.toPublicKey();
       const callerAddress = this.currentAccount.address;
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
+
       appState
         .withApis()
         .then(() => {
           let tr = new TransactionBuilder();
-          let op = TransactionHelper.new_contract_register_operation_from_gpc(
+          let op = TransactionHelper.new_transfer_to_contract_operation(
             callerAddress,
             pubkey,
+            contractId,
             gasLimit,
             gasPrice,
-            gpcHex
+            assetId,
+            amountFull,
+            memo
           );
-          tr.add_type_operation("contract_register", op);
+          tr.add_type_operation("transfer_contract", op);
           tr.set_expire_seconds(0);
           return tr.set_required_fees().then(() => {
             return tr.finalize().then(() => tr);
@@ -476,8 +563,8 @@ export default {
             .substr(0, 40);
           this.lastSentTxId = txid;
           console.log("tx hash:", txid);
-          if(typeof(messageToBackground) !== 'undefined') {
-            messageToBackground("txhash",txid);
+          if (typeof messageToBackground !== "undefined") {
+            messageToBackground("txhash", txid);
           }
           tr.broadcast(function() {})
             .then(() => {
@@ -505,9 +592,9 @@ export default {
         .catch(this.showError);
     },
     getTransaction(txid) {
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       return appState.withApis().then(() => {
-        return TransactionHelper.getTransactionById(apisInstance, txid);
+        return nodeClient.getTransactionById(txid);
       });
     },
     filterBalances(balances, skipZero = false, limit = null) {
@@ -519,23 +606,19 @@ export default {
         filtered = filtered.slice(0, limit);
       }
       return filtered;
-    },
-    hxAmountToString(val) {
-      return utils.hxAmountToString(val);
     }
   }
 };
 </script>
 
 <style lang="scss">
-.hx-register-contract-container {
+.hx-transfer-contract-container {
   min-width: 400px;
   min-height: 381pt;
   background: inherit;
-  padding-top: 0;
   width: calc(100% - 117pt);
-  padding: 0;
   float: right;
+  padding: 0;
   .-nav-side {
     margin-top: 4pt;
   }
@@ -549,14 +632,24 @@ export default {
     margin-right: 6pt;
   }
   .-left-side {
-    width: 100%;
+    width: 70%;
     background: white;
     min-height: 381pt;
-    padding: 0 20pt;
+    // padding: 0 20pt;
+  }
+  .el-input-group--append {
+    width: 220pt !important;
+  }
+  .el-input-group__append {
+    border-top: 0;
+    border-right: 0;
+    border-radius: 0;
+    background: white;
+    border-bottom: solid 1px #cccccc !important;
   }
   .-right-side {
     width: calc(30% - 10pt);
-    min-width: 250px;
+    min-width: 215px;
     float: right;
     text-align: left;
     background: white;
@@ -615,20 +708,18 @@ export default {
     color: #261932;
     font-size: 8pt;
   }
-  .-register-contract-confirm-dialog {
-    .grid-content {
-      text-align: center;
-    }
+  .-transfer-contract-api-result {
+    color: #261932;
+    font-size: 8pt;
+    padding: 20pt;
   }
-  .hx-address-or-select-wallet-input {
-    .-address-show-label {
-      padding-left: 120pt;
-    }
+  .-input-amount {
+    width: 170pt !important;
   }
 }
 
 @media (max-width: 960px) {
-  .hx-register-contract-container {
+  .hx-transfer-contract-container {
     .-right-side {
       display: none;
     }
@@ -638,30 +729,17 @@ export default {
   }
 }
 
-.hx-register-contract-inner-container,
-.hx-register-contract-done-inner-container {
-  min-width: 400pt;
+.hx-transfer-contract-inner-container,
+.hx-transfer-contract-done-inner-container {
+  min-width: 360pt;
   margin: 20pt auto 0 auto;
-  padding-left: 20pt;
+  // padding-left: 20pt;
   label {
     font-size: 10pt;
     color: #261932;
   }
-  .el-form-item__label {
-    text-align: left;
-  }
   .el-input {
     width: 220pt !important;
-  }
-  .el-input-group--append {
-    width: 220pt !important;
-  }
-  .el-input-group__append {
-    border-top: 0;
-    border-right: 0;
-    border-radius: 0;
-    background: white;
-    border-bottom: solid 1px #cccccc !important;
   }
   .el-input__inner {
     border: 0 !important;
@@ -689,32 +767,19 @@ export default {
 }
 
 @media (max-width: 600px) {
-  .hx-register-contract-container {
+  .hx-transfer-contract-container {
     padding: 0;
     .el-input {
       width: auto !important;
     }
-    .el-form-item__content {
-      margin-left: 10pt;
-    }
     .el-form-item {
       max-width: 400px;
     }
+    .el-form-item__content {
+      margin-left: 10pt;
+    }
     .-confirm-contract-address-btn {
       width: 120px;
-    }
-    .hx-address-or-select-wallet-input {
-      max-width: 375px;
-      .el-form-item__content {
-        margin-left: 0 !important;
-      }
-      .address-show-label {
-        float: right !important;
-        padding-left: 0 !important;
-      }
-      .-change-wallet-btn {
-        float: right !important;
-      }
     }
 
     .-contract-address-panel {
@@ -727,9 +792,9 @@ export default {
     .-left-side {
       padding-left: 0;
     }
-    .hx-register-contract-inner-container {
+    .hx-transfer-contract-inner-container {
       margin: 0;
-      padding: 5px 15px;
+      padding: 0;
     }
     .-control-panel {
       width: 400px;
@@ -738,20 +803,10 @@ export default {
       }
     }
   }
-  .hx-register-contract-container
-    .hx-address-or-select-wallet-input
-    .-address-show-label {
-    padding-left: 0;
-  }
 }
 
 .chrome-ext-app-container {
-  .hx-register-contract-container {
-    .hx-register-contract-inner-container {
-      margin: 0 !important;
-      padding: 5px 15px !important;
-      width: 400px !important;
-    }
+  .hx-transfer-contract-container {
     .-input-amount {
       width: 88pt !important;
     }
@@ -765,13 +820,19 @@ export default {
     }
     .-change-wallet-btn,
     .-address-show-label {
-      padding-left: 10px !important;
-      text-align: left;
-      float: none !important;
+      padding-left: 10px;
     }
     .-control-panel {
       .el-form-item__content {
         text-align: center;
+      }
+    }
+    .hx-transfer-contract-inner-container {
+      margin: 0 !important;
+      padding: 5px 15px !important;
+      width: 400px !important;
+      .el-form-item__label {
+        text-align: left;
       }
     }
   }

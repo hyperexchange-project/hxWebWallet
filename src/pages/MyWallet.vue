@@ -83,10 +83,10 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
-import KeystoreInput from "./KeystoreInput.vue";
-import AccountBalancesSidebar from "./AccountBalancesSidebar.vue";
-import AccountLockBalancesPanel from "./components/AccountLockBalancesPanel.vue";
+import appState from "../appState";
+import KeystoreInput from "../components/KeystoreInput.vue";
+import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
+import AccountLockBalancesPanel from "../components/AccountLockBalancesPanel.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
@@ -178,12 +178,11 @@ export default {
       if (!this.currentAccount) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(assets => {
-          return TransactionHelper.getAddrBalances(
-            apisInstance,
+          return nodeClient.getAddrBalances(
             this.currentAccount.address
           ).then(balances => {
             this.currentAccountBalances.length = 0;
@@ -206,8 +205,7 @@ export default {
           });
         })
         .then(() => {
-          return TransactionHelper.getAccountByAddresss(
-            apisInstance,
+          return nodeClient.getAccountByAddresss(
             this.currentAddress
           ).then(accountInfo => {
             if (accountInfo) {

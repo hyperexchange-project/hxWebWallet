@@ -38,10 +38,10 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
+import appState from "../appState";
 import AccountInfo from "./AccountInfo.vue";
-import ContractInfoPanel from "./ContractInfoPanel.vue";
-import TransactionInfo from "./TransactionInfo.vue";
+import ContractInfoPanel from "../components/ContractInfoPanel.vue";
+import TransactionInfo from "../components/TransactionInfo.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
@@ -104,28 +104,25 @@ export default {
       this.checkTxForm.isTxId = isTxId;
       this.checkTxForm.isHxAccountAddr = isHxAccountAddr;
       this.checkTxForm.isHxContractAddr = isHxContractAddr;
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withApis()
         .then(() => {
           if (isTxId) {
-            return TransactionHelper.getTransactionById(
-              apisInstance,
+            return nodeClient.getTransactionById(
               txidOrAddress
             );
           } else if (isHxAccountAddr) {
-            return TransactionHelper.getAccountByAddresss(
-              apisInstance,
+            return nodeClient.getAccountByAddresss(
               txidOrAddress
             );
           } else if (isHxContractAddr) {
-            return TransactionHelper.getSimpleContractInfo(
-              apisInstance,
+            return nodeClient.getSimpleContractInfo(
               txidOrAddress
             );
           } else {
             // account name
-            return TransactionHelper.getAccount(apisInstance, txidOrAddress);
+            return nodeClient.getAccount(txidOrAddress);
           }
         })
         .then(data => {

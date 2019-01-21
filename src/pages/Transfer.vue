@@ -239,10 +239,10 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
-import utils from "./utils";
-import KeystoreInput from "./KeystoreInput.vue";
-import AddressOrSelectWalletInput from "./AddressOrSelectWalletInput.vue";
+import appState from "../appState";
+import utils from "../utils";
+import KeystoreInput from "../components/KeystoreInput.vue";
+import AddressOrSelectWalletInput from "../components/AddressOrSelectWalletInput.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
@@ -328,12 +328,11 @@ export default {
       if (!this.currentAccount) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(assets => {
-          return TransactionHelper.getAddrBalances(
-            apisInstance,
+          return nodeClient.getAddrBalances(
             this.currentAccount.address
           ).then(balances => {
             this.currentAccountBalances.length = 0;
@@ -356,8 +355,7 @@ export default {
           });
         })
         .then(() => {
-          return TransactionHelper.getAccountByAddresss(
-            apisInstance,
+          return nodeClient.getAccountByAddresss(
             this.currentAddress
           ).then(accountInfo => {
             if (accountInfo) {
@@ -395,10 +393,9 @@ export default {
         addressOrAccountName.length < 20 ||
         addressOrAccountName.indexOf("HX") !== 0
       ) {
-        const apisInstance = appState.getApisInstance();
+        const nodeClient = appState.getNodeClient();
         return appState.withApis().then(() => {
-          return TransactionHelper.getAccount(
-            apisInstance,
+          return nodeClient.getAccount(
             addressOrAccountName
           ).then(account => account.addr);
         });
@@ -460,7 +457,7 @@ export default {
       );
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubKey = pkey.toPublicKey();
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
 
       this.getAddressByAddressOrAccountName(toAddress)
         .then(toAddress => {
@@ -522,9 +519,9 @@ export default {
         .catch(this.showError);
     },
     getTransaction(txid) {
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       return appState.withApis().then(() => {
-        return TransactionHelper.getTransactionById(apisInstance, txid);
+        return nodeClient.getTransactionById(txid);
       });
     },
     filterBalances(balances, skipZero = false, limit = null) {

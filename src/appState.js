@@ -36,6 +36,7 @@ const state = {
     currentAccount: null,
     currentAddress: null,
     apisInstance: null,
+    nodeClient: null,
 
     systemAssets: [], // [{id: ..., symbol: ..., precision: ..., issuer: ..., options: ..., current_feed: ...}]
 
@@ -44,7 +45,7 @@ const state = {
 
 // TODO: read current account from chrome.storage
 
-let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
+let { PrivateKey, key, TransactionBuilder, TransactionHelper, NodeClient } = hx_js;
 let { Apis, ChainConfig } = hx_js.bitshares_ws;
 
 ChainConfig.setChainId(
@@ -109,8 +110,9 @@ function getLocationHash() {
     }
 }
 
-// TODO: receive params
-switch(getLocationHash()) {
+// receive params
+const locationHash = getLocationHash();
+switch(locationHash) {
     case '#transfer': {
         state.currentTab = 'transfer';
     } break;
@@ -124,7 +126,15 @@ switch(getLocationHash()) {
         state.currentTab = 'check_tx';
         state.currentTabParams = [];
     } break;
+    default: {
+        if(locationHash && locationHash.indexOf('#locktocitizen=')===0) {
+            const lockToCitizenName = locationHash.substr('#locktocitizen='.length);
+            state.currentTab = 'my_wallet';
+            state.currentTabParams = ['locktocitizen', lockToCitizenName];
+        }
+    }
 }
+location.hash = '';
 
 export default {
     EE,
@@ -161,6 +171,9 @@ export default {
     },
     getCurrentTabParams() {
         return state.currentTabParams;
+    },
+    clearCurrentTabParams() {
+        state.currentTabParams.length = 0;
     },
 
     changeCurrentAccount(account) {
@@ -203,6 +216,7 @@ export default {
         if (networkObj) {
             const chainRpcUrl = networkObj.url;
             state.apisInstance = Apis.instance(chainRpcUrl, true);
+            state.nodeClient = new NodeClient(state.apisInstance);
             if(typeof(localSave) !== 'undefined') {
                 localSave.setItem("apiPrefix", chainRpcUrl);
                 localSave.setItem("chainId", networkObj.chainId);
@@ -213,23 +227,26 @@ export default {
     getApisInstance() {
         return state.apisInstance;
     },
+    getNodeClient() {
+        return state.nodeClient;
+    },
     withApis() {
-        const apisInstance = this.getApisInstance();
-        if (!apisInstance) {
+        const nodeClient = this.getNodeClient();
+        if (!nodeClient) {
             return null;
         }
-        return apisInstance.init_promise;
+        return nodeClient.afterInited();
     },
     withSystemAssets() {
-        const apisInstance = this.getApisInstance();
-        if (!apisInstance) {
+        const nodeClient = this.getNodeClient();
+        if (!nodeClient) {
             return null;
         }
         if (state.systemAssets.length > 0) {
             return Promise.resolve(state.systemAssets);
         }
         return this.withApis().then(() => {
-            return TransactionHelper.listAssets(apisInstance, "", 100)
+            return nodeClient.listAssets("", 100)
                 .then((assets) => {
                     state.systemAssets = assets;
                     return assets;

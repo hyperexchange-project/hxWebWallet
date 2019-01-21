@@ -64,7 +64,7 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
+import appState from "../appState";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {

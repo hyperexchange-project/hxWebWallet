@@ -1,39 +1,35 @@
 <template>
-  <div>
-    <el-row class="-info-line-row" v-for="(val, key) in operation" :key="key" v-if="key!=='fee'">
-      <el-col :span="4">
-        <div class="grid-content label-font">{{key}}</div>
-      </el-col>
-      <el-col :span="20">
-        <div class="grid-content label-font">
-          <div>{{val}}</div>
+  <el-row class="-info-line-row">
+    <el-col :span="8">
+      <div class="grid-content label-font">Event Logs</div>
+    </el-col>
+    <el-col :span="16">
+      <div class="grid-content label-font">
+        <div>
+          <div v-for="(event, index) in txReceipt.events" :key="index">
+            <div>Event Name: {{event.event_name}}</div>
+            <div style="overflow: hidden; text-overflow: ellipsis;">
+              Argument:
+              {{event.event_arg}}
+            </div>
+          </div>
         </div>
-      </el-col>
-    </el-row>
-    <el-row class="-info-line-row">
-      <el-col :span="4">
-        <div class="grid-content label-font">Fee</div>
-      </el-col>
-      <el-col :span="20">
-        <div class="grid-content label-font">
-          <div>{{opTotalFee(operation.fee.amount, 0, 0)}} HX</div>
-        </div>
-      </el-col>
-    </el-row>
-  </div>
+      </div>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
 import _ from "lodash";
 import { format, distanceInWordsToNow } from "date-fns";
-import appState from "./appState";
-import utils from "./utils";
+import appState from "../appState";
+import utils from "../utils";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 window.datefns = require("date-fns");
 
 export default {
-  name: "SimpleOpDetail",
-  props: ["operation"],
+  name: "TxReceiptPanel",
+  props: ["txReceipt"],
   components: {},
   data() {
     return {};

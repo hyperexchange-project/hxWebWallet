@@ -45,11 +45,11 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
-import utils from "./utils";
-import KeystoreInput from "./KeystoreInput.vue";
-import AccountBalancesSidebar from "./AccountBalancesSidebar.vue";
-import AccountLockBalancesPanel from "./components/AccountLockBalancesPanel.vue";
+import appState from "../appState";
+import utils from "../utils";
+import KeystoreInput from "../components/KeystoreInput.vue";
+import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
+import AccountLockBalancesPanel from "../components/AccountLockBalancesPanel.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
@@ -124,12 +124,11 @@ export default {
       if (!this.accountAddress) {
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       appState
         .withSystemAssets()
         .then(assets => {
-          return TransactionHelper.getAddrBalances(
-            apisInstance,
+          return nodeClient.getAddrBalances(
             this.accountAddress
           ).then(balances => {
             this.infoAccountBalances.length = 0;
@@ -152,8 +151,7 @@ export default {
           });
         })
         .then(() => {
-          return TransactionHelper.getAccountByAddresss(
-            apisInstance,
+          return nodeClient.getAccountByAddresss(
             this.accountAddress
           ).then(accountInfo => {
             if (accountInfo) {

@@ -35,8 +35,8 @@
 <script>
 import _ from "lodash";
 import { format, distanceInWordsToNow } from "date-fns";
-import appState from "./appState";
-import utils from "./utils";
+import appState from "../appState";
+import utils from "../utils";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 window.datefns = require("date-fns");
 

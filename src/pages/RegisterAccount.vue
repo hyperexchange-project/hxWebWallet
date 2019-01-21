@@ -66,7 +66,7 @@
 
 <script>
 import _ from "lodash";
-import appState from "./appState";
+import appState from "../appState";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
@@ -127,13 +127,13 @@ export default {
         this.showError(this.$t("registerAccount.invalid_account_format"));
         return;
       }
-      const apisInstance = appState.getApisInstance();
+      const nodeClient = appState.getNodeClient();
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubKey = pkey.toPublicKey();
       appState
         .withApis()
         .then(() => {
-          return TransactionHelper.getAccount(apisInstance, name)
+          return nodeClient.getAccount(name)
             .then(r => {
               throw new Error(
                 this.$t("registerAccount.account_registered_before")
