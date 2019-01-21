@@ -208,6 +208,7 @@ export default {
     },
 
     changeCurrentNetwork(network) {
+        network = network || 'mainnet';
         if (state.currentNetwork === network) {
             return;
         }
