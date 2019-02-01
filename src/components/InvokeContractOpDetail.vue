@@ -99,7 +99,8 @@ export default {
       return utils.hxAmountToString(val);
     },
     opTotalFee(opFeeAmount, gasCount, gasPrice) {
-      return utils.opTotalFee(opFeeAmount, gasCount, gasPrice);
+      let acctual_fee = (this.txReceipt || {}).acctual_fee || 0;
+      return utils.hxAmountToString(acctual_fee);
     },
     assetAmountToString(assetAmount) {
       return utils.assetAmountToString(assetAmount);
