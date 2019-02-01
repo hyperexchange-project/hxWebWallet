@@ -154,6 +154,10 @@ a {
   background-color: #653699;
 }
 
+.grid-content {
+  word-break: break-all;
+}
+
 .chrome-ext-app-container {
   .hx-main-container {
     width: 500px;
