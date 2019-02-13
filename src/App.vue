@@ -40,7 +40,8 @@ export default {
     Contract
   },
   created() {
-    appState.changeCurrentNetwork("mainnet");
+    const lastUsedNetwork = appState.getLastUsedNetwork();
+    appState.changeCurrentNetwork(lastUsedNetwork ? lastUsedNetwork.key : "mainnet");
     this.currentTabKey = appState.getCurrentTab();
   },
   mounted() {

@@ -48,6 +48,7 @@ const state = {
 let { PrivateKey, key, TransactionBuilder, TransactionHelper, NodeClient } = hx_js;
 let { Apis, ChainConfig } = hx_js.bitshares_ws;
 
+// TODO: read last used chainId or default
 ChainConfig.setChainId(
     "2e13ba07b457f2e284dcfcbd3d4a3e4d78a6ed89a61006cdb7fdad6d67ef0b12"
 );
@@ -206,7 +207,17 @@ export default {
     offChangeCurrentAddress(listener) {
         EE.off(changeCurrentAddressEventName, listener);
     },
-
+    getLastUsedNetwork() {
+        if(typeof(localSave) === 'undefined') {
+            return null;
+        }
+        const key = localSave.getItem("networkKey");
+        if(!key) {
+            return null;
+        }
+        const networkObj = getNetworkByKey(key);
+        return networkObj;
+    },
     changeCurrentNetwork(network) {
         network = network || 'mainnet';
         if (state.currentNetwork === network) {
@@ -219,6 +230,7 @@ export default {
             state.apisInstance = Apis.instance(chainRpcUrl, true);
             state.nodeClient = new NodeClient(state.apisInstance);
             if(typeof(localSave) !== 'undefined') {
+                localSave.setItem("networkKey", networkObj.key);
                 localSave.setItem("apiPrefix", chainRpcUrl);
                 localSave.setItem("chainId", networkObj.chainId);
             }
