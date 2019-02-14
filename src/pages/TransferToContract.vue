@@ -457,7 +457,7 @@ export default {
           nodeClient.transferToContractTesting(
             pubkey,
             contractId,
-            amountFull,
+            amount,
             asset.symbol,
             memo
           )
