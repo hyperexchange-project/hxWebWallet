@@ -68,7 +68,7 @@ export default {
         back: 'Return',
         tx_failed: 'Transaction Failed',
         tx_success: 'Transaction Successed',
-        tx_on_chain_success: 'The transaction has been successfully wound',
+        tx_on_chain_success: 'The transaction has been successfully sent',
         you_can_query_tx_status_on_chain: 'You can check the status and results of this transaction on the HX blockchain.',
         invalid_transfer_amount_format: 'Invalid transfer amount format',
         not_enough_balance: 'Balance not enough',
@@ -149,7 +149,7 @@ export default {
         back: 'Back',
         receive: 'Receive',
         receive_all: 'Receive All',
-        pledge_income: 'Pledge Income',
+        pledge_income: 'Pledge income',
     },
     forms: {
         invalid_input_format: "Invalid input format",

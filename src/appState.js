@@ -223,6 +223,7 @@ export default {
         if (state.currentNetwork === network) {
             return;
         }
+        const oldNetwork = state.currentNetwork;
         state.currentNetwork = network;
         const networkObj = getNetworkByKey(network);
         if (networkObj) {
@@ -236,6 +237,11 @@ export default {
             }
         }
         EE.emit(changeCurrentNetworkEventName, state.currentNetwork);
+        if(oldNetwork && oldNetwork != network) {
+            setTimeout(()=> {
+                window.location.reload();
+            }, 1000);
+        }
     },
     getApisInstance() {
         return state.apisInstance;

@@ -3,11 +3,12 @@
     <div v-show="step==='list'">
       <div class="hx-panel" style="padding-top: 10px;">
         <div class="-panel-title">{{$t('account_lock_balances.pledge_information')}}</div>
-        <div v-if="myself" class="-top-control-panel">
+        <div v-if="myself" class="-top-control-panel"  style="text-align: center;">
           <el-button
             type="primary"
             @click="toMortgageToCitizen(null, '1.3.0')"
             class="-ctrl-btn hxwallet-form-btn"
+            style="width: 80pt;"
           >{{$t('account_lock_balances.append')}}</el-button>
           <!-- TODO: 赎回全部按钮 -->
         </div>
@@ -74,11 +75,12 @@
       <!-- 质押收益和领取收益 -->
       <div class="hx-panel" style="padding-top: 10px;">
         <div class="-panel-title">{{$t('account_lock_balances.pledge_income')}}</div>
-        <div v-if="myself" class="-top-control-panel">
+        <div v-if="myself" class="-top-control-panel" style="text-align: center;">
           <el-button
             type="primary"
             @click="receivePayBack(accountPayBacks)"
             class="-ctrl-btn hxwallet-form-btn"
+            style="width: 80pt;"
           >{{$t('account_lock_balances.receive_all')}}</el-button>
         </div>
         <div>
