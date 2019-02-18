@@ -182,11 +182,11 @@ export default {
         toAddress.length < 20 ||
         toAddress.indexOf("HX") !== 0
       ) {
-        this.showError("不正确的目标地址格式");
+        this.showError(this.$t("transferPage.invalid_to_address_format"));
         return;
       }
       if (amountNu.isNaN() || amountNu.lte(0)) {
-        this.showError("不正确的转账数额格式");
+        this.showError(this.$t("transferPage.invalid_transfer_amount_format"));
         return;
       }
       if (
@@ -197,7 +197,7 @@ export default {
           this.currentAccountBalances
         )
       ) {
-        this.showError("余额不够");
+        this.showError(this.$t("transferPage.not_enough_balance"));
         return;
       }
       this.showConfirmDialog = true;
@@ -261,7 +261,7 @@ export default {
                   })
                   .catch(e => {
                     this.step = "contract_fail";
-                    this.transferFailError = "交易尚未上链，请稍后查询此交易ID";
+                    this.transferFailError = this.$t("contractPage.tx_not_on_chain_please_query_later");
                   });
               }, 6000);
             })

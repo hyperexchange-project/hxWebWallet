@@ -86,34 +86,34 @@
         >
           <div>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('transferPage.to_address')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{transferForm.toAddress}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('transferPage.transfer_amount')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{transferForm.amount}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('transferPage.fee')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">0.001HX</div>
               </el-col>
             </el-row>
             <el-row>
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('transferPage.memo_info')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div
                   class="grid-content label-font value-label"
                   style="text-overflow: ellipsis; overflow-x: hidden;"
@@ -414,7 +414,7 @@ export default {
       let fee = new BigNumber("0.001");
       let memo = (form.memo || "").trim();
       if (amountNu.isNaN() || amountNu.lte(0)) {
-        this.showError("不正确的转账数额格式");
+        this.showError(this.$t("transferPage.invalid_transfer_amount_format"));
         return;
       }
       if (
@@ -425,7 +425,7 @@ export default {
           this.currentAccountBalances
         )
       ) {
-        this.showError("余额不够");
+        this.showError(this.$t("transferPage.not_enough_balance"));
         return;
       }
       if (!toAddress) {
@@ -437,7 +437,7 @@ export default {
           this.showConfirmDialog = true;
         })
         .catch(() => {
-          this.showError("不正确的目标地址格式");
+          this.showError(this.$t("transferPage.invalid_to_address_format"));
         });
     },
     closeConfirmDialog() {

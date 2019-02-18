@@ -93,34 +93,34 @@
         >
           <div>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('contractPage.contract_address')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{contractForm.contractAddress}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('contractPage.transfer_amount')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{contractForm.amount}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('contractPage.fee')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">0.001HX</div>
               </el-col>
             </el-row>
             <el-row>
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('contractPage.memo_info')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div
                   class="grid-content label-font value-label"
                   style="text-overflow: ellipsis; overflow-x: hidden;"
@@ -415,28 +415,28 @@ export default {
       }
       const contractId = this.contractForm.contractAddress;
       if (!contractId) {
-        this.showError("请输入合约地址");
+        this.showError(this.$t("contractPage.please_input_contract_address"));
         return;
       }
       const gasLimit = parseInt(this.contractForm.gasLimit);
       const gasPriceNu = new BigNumber(this.contractForm.gasPrice);
       if (gasPriceNu.isNaN()) {
-        this.showError("不正确的gas price格式");
+        this.showError(this.$t("contractPage.invalid_gas_price_format"));
         return;
       }
       const gasPrice = parseInt(
         gasPriceNu.multipliedBy(Math.pow(10, appState.hxPrecision)).toFixed(0)
       );
       if (new BigNumber(gasLimit).isNaN() || gasLimit < 0) {
-        this.showError("不正确的gas limit格式");
+        this.showError(this.$t("contractPage.invalid_gas_limit_format"));
         return;
       }
       if (gasLimit > 1000000) {
-        this.showError("过大的gas limit");
+        this.showError(this.$t("contractPage.too_large_gas_limit"));
         return;
       }
       if (!gasPrice || gasPrice <= 0) {
-        this.showError("不正确的gas price格式");
+        this.showError(this.$t("contractPage.invalid_gas_price_format"));
         return;
       }
       let amount = this.contractForm.amount;

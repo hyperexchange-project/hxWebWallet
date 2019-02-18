@@ -106,7 +106,7 @@ export default {
     createWallet() {
       let password = (this.createWalletForm.password || "").trim();
       if (password.length < 8 || password.length > 30) {
-        this.showError("密码长度错误");
+        this.showError(this.$t("createWalletPage.invalid_password_length"));
         return;
       }
       this.created = true;
@@ -130,7 +130,7 @@ export default {
       document.body.appendChild(i);
       i.click();
       document.body.removeChild(i);
-      this.showInfo("下载完成后请到浏览器的下载文件夹查看");
+      this.showInfo(this.$t("createWalletPage.find_wallet_file_in_download_directory"));
     },
     openKeystoreWallet() {
       appState.changeCurrentAccount(this.createdAccount);

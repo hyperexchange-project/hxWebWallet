@@ -84,26 +84,26 @@
         >
           <div>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">Gas Limit</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{contractForm.gasLimit}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">Gas Price</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{contractForm.gasPrice}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('contractPage.fee')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div
                   class="grid-content label-font value-label"
                 >{{hxAmountToString(contractForm.fee && contractForm.fee.amount)}} HX</div>

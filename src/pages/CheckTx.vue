@@ -91,7 +91,7 @@ export default {
     toQueryTx(txidOrAddress) {
       txidOrAddress = (txidOrAddress || "").trim();
       if (txidOrAddress.length < 1) {
-        this.showError("输入格式错误");
+        this.showError(this.$t("forms.invalid_input_format"));
         return;
       }
       let isTxId = txidOrAddress.length === 40;

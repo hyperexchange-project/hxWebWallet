@@ -123,42 +123,42 @@
         >
           <div>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('transferPage.to_address')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{contractForm.contractAddress}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('contractPage.contract_api')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{contractForm.apiName}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">{{$t('contractPage.contract_arg')}}</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{contractForm.apiArg}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">Gas Price</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{contractForm.gasPrice}}</div>
               </el-col>
             </el-row>
             <el-row style="margin-bottom: 15pt;">
-              <el-col :span="6">
+              <el-col :span="8">
                 <div class="grid-content label-font">Gas Limit</div>
               </el-col>
-              <el-col :span="18">
+              <el-col :span="16">
                 <div class="grid-content label-font value-label">{{contractForm.gasLimit}}</div>
               </el-col>
             </el-row>
@@ -480,12 +480,12 @@ export default {
       }
       const contractId = this.contractForm.contractAddress;
       if (!contractId) {
-        this.showError("请输入合约地址");
+        this.showError(this.$t("contractPage.please_input_contract_address"));
         return;
       }
       const apiName = this.contractForm.apiName;
       if (!apiName) {
-        this.showError("请输入要调用的合约API");
+        this.showError(this.$t("contractPage.please_input_to_invoke_contract_api"));
         return;
       }
       const apiArg = this.contractForm.apiArg || "";

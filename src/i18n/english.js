@@ -23,6 +23,8 @@ export default {
         wallet_password: 'Wallet Password',
         please_input_wallet_password: 'Please enter your wallet password',
         from_address: 'From Address',
+        please_open_locked_file: 'Please open locked wallet file',
+        wallet_password_length_invalid: 'Password length should be 8-30',
     },
     accountBalances: {
         wallet_balance: 'Balances',
@@ -32,11 +34,13 @@ export default {
         please_confirm_tx_info: 'Please confirm the transaction information',
         confirm: 'OK',
         cancel: 'Cancel',
+        unlock_successfully: 'Unlock successfully',
     },
     createWalletPage: {
         title: 'Create Wallet',
         please_save_wallet_file_line1: 'The wallet password is used to unlock the wallet, please save it properly',
         passworld_length_notice: 'Password length is 8 to 30 digits',
+        invalid_password_length: 'Invalid password length',
         next_step: 'Next Step',
         now_please_download_wallet_keystore_file: 'Now download the wallet keystore file',
         download_wallet_keystore_file: 'Download Wallet Keystore File',
@@ -45,6 +49,7 @@ export default {
         open_wallet_right_now: 'Open the wallet now',
         please_set_password: 'Please set wallet password',
         set_wallet_password: 'Set wallet password',
+        find_wallet_file_in_download_directory: 'Please find your new wallet file in download directory after downloaded',
     },
     transferPage: {
         account_name: 'Account Name',
@@ -65,6 +70,9 @@ export default {
         tx_success: 'Transaction Successed',
         tx_on_chain_success: 'The transaction has been successfully wound',
         you_can_query_tx_status_on_chain: 'You can check the status and results of this transaction on the HX blockchain.',
+        invalid_transfer_amount_format: 'Invalid transfer amount format',
+        not_enough_balance: 'Balance not enough',
+        invalid_to_address_format: 'Invalid distination address format',
     },
     checkTxPage: {
         title: 'Query',
@@ -109,6 +117,7 @@ export default {
         invalid_gas_limit_format: 'Incorrect gas limit format',
         too_large_gas_limit: 'Too large gas limit',
         tx_not_on_chain_please_query_later: 'The transaction is not yet online. Please check this transaction ID later',
+        contract_create_height: 'Create Block Height',
     },
     registerAccount: {
         register_account: 'Register Account',
@@ -141,5 +150,8 @@ export default {
         receive: 'Receive',
         receive_all: 'Receive All',
         pledge_income: 'Pledge Income',
+    },
+    forms: {
+        invalid_input_format: "Invalid input format",
     },
 };

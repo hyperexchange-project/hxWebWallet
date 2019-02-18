@@ -31,7 +31,7 @@
             </div>
           </el-col>
           <el-col :span="4">
-            <div class="grid-content label-font">创建块高</div>
+            <div class="grid-content label-font">{{$t('contractPage.contract_create_height')}}</div>
           </el-col>
           <el-col :span="8">
             <div class="grid-content label-font" style="text-align: left;">
@@ -41,7 +41,7 @@
         </el-row>
         <el-row class="-balance-label-row">
           <el-col :span="4">
-            <div class="grid-content label-font">余额</div>
+            <div class="grid-content label-font">{{$t('contractPage.balance')}}</div>
           </el-col>
           <el-col :span="8">
             <div class="grid-content label-font">&nbsp;</div>
@@ -53,7 +53,7 @@
             <div class="grid-content">
               <div style="text-align: right;">
                 <el-switch v-model="hideZeroAssets"></el-switch>
-                <span class="label-font">隐藏余额为0的资产</span>
+                <span class="label-font">{{$t('accountBalances.hide_zero_balances')}}</span>
               </div>
             </div>
           </el-col>

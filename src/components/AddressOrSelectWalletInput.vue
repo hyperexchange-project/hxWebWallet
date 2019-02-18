@@ -66,7 +66,7 @@ export default {
     },
     toUnlockKeystoreFile() {
       if (!this.unlockWalletForm.keystoreFileJson) {
-        this.showError("请打开待解锁文件");
+        this.showError(this.$t("keystoreInput.please_open_locked_file"));
         return;
       }
       this.unlockWalletForm.password = this.unlockWalletForm.password.trim();
@@ -74,7 +74,7 @@ export default {
         this.unlockWalletForm.password.length < 8 ||
         this.unlockWalletForm.password.length > 30
       ) {
-        this.showError("密码需要8-30位长度");
+        this.showError(this.$t("keystoreInput.wallet_password_length_invalid"));
         return;
       }
       let fileJson = this.unlockWalletForm.keystoreFileJson;
@@ -104,7 +104,7 @@ export default {
         } catch (e) {
           console.log(e);
         }
-        this.showSuccess("解锁成功");
+        this.showSuccess(this.$t("dialogs.unlock_successfully"));
         this.walletUnlocked = true;
         this.$emit("change-current-account", account);
       } catch (e) {

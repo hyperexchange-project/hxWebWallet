@@ -23,6 +23,8 @@ export default {
         wallet_password: '钱包密码',
         please_input_wallet_password: '请输入钱包密码',
         from_address: '来自地址',
+        please_open_locked_file: '请打开待解锁文件',
+        wallet_password_length_invalid: '密码需要8-30位长度',
     },
     accountBalances: {
         wallet_balance: '钱包余额',
@@ -32,11 +34,13 @@ export default {
         please_confirm_tx_info: '请确认交易信息',
         confirm: '确 定',
         cancel: '取 消',
+        unlock_successfully: '解锁成功',
     },
     createWalletPage: {
         title: '创建钱包',
         please_save_wallet_file_line1: '钱包密码用于解锁钱包，请妥善保存',
         passworld_length_notice: '密码长度为8至30位',
+        invalid_password_length: '密码长度错误',
         next_step: '下一步',
         now_please_download_wallet_keystore_file: '现在，请下载钱包Keystore文件',
         download_wallet_keystore_file: '下载钱包Keystore文件',
@@ -45,6 +49,7 @@ export default {
         open_wallet_right_now: '立即打开钱包',
         please_set_password: '请设置钱包密码',
         set_wallet_password: '设置钱包密码',
+        find_wallet_file_in_download_directory: '下载完成后请到浏览器的下载文件夹查看',
     },
     transferPage: {
         account_name: '账户名称',
@@ -65,6 +70,9 @@ export default {
         tx_success: '交易成功',
         tx_on_chain_success: '交易已经成功上链',
         you_can_query_tx_status_on_chain: '你可以在HX区块链上查询到这笔交易的状态和结果了',
+        invalid_transfer_amount_format: '不正确的转账数额格式',
+        not_enough_balance: '余额不够',
+        invalid_to_address_format: '不正确的目标地址格式',
     },
     checkTxPage: {
         title: '查询',
@@ -110,6 +118,7 @@ export default {
         invalid_gas_limit_format: '不正确的gas limit格式',
         too_large_gas_limit: '过大的gas limit',
         tx_not_on_chain_please_query_later: '交易尚未上链，请稍后查询此交易ID',
+        contract_create_height: '创建块高',
     },
     registerAccount: {
         register_account: '注册账户',
@@ -142,5 +151,8 @@ export default {
         receive: '领取',
         receive_all: '领取全部',
         pledge_income: '质押收益',
-    }
+    },
+    forms: {
+        invalid_input_format: "输入格式错误",
+    },
 };
