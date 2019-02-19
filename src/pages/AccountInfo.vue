@@ -38,7 +38,8 @@
         ></AccountBalancesSidebar>
         
       </div>
-      <AccountLockBalancesPanel v-if="infoAccountInfo && infoAccountInfo.name" :currentAccount="myself?infoAccount:null" :accountName="infoAccountInfo.name" :myself="myself"></AccountLockBalancesPanel>
+      <AccountLockBalancesPanel v-if="infoAccountInfo && infoAccountInfo.name" :currentAccount="myself?infoAccount:null"
+       :accountName="infoAccountInfo.name" :myself="myself" @balance-update="toUpdateAccountBalances"></AccountLockBalancesPanel>
     </div>
   </div>
 </template>
@@ -119,6 +120,9 @@ export default {
     },
     showAllBalances() {
       this.showAccountBalancesLimit = null;
+    },
+    toUpdateAccountBalances() {
+      this.loadInfoAccountInfo();
     },
     loadInfoAccountInfo() {
       if (!this.accountAddress) {

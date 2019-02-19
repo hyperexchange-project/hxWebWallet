@@ -297,7 +297,6 @@ export default {
         currentTabParams[0] === "locktocitizen"
       ) {
         const lockToCitizenName = currentTabParams[1];
-        // TODO
         const nodeClient = appState.getNodeClient();
         if (lockToCitizenName) {
           appState
@@ -423,6 +422,7 @@ export default {
                     this.step = "list";
                     this.showSuccess("take paybacks successfully");
                     this.loadLockBalances();
+                    this.notifyAccountBalancesUpdate();
                   })
                   .catch(e => {
                     console.log("take paybacks error", e);
@@ -506,6 +506,7 @@ export default {
                     this.step = "list";
                     this.showSuccess("Mortgage successfully");
                     this.loadLockBalances();
+                    this.notifyAccountBalancesUpdate();
                   })
                   .catch(e => {
                     console.log("mortgage error", e);
@@ -589,6 +590,7 @@ export default {
                     this.step = "list";
                     this.showSuccess("Redeem successfully");
                     this.loadLockBalances();
+                    this.notifyAccountBalancesUpdate();
                   })
                   .catch(e => {
                     console.log("redeem error", e);
@@ -618,6 +620,9 @@ export default {
       return appState.withApis().then(() => {
         return nodeClient.getTransactionById(txid);
       });
+    },
+    notifyAccountBalancesUpdate() {
+      this.$emit("balance-update");
     },
     loadLockBalances() {
       if (!this.accountName) {

@@ -288,7 +288,7 @@ export default {
   },
   created() {
     let account = appState.getCurrentAccount();
-      this.currentAccount = account;
+    this.currentAccount = account;
     if (account) {
       this.walletUnlocked = true;
       this.currentAddress = account.address;
@@ -312,11 +312,11 @@ export default {
   methods: {
     onFlashTxMessage(txMsg) {
       this.contractForm.transferAssetId = txMsg.currency || "1.3.0";
-      this.contractForm.contractAddress = txMsg.to || '';
-      this.contractForm.apiName = txMsg.contractApi || '';
-      this.contractForm.apiArg = txMsg.contractArg || '';
+      this.contractForm.contractAddress = txMsg.to || "";
+      this.contractForm.apiName = txMsg.contractApi || "";
+      this.contractForm.apiArg = txMsg.contractArg || "";
       this.contractForm.gasLimit = txMsg.gasLimit || 10000;
-      this.contractForm.gasPrice = txMsg.gasPrice || '0.00001';
+      this.contractForm.gasPrice = txMsg.gasPrice || "0.00001";
     },
     showError(e) {
       if (e && e.message) {
@@ -354,9 +354,7 @@ export default {
       appState
         .withApis()
         .then(() => {
-          return nodeClient.getSimpleContractInfo(
-            contractAddress
-          );
+          return nodeClient.getSimpleContractInfo(contractAddress);
         })
         .then(contract => {
           this.contractForm.contractInfo = contract;
@@ -405,43 +403,43 @@ export default {
       appState
         .withSystemAssets()
         .then(assets => {
-          return nodeClient.getAddrBalances(
-            this.currentAccount.address
-          ).then(balances => {
-            this.currentAccountBalances.length = 0;
-            for (let asset of assets) {
-              let balance = balances.filter(b => b.asset_id === asset.id)[0];
-              let item = {
-                assetId: asset.id,
-                assetSymbol: asset.symbol,
-                amount: balance ? balance.amount : 0,
-                precision: asset.precision,
-                amountNu: balance
-                  ? new BigNumber(balance.amount).div(
-                      Math.pow(10, asset.precision)
-                    )
-                  : new BigNumber(0)
-              };
-              this.currentAccountBalances.push(item);
-              if (asset.id === "1.3.0") {
-                this.currentAccountHxBalance = item.amountNu.toFixed(
-                  asset.precision
-                );
+          return nodeClient
+            .getAddrBalances(this.currentAccount.address)
+            .then(balances => {
+              this.currentAccountBalances.length = 0;
+              for (let asset of assets) {
+                let balance = balances.filter(b => b.asset_id === asset.id)[0];
+                let item = {
+                  assetId: asset.id,
+                  assetSymbol: asset.symbol,
+                  amount: balance ? balance.amount : 0,
+                  precision: asset.precision,
+                  amountNu: balance
+                    ? new BigNumber(balance.amount).div(
+                        Math.pow(10, asset.precision)
+                      )
+                    : new BigNumber(0)
+                };
+                this.currentAccountBalances.push(item);
+                if (asset.id === "1.3.0") {
+                  this.currentAccountHxBalance = item.amountNu.toFixed(
+                    asset.precision
+                  );
+                }
               }
-            }
-            return balances;
-          });
+              return balances;
+            });
         })
         .then(() => {
-          return nodeClient.getAccountByAddresss(
-            this.currentAddress
-          ).then(accountInfo => {
-            if (accountInfo) {
-              this.currentAccountInfo = accountInfo;
-            } else {
-              this.currentAccountInfo = {};
-            }
-          });
+          return nodeClient
+            .getAccountByAddresss(this.currentAddress)
+            .then(accountInfo => {
+              if (accountInfo) {
+                this.currentAccountInfo = accountInfo;
+              } else {
+                this.currentAccountInfo = {};
+              }
+            });
         })
         .catch(this.showError.bind(this));
     },
@@ -485,7 +483,9 @@ export default {
       }
       const apiName = this.contractForm.apiName;
       if (!apiName) {
-        this.showError(this.$t("contractPage.please_input_to_invoke_contract_api"));
+        this.showError(
+          this.$t("contractPage.please_input_to_invoke_contract_api")
+        );
         return;
       }
       const apiArg = this.contractForm.apiArg || "";
@@ -495,12 +495,8 @@ export default {
       appState
         .withApis()
         .then(() => {
-          nodeClient.invokeContractTesting(
-            pubkey,
-            contractId,
-            apiName,
-            apiArg
-          )
+          nodeClient
+            .invokeContractTesting(pubkey, contractId, apiName, apiArg)
             .then(data => {
               console.log(data);
               const fee = data.fee;
@@ -599,8 +595,8 @@ export default {
             .substr(0, 40);
           this.lastSentTxId = txid;
           console.log("tx hash:", txid);
-          if(typeof(messageToBackground) !== 'undefined') {
-            messageToBackground("txhash",txid);
+          if (typeof messageToBackground !== "undefined") {
+            messageToBackground("txhash", txid);
           }
           tr.broadcast(function() {})
             .then(() => {
@@ -750,6 +746,8 @@ export default {
     font-size: 8pt;
     padding: 20pt;
     margin-left: -40pt;
+    width: 100%;
+    word-break: break-all;
   }
   .-confirm-contract-address-btn {
     width: 100pt;
@@ -853,7 +851,6 @@ export default {
       width: 400px;
       button {
         max-width: 80px;
-
       }
     }
   }

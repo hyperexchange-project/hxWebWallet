@@ -75,7 +75,8 @@
           :defaultLimit="showAccountBalancesLimit"
         ></AccountBalancesSidebar>
       </div>
-      <AccountLockBalancesPanel v-if="currentAccountInfo && currentAccountInfo.name" :currentAccount="currentAccount" :accountName="currentAccountInfo.name" :myself="true"></AccountLockBalancesPanel>
+      <AccountLockBalancesPanel v-if="currentAccountInfo && currentAccountInfo.name" :currentAccount="currentAccount" 
+      :accountName="currentAccountInfo.name" :myself="true" @balance-update="toUpdateAccountBalances"></AccountLockBalancesPanel>
       <div class="hx-main-container hx-my-opened-wallet-container2" style="display: none;">TODO</div>
     </div>
   </div>
@@ -173,6 +174,9 @@ export default {
     },
     showAllBalances() {
       this.showAccountBalancesLimit = null;
+    },
+    toUpdateAccountBalances() {
+      this.loadCurrentAccountInfo();
     },
     loadCurrentAccountInfo() {
       if (!this.currentAccount) {
