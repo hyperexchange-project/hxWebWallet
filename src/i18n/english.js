@@ -77,7 +77,7 @@ export default {
     checkTxPage: {
         title: 'Query',
         query_now: 'Query Now',
-        please_input_txid_or_address: 'Please enter the transaction hash / address / contract address',
+        please_input_txid_or_address: 'Enter tx hash/address/contract address',
     },
     accountInfoPage: {
         my_address: 'My Address',

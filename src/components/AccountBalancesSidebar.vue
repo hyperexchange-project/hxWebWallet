@@ -15,9 +15,9 @@
     </el-row>
     <div class="-account-balances-panel">
       <div
-        v-for="balance in filterBalances(accountBalances, hideZeroAssets, showAccountBalancesLimit)"
+        v-for="(balance, index) in filterBalances(accountBalances, hideZeroAssets, showAccountBalancesLimit)"
         class="-account-balance"
-        :key="balance.assetSymbol"
+        :key="index"
       >
         <div class="-asset-symbol-label">{{balance.assetSymbol}}</div>
         <div class="-asset-amount-label">{{balance.amountNu.toFixed(balance.precision)}}</div>

@@ -65,7 +65,7 @@
           ></AddressOrSelectWalletInput>
           <el-form-item v-bind:label="$t('contractPage.balance')" prop="amount">
             <el-input
-              class="-input-amount"
+              class="-input-amount -contract-balance-input"
               placeholder
               type="text"
               :readonly="true"
@@ -839,6 +839,9 @@ export default {
     .el-input {
       width: auto !important;
     }
+    .-contract-balance-input {
+      width: 140pt !important;
+    }
     .el-form-item__content {
       margin-left: 10pt;
     }
@@ -877,6 +880,9 @@ export default {
   .hx-invoke-contract-container {
     .-input-amount {
       width: 88pt !important;
+    }
+    .-contract-balance-input {
+      width: 140pt !important;
     }
     .el-form-item__label {
       width: 75pt !important;

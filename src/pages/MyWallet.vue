@@ -145,7 +145,10 @@ export default {
       if (e && e.message) {
         e = e.message;
       }
-      e = (e || "error").toString();
+      e = e || 'error';
+      if(!_.isString(e)) {
+        e = JSON.stringify(e);
+      }
       this.$message({
         showClose: true,
         message: e,
