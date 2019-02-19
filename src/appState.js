@@ -104,7 +104,7 @@ const languageConfigStorageKey = "languageConfig";
 state.currentLanguage = getStorage(languageConfigStorageKey) || "chinese";
 
 function getLocationHash() {
-    if(typeof(location) !== 'undefined') {
+    if (typeof (location) !== 'undefined') {
         return location.hash;
     } else {
         return '';
@@ -113,7 +113,7 @@ function getLocationHash() {
 
 // receive params
 const locationHash = getLocationHash();
-switch(locationHash) {
+switch (locationHash) {
     case '#transfer': {
         state.currentTab = 'transfer';
     } break;
@@ -128,7 +128,7 @@ switch(locationHash) {
         state.currentTabParams = [];
     } break;
     default: {
-        if(locationHash && locationHash.indexOf('#locktocitizen=')===0) {
+        if (locationHash && locationHash.indexOf('#locktocitizen=') === 0) {
             const lockToCitizenName = locationHash.substr('#locktocitizen='.length);
             state.currentTab = 'my_wallet';
             state.currentTabParams = ['locktocitizen', lockToCitizenName];
@@ -208,11 +208,11 @@ export default {
         EE.off(changeCurrentAddressEventName, listener);
     },
     getLastUsedNetwork() {
-        if(typeof(localSave) === 'undefined') {
+        if (typeof (localSave) === 'undefined') {
             return null;
         }
         const key = localSave.getItem("networkKey");
-        if(!key) {
+        if (!key) {
             return null;
         }
         const networkObj = getNetworkByKey(key);
@@ -230,15 +230,15 @@ export default {
             const chainRpcUrl = networkObj.url;
             state.apisInstance = Apis.instance(chainRpcUrl, true);
             state.nodeClient = new NodeClient(state.apisInstance);
-            if(typeof(localSave) !== 'undefined') {
+            if (typeof (localSave) !== 'undefined') {
                 localSave.setItem("networkKey", networkObj.key);
                 localSave.setItem("apiPrefix", chainRpcUrl);
                 localSave.setItem("chainId", networkObj.chainId);
             }
         }
         EE.emit(changeCurrentNetworkEventName, state.currentNetwork);
-        if(oldNetwork && oldNetwork != network) {
-            setTimeout(()=> {
+        if (oldNetwork && oldNetwork != network) {
+            setTimeout(() => {
                 window.location.reload();
             }, 1000);
         }
@@ -283,6 +283,18 @@ export default {
             }
         }
         return null;
+    },
+    getAssetPrecisionByAssetId(assetId) {
+        const asset = this.getAssetLocal(assetId);
+        if (asset) {
+            return asset.precision;
+        } else {
+            if (assetId === '1.3.0') {
+                return 5; // HX precision
+            } else {
+                return 8; // default precision
+            }
+        }
     },
     onChangeCurrentNetwork(listener) {
         EE.on(changeCurrentNetworkEventName, listener);

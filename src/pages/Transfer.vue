@@ -34,13 +34,8 @@
             ></el-input>
           </el-form-item>
           <el-form-item v-bind:label="$t('transferPage.transfer_amount')" prop="amount">
-            <el-input
-              class="-input-amount"
-              placeholder
-              type="text"
-              v-model="transferForm.amount"
-              style="width: 170pt !important;"
-            ></el-input>
+            <AssetInput v-model="transferForm.amount" :precision="getAssetPrecisionByAssetId(transferForm.transferAssetId)"
+            style="width: 170pt;"></AssetInput>
             <el-select
               class="transfer-asset-select"
               v-model="transferForm.transferAssetId"
@@ -243,11 +238,12 @@ import appState from "../appState";
 import utils from "../utils";
 import KeystoreInput from "../components/KeystoreInput.vue";
 import AddressOrSelectWalletInput from "../components/AddressOrSelectWalletInput.vue";
+import AssetInput from "../components/AssetInput.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
   name: "Transfer",
-  components: { KeystoreInput, AddressOrSelectWalletInput },
+  components: { KeystoreInput, AddressOrSelectWalletInput, AssetInput },
   data() {
     return {
       lastSentTxId: null,
@@ -294,6 +290,9 @@ export default {
       this.transferForm.amount = txMsg.valueRaw;
       this.transferForm.toAddress = txMsg.to;
       this.transferForm.memo = txMsg.memo;
+    },
+    getAssetPrecisionByAssetId(assetId) {
+      return appState.getAssetPrecisionByAssetId(assetId);
     },
     showError(e) {
       if (e && e.message) {

@@ -3,7 +3,7 @@
     <div v-show="step==='list'">
       <div class="hx-panel" style="padding-top: 10px;">
         <div class="-panel-title">{{$t('account_lock_balances.pledge_information')}}</div>
-        <div v-if="myself" class="-top-control-panel"  style="text-align: center;">
+        <div v-if="myself" class="-top-control-panel" style="text-align: center;">
           <el-button
             type="primary"
             @click="toMortgageToCitizen(null, '1.3.0')"
@@ -165,7 +165,11 @@
               </el-select>
             </el-form-item>
             <el-form-item v-bind:label="$t('account_lock_balances.pledge_currency')" prop="assetId">
-              <el-input class="-input-amount" placeholder type="text" v-model="mortgageForm.amount"></el-input>
+              <AssetInput
+                v-model="mortgageForm.amount"
+                :precision="getAssetPrecisionByAssetId(mortgageForm.assetId)"
+                style="width: 167pt;"
+              ></AssetInput>
               <el-select
                 class="-asset-select -transfer-asset-select"
                 v-model="mortgageForm.assetId"
@@ -221,7 +225,11 @@
               </el-select>
             </el-form-item>
             <el-form-item v-bind:label="$t('account_lock_balances.pledge_currency')" prop="assetId">
-              <el-input class="-input-amount" placeholder type="text" v-model="redeemForm.amount"></el-input>
+              <AssetInput
+                v-model="redeemForm.amount"
+                :precision="getAssetPrecisionByAssetId(redeemForm.assetId)"
+                style="width: 167pt;"
+              ></AssetInput>
               <el-select
                 class="-asset-select -transfer-asset-select"
                 v-model="redeemForm.assetId"
@@ -261,13 +269,14 @@ import _ from "lodash";
 import { format, distanceInWordsToNow } from "date-fns";
 import appState from "../appState";
 import utils from "../utils";
+import AssetInput from "./AssetInput.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 window.datefns = require("date-fns");
 
 export default {
   name: "AccountLockBalancesPanel",
   props: ["accountName", "currentAccount", "myself"],
-  components: {},
+  components: { AssetInput },
   data() {
     return {
       accountLockBalances: [],
@@ -327,6 +336,9 @@ export default {
         }
       }
       return {};
+    },
+    getAssetPrecisionByAssetId(assetId) {
+      return appState.getAssetPrecisionByAssetId(assetId);
     },
     loadSystemCitizens() {
       const nodeClient = appState.getNodeClient();

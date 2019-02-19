@@ -23,7 +23,11 @@
             @change-current-account="onChangeSelectedAccount"
           ></AddressOrSelectWalletInput>
           <el-form-item v-bind:label="$t('contractPage.transfer_amount')" prop="amount">
-            <el-input class="-input-amount" placeholder type="text" v-model="contractForm.amount"></el-input>
+            <AssetInput
+              v-model="contractForm.amount"
+              :precision="getAssetPrecisionByAssetId(contractForm.transferAssetId)"
+              style="width: 167pt;"
+            ></AssetInput>
             <el-select
               class="transfer-asset-select"
               v-model="contractForm.transferAssetId"
@@ -47,24 +51,23 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="Gas Limit" prop="gasLimit">
-            <el-input
+            <AssetInput
               class="-input-gas-limit"
-              placeholder
-              type="text"
               v-model="contractForm.gasLimit"
-              style="width: 100pt;"
-            ></el-input>
+              :precision="0"
+              :min="0"
+              :max="2000000"
+            ></AssetInput>
           </el-form-item>
           <el-form-item label="Gas Price" prop="gasPrice">
-            <el-input
+            <AssetInput
               class="-input-gas-price"
-              placeholder
-              type="text"
               v-model="contractForm.gasPrice"
-              style
+              :precision="getAssetPrecisionByAssetId('1.3.0')"
+              :hasAppend="true"
             >
               <template slot="append">HX</template>
-            </el-input>
+            </AssetInput>
           </el-form-item>
 
           <el-form-item class="-control-panel">
@@ -228,6 +231,8 @@ import KeystoreInput from "../components/KeystoreInput.vue";
 import SideNavbar from "../components/SideNavbar.vue";
 import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
 import AddressOrSelectWalletInput from "../components/AddressOrSelectWalletInput.vue";
+import AssetInput from "../components/AssetInput.vue";
+
 let {
   PrivateKey,
   key,
@@ -242,7 +247,8 @@ export default {
     KeystoreInput,
     SideNavbar,
     AccountBalancesSidebar,
-    AddressOrSelectWalletInput
+    AddressOrSelectWalletInput,
+    AssetInput
   },
   data() {
     return {
@@ -304,6 +310,9 @@ export default {
       this.contractForm.memo = txMsg.memo;
       this.contractForm.gasLimit = txMsg.gasLimit || 10000;
       this.contractForm.gasPrice = txMsg.gasPrice || "0.00001";
+    },
+    getAssetPrecisionByAssetId(assetId) {
+      return appState.getAssetPrecisionByAssetId(assetId);
     },
     showError(e) {
       if (e && e.message) {
@@ -454,13 +463,14 @@ export default {
       appState
         .withApis()
         .then(() => {
-          nodeClient.transferToContractTesting(
-            pubkey,
-            contractId,
-            amount,
-            asset.symbol,
-            memo
-          )
+          nodeClient
+            .transferToContractTesting(
+              pubkey,
+              contractId,
+              amount,
+              asset.symbol,
+              memo
+            )
             .then(data => {
               const fee = data[0];
               const gasCount = data[1];
@@ -715,6 +725,14 @@ export default {
   }
   .-input-amount {
     width: 170pt !important;
+  }
+  .-input-gas-price.asset-input-wrapper {
+    .el-input {
+      width: 170pt !important;
+      .el-input__inner {
+        width: 170pt !important;
+      }
+    }
   }
 }
 

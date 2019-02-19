@@ -76,24 +76,23 @@
             </el-input>
           </el-form-item>
           <el-form-item label="Gas Limit" prop="gasLimit">
-            <el-input
+            <AssetInput
               class="-input-gas-limit"
-              placeholder
-              type="text"
               v-model="contractForm.gasLimit"
-              style="width: 100pt;"
-            ></el-input>
+              :precision="0"
+              :min="0"
+              :max="2000000"
+            ></AssetInput>
           </el-form-item>
           <el-form-item label="Gas Price" prop="gasPrice">
-            <el-input
+            <AssetInput
               class="-input-gas-price"
-              placeholder
-              type="text"
               v-model="contractForm.gasPrice"
-              style
+              :precision="getAssetPrecisionByAssetId('1.3.0')"
+              :hasAppend="true"
             >
               <template slot="append">HX</template>
-            </el-input>
+            </AssetInput>
           </el-form-item>
 
           <div class="-control-panel" style="text-align: center;padding: 10pt;">
@@ -258,11 +257,12 @@ import utils from "../utils";
 import KeystoreInput from "../components/KeystoreInput.vue";
 import SideNavbar from "../components/SideNavbar.vue";
 import AddressOrSelectWalletInput from "../components/AddressOrSelectWalletInput.vue";
+import AssetInput from "../components/AssetInput.vue";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
   name: "InvokeContract",
-  components: { KeystoreInput, SideNavbar, AddressOrSelectWalletInput },
+  components: { KeystoreInput, SideNavbar, AddressOrSelectWalletInput, AssetInput },
   data() {
     return {
       lastSentTxId: null,
@@ -317,6 +317,9 @@ export default {
       this.contractForm.apiArg = txMsg.contractArg || "";
       this.contractForm.gasLimit = txMsg.gasLimit || 10000;
       this.contractForm.gasPrice = txMsg.gasPrice || "0.00001";
+    },
+    getAssetPrecisionByAssetId(assetId) {
+      return appState.getAssetPrecisionByAssetId(assetId);
     },
     showError(e) {
       if (e && e.message) {
@@ -760,6 +763,20 @@ export default {
   .hx-address-or-select-wallet-input {
     .-address-show-label {
       padding-left: 10pt !important;
+    }
+  }
+  .-input-gas-price.asset-input-wrapper {
+    .el-input {
+      width: 170pt !important;
+      .el-input__inner {
+        width: 170pt !important;
+      }
+    }
+  }
+  .-input-gas-limit.asset-input-wrapper {
+    .el-input {
+      width: 220pt !important;
+
     }
   }
 }
