@@ -24,6 +24,7 @@
           ></AddressOrSelectWalletInput>
           <el-form-item v-bind:label="$t('contractPage.transfer_amount')" prop="amount">
             <AssetInput
+              class="-input-amount-field"
               v-model="contractForm.amount"
               :precision="getAssetPrecisionByAssetId(contractForm.transferAssetId)"
               style="width: 167pt;"
@@ -292,14 +293,14 @@ export default {
     } else {
       this.walletUnlocked = false;
     }
-  },
-  mounted() {
-    appState.onChangeCurrentAccount(this.onChangeCurrentAccount);
     const flashTxMessage = appState.getFlashTxOnce();
     if (flashTxMessage) {
       this.onFlashTxMessage(flashTxMessage);
     }
     appState.onPushFlashTxMessage(this.onFlashTxMessage);
+  },
+  mounted() {
+    appState.onChangeCurrentAccount(this.onChangeCurrentAccount);
   },
   beforeDestroy() {
     appState.offChangeCurrentAccount(this.onChangeCurrentAccount);
@@ -307,9 +308,13 @@ export default {
   },
   methods: {
     onFlashTxMessage(txMsg) {
+      console.log('txMsg', txMsg);
       this.contractForm.transferAssetId = txMsg.currency || "1.3.0";
       this.contractForm.contractAddress = txMsg.to || "";
       this.contractForm.amount = txMsg.valueRaw || "";
+      setTimeout(()=> {
+        this.contractForm.amount = txMsg.valueRaw || "";
+      }, 100);
       this.contractForm.memo = txMsg.memo;
       this.contractForm.gasLimit = txMsg.gasLimit || 10000;
       this.contractForm.gasPrice = txMsg.gasPrice || "0.00001";
@@ -739,6 +744,17 @@ export default {
   }
 }
 
+.chrome-ext-app-container .hx-transfer-contract-container {
+  .-input-gas-price.asset-input-wrapper {
+    .el-input {
+      width: 88pt !important;
+      .el-input__inner {
+        width: 88pt !important;
+      }
+    }
+  }
+}
+
 @media (max-width: 960px) {
   .hx-transfer-contract-container {
     .-right-side {
@@ -854,6 +870,25 @@ export default {
       width: 400px !important;
       .el-form-item__label {
         text-align: left;
+      }
+    }
+    
+    .-input-gas-limit {
+      width: 140pt !important;
+      .-input-amount {
+        width: 140pt !important;
+      }
+    }
+    .-input-amount-field,.-input-gas-price {
+      width: 88pt !important;
+    }
+    .-input-gas-price {
+      width: 88pt !important;
+      .-input-amount {
+        width: 88pt !important;
+        input {
+          width: 88pt !important;
+        }
       }
     }
   }

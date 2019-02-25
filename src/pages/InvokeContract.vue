@@ -781,6 +781,17 @@ export default {
   }
 }
 
+.chrome-ext-app-container .hx-invoke-contract-container {
+  .-input-gas-price.asset-input-wrapper {
+    .el-input {
+      width: 88pt !important;
+      .el-input__inner {
+        width: 88pt !important;
+      }
+    }
+  }
+}
+
 @media (max-width: 960px) {
   .hx-invoke-contract-container {
     .-right-side {
@@ -901,6 +912,24 @@ export default {
     .-control-panel {
       .el-form-item__content {
         text-align: center;
+      }
+    }
+    .-input-gas-limit {
+      width: 140pt !important;
+      .-input-amount {
+        width: 140pt !important;
+      }
+    }
+    .-input-amount-field,.-input-gas-price {
+      width: 88pt !important;
+    }
+    .-input-gas-price {
+      width: 88pt !important;
+      .-input-amount {
+        width: 88pt !important;
+        input {
+          width: 88pt !important;
+        }
       }
     }
   }
