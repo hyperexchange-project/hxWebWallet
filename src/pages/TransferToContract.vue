@@ -259,6 +259,9 @@ export default {
       walletUnlocked: false,
       hideZeroAssets: true,
       contractForm: {
+        contractAddress: null,
+        memo: null,
+        amount: null,
         filename: appState.getCurrentAddress(),
         transferAssetId: "1.3.0",
         gasLimit: 10000,

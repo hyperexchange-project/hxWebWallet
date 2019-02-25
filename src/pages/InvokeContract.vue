@@ -581,7 +581,7 @@ export default {
             gasPrice,
             contractId,
             apiName,
-            apiArg
+            apiArg.toString()
           );
           tr.add_type_operation("contract_invoke", op);
           tr.set_expire_seconds(0);

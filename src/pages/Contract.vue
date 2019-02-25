@@ -68,6 +68,14 @@ export default {
     } else {
       this.walletUnlocked = false;
     }
+    const tabParams = appState.getCurrentTabParams();
+    if (tabParams && tabParams.length > 0) {
+      const type = tabParams[0];
+      const arg = tabParams[1];
+      if(type === 'transfer_to_contract') {
+        this.selectedNavbarItem = 'transfer';
+      }
+    }
   },
   mounted() {
     appState.onChangeCurrentAccount(this.onChangeCurrentAccount);

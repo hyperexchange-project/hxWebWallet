@@ -111,6 +111,16 @@ function getLocationHash() {
     }
 }
 
+function parseQuery(queryString) {
+    var query = {};
+    var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=');
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+    }
+    return query;
+}
+
 // receive params
 const locationHash = getLocationHash();
 switch (locationHash) {
@@ -122,6 +132,7 @@ switch (locationHash) {
     } break;
     case '#transfer_to_contract': {
         state.currentTab = 'contract';
+        state.currentTabParams = ['transfer_to_contract'];
     } break;
     case '#check_tx': {
         state.currentTab = 'check_tx';
