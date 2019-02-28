@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="hx-panel hx-invoke-contract-container">
-      <div class="-left-side" v-if="step==='transfer'">
+      <div class="-left-side" v-show="step==='transfer'">
         <el-form
           :model="contractForm"
           status-icon
@@ -362,7 +362,10 @@ export default {
         .then(contract => {
           this.contractForm.contractInfo = contract;
           console.log("contract: ", contract);
-          this.contractForm.contractApis = [];
+          if(!this.contractForm.contractApis) {
+            this.contractForm.contractApis = [];
+          }
+          this.contractForm.contractApis.length = 0;
           this.contractForm.contractApisOptions = [];
           if (
             contract &&
@@ -387,7 +390,10 @@ export default {
                 apis.push(api);
               }
             }
-            this.contractForm.contractApis = apis;
+            apis.forEach(item=> {
+              this.contractForm.contractApis.push(item);
+            });
+            // this.contractForm.contractApis = apis;
             for (let api of apis) {
               this.contractForm.contractApisOptions.push({
                 value: api,
@@ -459,10 +465,14 @@ export default {
       this.loadCurrentAccountInfo();
     },
     backToTransfer() {
-      this.contractForm = {
-        filename: appState.getCurrentAddress(),
-        transferAssetId: "1.3.0"
-      };
+      this.contractForm.contractAddress = '';
+      this.contractForm.contractApis.length = 0;
+      this.contractForm.apiName = '';
+      this.contractForm.apiArg = '';
+      this.contractForm.gasLimit = 10000;
+      this.contractForm.gasPrice = "0.00001";
+      this.contractForm.transferAssetId = "1.3.0";
+      this.contractForm.apiResult = '';
       this.step = "transfer";
     },
     toViewTx(txId) {

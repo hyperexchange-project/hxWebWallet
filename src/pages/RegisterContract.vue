@@ -347,10 +347,11 @@ export default {
       this.currentAccountBalances = balances;
     },
     backToTransfer() {
-      this.contractForm = {
-        filename: appState.getCurrentAddress(),
-        transferAssetId: "1.3.0"
-      };
+      this.contractForm.filename = '';
+      this.contractForm.gasLimit = 10000;
+      this.contractForm.gasPrice = "0.00001";
+      this.contractForm.transferAssetId = "1.3.0";
+      this.contractForm.apiResult = '';
       this.step = "transfer";
     },
     toViewTx(txId) {

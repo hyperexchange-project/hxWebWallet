@@ -374,10 +374,10 @@ export default {
       this.currentAccountBalances = balances;
     },
     backToTransfer() {
-      this.transferForm = {
-        filename: appState.getCurrentAddress(),
-        transferAssetId: "1.3.0"
-      };
+      this.contractForm.toAddress = '';
+      this.contractForm.amount = 0;
+      this.contractForm.memo = '';
+      this.contractForm.transferAssetId = "1.3.0";
       this.step = "transfer";
     },
     toViewTx(txId) {
