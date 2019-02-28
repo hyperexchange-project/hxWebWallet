@@ -73,7 +73,7 @@ export default {
         you_can_query_tx_status_on_chain: 'You can check the status and results of this transaction on the HX blockchain.',
         invalid_transfer_amount_format: 'Invalid transfer amount format',
         not_enough_balance: 'Balance not enough',
-        invalid_to_address_format: 'Invalid distination address format',
+        invalid_to_address_format: 'Invalid destination address format',
     },
     checkTxPage: {
         title: 'Query',
