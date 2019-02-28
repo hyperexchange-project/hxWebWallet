@@ -14,6 +14,10 @@ const networkList = [
         //  chainId: 'fe70279c1d9850d4ddb6ca1f00c577bc2e86bf33d54fafd4c606a6937b89ae32', // local testnet
         chainId: '2e13ba07b457f2e284dcfcbd3d4a3e4d78a6ed89a61006cdb7fdad6d67ef0b12', // local mainnet
         key: 'localhost', name: "localhost:8090", url: "ws://localhost:8090"
+    },
+    {
+        chainId: '2e13ba07b457f2e284dcfcbd3d4a3e4d78a6ed89a61006cdb7fdad6d67ef0b12', key: 'indicator', name: "Indicator",
+        url: "ws://localhost:50320"
     }
 ];
 

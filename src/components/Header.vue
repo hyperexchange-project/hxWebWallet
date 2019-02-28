@@ -16,6 +16,7 @@
           >
             <el-option label="Mainnet" value="mainnet"></el-option>
             <el-option label="Testnet" value="testnet"></el-option>
+            <el-option label="Indicator" value="indicator"></el-option>
             <el-option label="localhost" value="localhost"></el-option>
           </el-select>
           <el-select
