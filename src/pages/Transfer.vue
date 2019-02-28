@@ -90,7 +90,7 @@
             </el-row>
             <el-row style="margin-bottom: 15pt;">
               <el-col :span="8">
-                <div class="grid-content label-font">{{$t('transferPage.transfer_amount')}}</div>
+                <div class="grid-content label-font">{{$t('transferPage.transfer_amount_in_dialog')}}</div>
               </el-col>
               <el-col :span="16">
                 <div class="grid-content label-font value-label">{{transferForm.amount}}</div>

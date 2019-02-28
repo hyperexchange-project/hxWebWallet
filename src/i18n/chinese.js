@@ -54,6 +54,7 @@ export default {
     transferPage: {
         account_name: '账户名称',
         transfer_amount: '转账数量',
+        transfer_amount_in_dialog: '金额',
         not_registered: '未注册',
         send_to_address: '发送至地址',
         please_input_to_address_or_account_name: '请输入对方地址或已注册的账户名',

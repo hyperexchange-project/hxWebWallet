@@ -438,13 +438,13 @@ export default {
                   })
                   .catch(e => {
                     console.log("take paybacks error", e);
-                    this.showError("take paybacks failed");
+                    this.showError("take paybacks failed " + JSON.stringify(e));
                   });
               }, 6000);
             })
             .catch(e => {
               console.log("take paybacks error", e);
-              this.showError("take paybacks failed");
+              this.showError("take paybacks failed " + JSON.stringify(e));
             });
         })
         .catch(this.showError);
