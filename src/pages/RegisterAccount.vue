@@ -152,7 +152,7 @@ export default {
           );
           let tr = new TransactionBuilder();
           tr.add_type_operation("account_create", op);
-          tr.set_expire_seconds(0);
+          tr.set_expire_seconds(500);
           return tr.set_required_fees().then(() => {
             return tr.finalize().then(() => tr);
           });

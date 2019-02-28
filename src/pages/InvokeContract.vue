@@ -584,7 +584,7 @@ export default {
             apiArg.toString()
           );
           tr.add_type_operation("contract_invoke", op);
-          tr.set_expire_seconds(0);
+          tr.set_expire_seconds(500);
           return tr.set_required_fees().then(() => {
             return tr.finalize().then(() => tr);
           });

@@ -459,7 +459,7 @@ export default {
             gpcHex
           );
           tr.add_type_operation("contract_register", op);
-          tr.set_expire_seconds(0);
+          tr.set_expire_seconds(500);
           return tr.set_required_fees().then(() => {
             return tr.finalize().then(() => tr);
           });

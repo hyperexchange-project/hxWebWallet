@@ -407,7 +407,7 @@ export default {
             takePayBackItems
           );
           tr.add_type_operation("pay_back", op);
-          tr.set_expire_seconds(0);
+          tr.set_expire_seconds(500);
           return tr.set_required_fees().then(() => {
             return tr.finalize().then(() => tr);
           });
@@ -491,7 +491,7 @@ export default {
             amountFull
           );
           tr.add_type_operation("lockbalance", op);
-          tr.set_expire_seconds(0);
+          tr.set_expire_seconds(500);
           return tr.set_required_fees().then(() => {
             return tr.finalize().then(() => tr);
           });
@@ -575,7 +575,7 @@ export default {
             amountFull
           );
           tr.add_type_operation("foreclose_balance", op);
-          tr.set_expire_seconds(0);
+          tr.set_expire_seconds(500);
           return tr.set_required_fees().then(() => {
             return tr.finalize().then(() => tr);
           });
