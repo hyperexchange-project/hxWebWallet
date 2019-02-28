@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="hx-panel hx-invoke-contract-container">
-      <div class="-left-side" v-show="step==='transfer'">
+      <div class="-left-side" v-if="step==='transfer'">
         <el-form
           :model="contractForm"
           status-icon
