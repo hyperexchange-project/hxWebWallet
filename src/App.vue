@@ -41,7 +41,9 @@ export default {
   },
   created() {
     const lastUsedNetwork = appState.getLastUsedNetwork();
-    appState.changeCurrentNetwork(lastUsedNetwork ? lastUsedNetwork.key : "mainnet");
+    appState.changeCurrentNetwork(
+      lastUsedNetwork ? lastUsedNetwork.key : "mainnet"
+    );
     this.currentTabKey = appState.getCurrentTab();
   },
   mounted() {
@@ -96,12 +98,13 @@ body::-webkit-scrollbar {
 
 .hx-footer-bar {
   position: fixed;
-  bottom: 5pt;
   min-width: 200pt;
   text-align: center;
   color: #999999;
   font-size: 10pt;
   right: 40pt;
+  padding-top: 20pt;
+  bottom: 12pt;
 }
 
 h1,

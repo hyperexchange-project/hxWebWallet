@@ -716,7 +716,10 @@ export default {
                 }
                 console.log("payBacks", payBacks);
               })
-              .catch(this.showError.bind(this));
+              .catch(err => {
+                console.log("get address payBack balances error ", err);
+                // this.showError.bind(this)
+              });
             return account;
           });
         })
