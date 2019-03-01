@@ -141,7 +141,7 @@
         </div>
       </div>
     </div>
-    <div v-show="step==='mortgage'">
+    <div v-if="step==='mortgage'">
       <div class="hx-panel" style="padding-top: 10px;">
         <div class="-panel-title">{{$t('account_lock_balances.pledge')}}</div>
         <div class="-simple-form-panel">
@@ -166,7 +166,7 @@
             </el-form-item>
             <el-form-item v-bind:label="$t('account_lock_balances.pledge_currency')" prop="assetId">
               <AssetInput
-                v-model="mortgageForm.amount"
+                v-model="mortgageFormAmount"
                 :precision="getAssetPrecisionByAssetId(mortgageForm.assetId)"
                 style="width: 167pt;"
               ></AssetInput>
@@ -201,7 +201,7 @@
         </div>
       </div>
     </div>
-    <div v-show="step==='redeem'">
+    <div v-if="step==='redeem'">
       <div class="hx-panel" style="padding-top: 10px;">
         <div class="-panel-title">{{$t('account_lock_balances.redeem')}}</div>
         <div class="-simple-form-panel">
@@ -226,7 +226,7 @@
             </el-form-item>
             <el-form-item v-bind:label="$t('account_lock_balances.pledge_currency')" prop="assetId">
               <AssetInput
-                v-model="redeemForm.amount"
+                v-model="redeemFormAmount"
                 :precision="getAssetPrecisionByAssetId(redeemForm.assetId)"
                 style="width: 167pt;"
               ></AssetInput>
@@ -360,9 +360,11 @@ export default {
         this.loadSystemCitizens();
       }
       this.mortgageForm = {
+        amount: '',
         citizenId: selectedCitizenId,
         assetId: assetId
       };
+      this.mortgageFormAmount = '';
       this.step = "mortgage";
     },
     receivePayBack(payBacks) {
@@ -438,13 +440,13 @@ export default {
                   })
                   .catch(e => {
                     console.log("take paybacks error", e);
-                    this.showError("take paybacks failed " + JSON.stringify(e));
+                    this.showError("take paybacks failed " + e.toString());
                   });
               }, 6000);
             })
             .catch(e => {
               console.log("take paybacks error", e);
-              this.showError("take paybacks failed " + JSON.stringify(e));
+              this.showError("take paybacks failed " + e.toString());
             });
         })
         .catch(this.showError);
@@ -456,7 +458,7 @@ export default {
       }
       const citizenId = this.mortgageForm.citizenId;
       const assetId = this.mortgageForm.assetId;
-      const amount = this.mortgageForm.amount;
+      const amount = this.mortgageFormAmount;
       const amountBn = new BigNumber(amount);
       if (!citizenId || !assetId) {
         this.showError("Invalid citizen or asset");
@@ -522,13 +524,13 @@ export default {
                   })
                   .catch(e => {
                     console.log("mortgage error", e);
-                    this.showError("Mortgage failed");
+                    this.showError("Mortgage failed " +e.toString());
                   });
               }, 6000);
             })
             .catch(e => {
               console.log("mortgage error", e);
-              this.showError("Mortgage failed");
+              this.showError("Mortgage failed " +e.toString());
             });
         })
         .catch(this.showError);
@@ -540,7 +542,7 @@ export default {
       }
       const citizenId = this.redeemForm.citizenId;
       const assetId = this.redeemForm.assetId;
-      const amount = this.redeemForm.amount;
+      const amount = this.redeemFormAmount;
       const amountBn = new BigNumber(amount);
       if (!citizenId || !assetId) {
         this.showError("Invalid citizen or asset");
@@ -606,13 +608,13 @@ export default {
                   })
                   .catch(e => {
                     console.log("redeem error", e);
-                    this.showError("Redeem failed");
+                    this.showError("Redeem failed " + e.toString());
                   });
               }, 6000);
             })
             .catch(e => {
               console.log("redeem error", e);
-              this.showError("Redeem failed");
+              this.showError("Redeem failed " + e.toString());
             });
         })
         .catch(this.showError);
@@ -622,9 +624,11 @@ export default {
         this.loadSystemCitizens();
       }
       this.redeemForm = {
+        amount: null,
         citizenId: citizenId,
-        assetId: assetId
+        assetId: assetId,
       };
+      this.redeemFormAmount = '';
       this.step = "redeem";
     },
     getTransaction(txid) {

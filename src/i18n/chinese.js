@@ -126,7 +126,7 @@ export default {
         account_name: '账户名称',
         please_input_account_name: '请输入账户名称',
         account_name_rule1: '1. 2-63位字符',
-        account_name_rule2: '2. 仅可输入小写字母或数字或-',
+        account_name_rule2: "2. 仅可输入小写字母或数字或 - 字符",
         account_name_rule3: '3. 需小写字母开头',
         fee: '手续费',
         register_now: '立即注册',

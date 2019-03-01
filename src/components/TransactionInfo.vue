@@ -218,10 +218,11 @@ export default {
       if (!txTimeString) {
         return "";
       }
+      const dateTz = utils.formatTimezone(new Date(Date.parse(txTimeString)));
+      console.log(dateTz);
+      const ago = dateTz.getTime() < new Date().getTime();
       return (
-        distanceInWordsToNow(
-          utils.formatTimezone(new Date(Date.parse(txTimeString)))
-        ) + " ago"
+        distanceInWordsToNow(dateTz) + " " + (ago ? "ago" : "later")
       );
     },
     getOperationTypeName(opType) {

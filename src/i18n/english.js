@@ -125,7 +125,7 @@ export default {
         account_name: 'Account Name',
         please_input_account_name: 'Please enter account name',
         account_name_rule1: '1. 2-63 characters',
-        account_name_rule2: '2. Only enter lowercase letters or numbers or -',
+        account_name_rule2: "2. Only enter lowercase letters or numbers or char '-'",
         account_name_rule3: '3. Start with a lowercase letter',
         fee: 'Fee',
         register_now: 'Register Now',
