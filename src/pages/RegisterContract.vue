@@ -752,13 +752,9 @@ export default {
       width: 400px !important;
     }
     .-input-amount {
-      width: 88pt !important;
-    }
-
-    .-transfer-assert-input .-input-amount {
       width: 140pt !important;
     }
-
+    
     .el-form-item__label {
       width: 75pt !important;
     }
