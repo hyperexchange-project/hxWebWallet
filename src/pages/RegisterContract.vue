@@ -23,6 +23,7 @@
           <AddressOrSelectWalletInput
             :currentAddress="currentAccount && currentAccount.address"
             @change-current-account="onChangeSelectedAccount"
+            class="-transfer-assert-input"
           ></AddressOrSelectWalletInput>
 
           <el-form-item v-bind:label="$t('contractPage.balance')" prop="amount">
@@ -625,10 +626,6 @@ export default {
   }
 }
 
-.chrome-ext-app-container .hx-register-contract-container .-input-amount {
-  width: 140pt !important;
-}
-
 @media (max-width: 960px) {
   .hx-register-contract-container {
     .-right-side {
@@ -757,6 +754,11 @@ export default {
     .-input-amount {
       width: 88pt !important;
     }
+
+    .-transfer-assert-input .-input-amount {
+      width: 140pt !important;
+    }
+
     .el-form-item__label {
       width: 75pt !important;
     }
