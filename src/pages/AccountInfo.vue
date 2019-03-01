@@ -205,7 +205,8 @@ export default {
       try {
         let account = account_utils.NewAccount();
         account.fromKey(fileJson, password);
-        let address = account.getAddressString("HX");
+        account.address = null;
+        let address = account.getAddressString(appState.getAddressPrefix());
         account.address = address;
         appState.changeCurrentAccount(account);
         // save to storage

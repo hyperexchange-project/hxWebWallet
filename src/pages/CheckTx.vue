@@ -95,12 +95,13 @@ export default {
         return;
       }
       let isTxId = txidOrAddress.length === 40;
+      let addressPrefix = appState.getAddressPrefix();
       let isHxAccountAddr =
-        txidOrAddress.indexOf("HX") === 0 &&
-        txidOrAddress.indexOf("HXC") !== 0 &&
+        txidOrAddress.indexOf(addressPrefix) === 0 &&
+        txidOrAddress.indexOf(addressPrefix + "C") !== 0 &&
         txidOrAddress.length > 20;
       let isHxContractAddr =
-        txidOrAddress.indexOf("HXC") === 0 && txidOrAddress.length > 20;
+        txidOrAddress.indexOf(addressPrefix + "C") === 0 && txidOrAddress.length > 20;
       this.checkTxForm.isTxId = isTxId;
       this.checkTxForm.isHxAccountAddr = isHxAccountAddr;
       this.checkTxForm.isHxContractAddr = isHxContractAddr;

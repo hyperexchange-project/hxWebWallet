@@ -18,7 +18,12 @@ const networkList = [
     {
         chainId: '2e13ba07b457f2e284dcfcbd3d4a3e4d78a6ed89a61006cdb7fdad6d67ef0b12', key: 'indicator', name: "Indicator",
         url: "ws://localhost:50320"
-    }
+    },
+    {
+        chainId: '2c5729a8f02e0431233528a3db625a7b0f83aa7c9f561d9bd73886d993a57161', key: 'regtest', name: "Regtest",
+        url: "ws://localhost:7090",
+        address_prefix: "HXT",
+    },
 ];
 
 function getNetworkByKey(networkKey) {
@@ -77,23 +82,28 @@ function getStorage(key) {
     }
 }
 
-if (typeof localStorage !== "undefined") {
-    try {
-        let fileJson = localStorage.getItem("keyInfo");
-        let password = localStorage.getItem("keyPassword");
-        if (fileJson && fileJson !== 'null' && password) {
-            fileJson = JSON.parse(fileJson);
-            let account = account_utils.NewAccount();
-            account.fromKey(fileJson, password);
-            let address = account.getAddressString("HX");
-            account.address = address;
-            state.currentAccount = account;
-            state.currentAddress = address;
+function setCurrentAccount() {
+    if (typeof localStorage !== "undefined") {
+        try {
+            let fileJson = localStorage.getItem("keyInfo");
+            let password = localStorage.getItem("keyPassword");
+            if (fileJson && fileJson !== 'null' && password) {
+                fileJson = JSON.parse(fileJson);
+                let account = account_utils.NewAccount();
+                account.fromKey(fileJson, password);
+                account.address = null;
+                let address = account.getAddressString("HX");
+                account.address = address;
+                state.currentAccount = account;
+                state.currentAddress = address;
+            }
+        } catch (e) {
+            console.log(e);
         }
-    } catch (e) {
-        console.log(e);
     }
 }
+
+setCurrentAccount();
 
 
 const changeCurrentTabEventName = "changeCurrentTab";
@@ -250,6 +260,14 @@ export default {
                 localSave.setItem("apiPrefix", chainRpcUrl);
                 localSave.setItem("chainId", networkObj.chainId);
             }
+            ChainConfig.setChainId(networkObj.chainId);
+            ChainConfig.address_prefix = networkObj.address_prefix || "HX";
+            if(state.currentAccount) {
+                let account = state.currentAccount;
+                account.address = null;
+                let address = account.getAddressString(ChainConfig.address_prefix);
+                account.address = address;
+            }
         }
         EE.emit(changeCurrentNetworkEventName, state.currentNetwork);
         if (oldNetwork && oldNetwork != network) {
@@ -334,4 +352,7 @@ export default {
     getCurrentLanguage() {
         return state.currentLanguage;
     },
+    getAddressPrefix() {
+        return ChainConfig.address_prefix;
+    }
 };

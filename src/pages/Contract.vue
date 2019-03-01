@@ -188,7 +188,7 @@ export default {
       if (
         !toAddress ||
         toAddress.length < 20 ||
-        toAddress.indexOf("HX") !== 0
+        toAddress.indexOf(appState.getAddressPrefix()) !== 0
       ) {
         this.showError(this.$t("transferPage.invalid_to_address_format"));
         return;

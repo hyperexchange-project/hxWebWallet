@@ -374,10 +374,10 @@ export default {
       this.currentAccountBalances = balances;
     },
     backToTransfer() {
-      this.contractForm.toAddress = '';
-      this.contractForm.amount = 0;
-      this.contractForm.memo = '';
-      this.contractForm.transferAssetId = "1.3.0";
+      this.transferForm.toAddress = '';
+      this.transferForm.amount = 0;
+      this.transferForm.memo = '';
+      this.transferForm.transferAssetId = "1.3.0";
       this.step = "transfer";
     },
     toViewTx(txId) {
@@ -390,7 +390,7 @@ export default {
       if (
         !addressOrAccountName ||
         addressOrAccountName.length < 20 ||
-        addressOrAccountName.indexOf("HX") !== 0
+        addressOrAccountName.indexOf(appState.getAddressPrefix()) !== 0
       ) {
         const nodeClient = appState.getNodeClient();
         return appState.withApis().then(() => {

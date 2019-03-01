@@ -112,7 +112,8 @@ export default {
       this.created = true;
       let account = account_utils.NewAccount();
       this.createdAccount = account;
-      let address = account.getAddressString("HX");
+      account.address = null;
+      let address = account.getAddressString(appState.getAddressPrefix());
       let keyStr = account.toKeyString(password);
       this.createdAccountKeyString = keyStr;
     },
