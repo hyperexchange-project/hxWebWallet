@@ -440,13 +440,13 @@ export default {
                   })
                   .catch(e => {
                     console.log("take paybacks error", e);
-                    this.showError("take paybacks failed " + e.toString());
+                    this.showError("take paybacks failed, maybe too little to receive once");
                   });
               }, 6000);
             })
             .catch(e => {
               console.log("take paybacks error", e);
-              this.showError("take paybacks failed " + e.toString());
+              this.showError("take paybacks failed, maybe too little to receive once");
             });
         })
         .catch(this.showError);
