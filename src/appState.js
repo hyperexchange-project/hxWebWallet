@@ -21,7 +21,7 @@ const networkList = [
     },
     {
         chainId: '2c5729a8f02e0431233528a3db625a7b0f83aa7c9f561d9bd73886d993a57161', key: 'regtest', name: "Regtest",
-        url: "ws://localhost:7090",
+        url: "ws://localhost:60320",
         address_prefix: "HXT",
     },
 ];

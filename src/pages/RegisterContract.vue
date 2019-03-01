@@ -625,6 +625,10 @@ export default {
   }
 }
 
+.chrome-ext-app-container .hx-register-contract-container .-input-amount {
+  width: 140pt !important;
+}
+
 @media (max-width: 960px) {
   .hx-register-contract-container {
     .-right-side {
