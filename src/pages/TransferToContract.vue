@@ -308,11 +308,11 @@ export default {
   },
   methods: {
     onFlashTxMessage(txMsg) {
-      console.log('txMsg', txMsg);
+      console.log("txMsg", txMsg);
       this.contractForm.transferAssetId = txMsg.currency || "1.3.0";
       this.contractForm.contractAddress = txMsg.to || "";
       this.contractForm.amount = txMsg.valueRaw || "";
-      setTimeout(()=> {
+      setTimeout(() => {
         this.contractForm.amount = txMsg.valueRaw || "";
       }, 100);
       this.contractForm.memo = txMsg.memo;
@@ -323,10 +323,7 @@ export default {
       return appState.getAssetPrecisionByAssetId(assetId);
     },
     showError(e) {
-      if (e && e.message) {
-        e = e.message;
-      }
-      e = (e || "error").toString();
+      e = utils.getShowErrorMessage(e);
       this.$message({
         showClose: true,
         message: e,
@@ -410,15 +407,15 @@ export default {
       this.currentAccountBalances = balances;
     },
     backToTransfer() {
-      this.contractForm.contractAddress = '';
-      this.contractForm.apiName = '';
-      this.contractForm.apiArg = '';
+      this.contractForm.contractAddress = "";
+      this.contractForm.apiName = "";
+      this.contractForm.apiArg = "";
       this.contractForm.gasLimit = 10000;
       this.contractForm.gasPrice = "0.00001";
       this.contractForm.transferAssetId = "1.3.0";
-      this.contractForm.apiResult = '';
+      this.contractForm.apiResult = "";
       this.contractForm.amount = 0;
-      this.contractForm.memo = '';
+      this.contractForm.memo = "";
       this.step = "transfer";
     },
     toViewTx(txId) {
@@ -877,14 +874,15 @@ export default {
         text-align: left;
       }
     }
-    
+
     .-input-gas-limit {
       width: 140pt !important;
       .-input-amount {
         width: 140pt !important;
       }
     }
-    .-input-amount-field,.-input-gas-price {
+    .-input-amount-field,
+    .-input-gas-price {
       width: 88pt !important;
     }
     .-input-gas-price {

@@ -126,10 +126,7 @@ export default {
       });
     },
     showError(e) {
-      if (e && e.message) {
-        e = e.message;
-      }
-      e = (e || "error").toString();
+      e = utils.getShowErrorMessage(e);
       this.$message({
         showClose: true,
         message: e,

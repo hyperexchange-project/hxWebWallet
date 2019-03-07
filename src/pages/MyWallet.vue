@@ -142,13 +142,7 @@ export default {
   },
   methods: {
     showError(e) {
-      if (e && e.message) {
-        e = e.message;
-      }
-      e = e || 'error';
-      if(!_.isString(e)) {
-        e = JSON.stringify(e);
-      }
+      e = utils.getShowErrorMessage(e);
       this.$message({
         showClose: true,
         message: e,

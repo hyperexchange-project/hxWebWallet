@@ -123,6 +123,20 @@ export default {
         );
         return result;
     },
+    getShowErrorMessage(e) {
+        console.log('show error', e);
+        if (e && e.message) {
+            e = e.message;
+        }
+        e = (e || "error").toString();
+        if (!_.isString(e)) {
+            e = JSON.stringify(e);
+        }
+        if(e === '{"isTrusted":true}') {
+            return "Connected successfully";
+        }
+        return e;
+    },
     emptyHxBalance: {
         assetId: "1.3.0",
         assetSymbol: "HX",
