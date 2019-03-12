@@ -317,6 +317,12 @@ export default {
       this.contractForm.apiArg = txMsg.contractArg || "";
       this.contractForm.gasLimit = txMsg.gasLimit || 10000;
       this.contractForm.gasPrice = txMsg.gasPrice || "0.00001";
+      console.log('contract form', this.contractForm);
+      if(this.contractForm.contractAddress && this.contractForm.apiName) {
+        setTimeout(()=> {
+          this.emulateInvokeContract();
+        },500);
+      }
     },
     getAssetPrecisionByAssetId(assetId) {
       return appState.getAssetPrecisionByAssetId(assetId);

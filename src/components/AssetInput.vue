@@ -29,6 +29,13 @@ export default {
   mounted() {
     this.form.value = this.value;
   },
+  watch: {
+    value(newVal, oldVal) {
+      if(newVal !== oldVal) {
+        this.form.value = newVal;
+      }
+    }
+  },
   methods: {
     onValueChange(e) {
       const val = e.target.value || "";
