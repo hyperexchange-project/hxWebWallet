@@ -583,6 +583,9 @@ export default {
             .substr(0, 40);
           this.lastSentTxId = txid;
           console.log("tx hash:", txid);
+
+          appState.bindPayId(txid);
+          
           if (typeof messageToBackground !== "undefined") {
             messageToBackground("txhash", txid);
           }

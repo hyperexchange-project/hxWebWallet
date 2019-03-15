@@ -262,7 +262,12 @@ let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
   name: "InvokeContract",
-  components: { KeystoreInput, SideNavbar, AddressOrSelectWalletInput, AssetInput },
+  components: {
+    KeystoreInput,
+    SideNavbar,
+    AddressOrSelectWalletInput,
+    AssetInput
+  },
   data() {
     return {
       lastSentTxId: null,
@@ -317,11 +322,11 @@ export default {
       this.contractForm.apiArg = txMsg.contractArg || "";
       this.contractForm.gasLimit = txMsg.gasLimit || 10000;
       this.contractForm.gasPrice = txMsg.gasPrice || "0.00001";
-      console.log('contract form', this.contractForm);
-      if(this.contractForm.contractAddress && this.contractForm.apiName) {
-        setTimeout(()=> {
+      console.log("contract form", this.contractForm);
+      if (this.contractForm.contractAddress && this.contractForm.apiName) {
+        setTimeout(() => {
           this.emulateInvokeContract();
-        },500);
+        }, 500);
       }
     },
     getAssetPrecisionByAssetId(assetId) {
@@ -365,7 +370,7 @@ export default {
         .then(contract => {
           this.contractForm.contractInfo = contract;
           console.log("contract: ", contract);
-          if(!this.contractForm.contractApis) {
+          if (!this.contractForm.contractApis) {
             this.contractForm.contractApis = [];
           }
           this.contractForm.contractApis.length = 0;
@@ -393,7 +398,7 @@ export default {
                 apis.push(api);
               }
             }
-            apis.forEach(item=> {
+            apis.forEach(item => {
               this.contractForm.contractApis.push(item);
             });
             // this.contractForm.contractApis = apis;
@@ -468,14 +473,14 @@ export default {
       this.loadCurrentAccountInfo();
     },
     backToTransfer() {
-      this.contractForm.contractAddress = '';
+      this.contractForm.contractAddress = "";
       this.contractForm.contractApis.length = 0;
-      this.contractForm.apiName = '';
-      this.contractForm.apiArg = '';
+      this.contractForm.apiName = "";
+      this.contractForm.apiArg = "";
       this.contractForm.gasLimit = 10000;
       this.contractForm.gasPrice = "0.00001";
       this.contractForm.transferAssetId = "1.3.0";
-      this.contractForm.apiResult = '';
+      this.contractForm.apiResult = "";
       this.step = "transfer";
     },
     toViewTx(txId) {
@@ -611,6 +616,9 @@ export default {
             .substr(0, 40);
           this.lastSentTxId = txid;
           console.log("tx hash:", txid);
+
+          appState.bindPayId(txid);
+
           if (typeof messageToBackground !== "undefined") {
             messageToBackground("txhash", txid);
           }
@@ -789,7 +797,6 @@ export default {
   .-input-gas-limit.asset-input-wrapper {
     .el-input {
       width: 220pt !important;
-
     }
   }
 }
@@ -936,7 +943,8 @@ export default {
         width: 140pt !important;
       }
     }
-    .-input-amount-field,.-input-gas-price {
+    .-input-amount-field,
+    .-input-gas-price {
       width: 88pt !important;
     }
     .-input-gas-price {

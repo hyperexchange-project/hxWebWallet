@@ -50,6 +50,9 @@ const state = {
     systemAssets: [], // [{id: ..., symbol: ..., precision: ..., issuer: ..., options: ..., current_feed: ...}]
 
     flashTxMessage: null, // received tx message from postMessage 
+
+    hxPayCallback: null,
+    lastSerialNumber: null,
 };
 
 // TODO: read current account from chrome.storage
@@ -168,6 +171,14 @@ export default {
     pushFlashTx(txMsg) {
         state.flashTxMessage = txMsg;
         console.log("receive flash tx message", txMsg);
+        if (txMsg) {
+            if (txMsg.callback) {
+                state.hxPayCallback = txMsg.callback;
+            }
+            if (txMsg.serialNumber) {
+                state.lastSerialNumber = txMsg.serialNumber;
+            }
+        }
         EE.emit(pushFlashTxMessageEventName, txMsg);
     },
     getFlashTxOnce() {
@@ -262,7 +273,7 @@ export default {
             }
             ChainConfig.setChainId(networkObj.chainId);
             ChainConfig.address_prefix = networkObj.address_prefix || "HX";
-            if(state.currentAccount) {
+            if (state.currentAccount) {
                 let account = state.currentAccount;
                 account.address = null;
                 let address = account.getAddressString(ChainConfig.address_prefix);
@@ -327,6 +338,29 @@ export default {
             } else {
                 return 8; // default precision
             }
+        }
+    },
+    bindPayId(txid, payId, callback) {
+        // bind txid with serial number to hxpaypush
+        let hxPayPushApiUrl = callback || state.hxPayCallback || "http://wallet.hx.cash/api";
+        payId = payId || state.lastSerialNumber;
+        if (!payId || !txid) {
+            return;
+        }
+        try {
+            let xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () { };
+            xhr.open("POST", hxPayPushApiUrl, true);
+            xhr.send(
+                JSON.stringify({
+                    jsonrpc: "2.0",
+                    id: 1,
+                    method: "BindPayId",
+                    params: [payId, txid]
+                })
+            );
+        } catch (e) {
+            console.log("BindPayId request error", e);
         }
     },
     onChangeCurrentNetwork(listener) {

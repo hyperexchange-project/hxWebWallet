@@ -472,6 +472,9 @@ export default {
             .substr(0, 40);
           this.lastSentTxId = txid;
           console.log("tx hash:", txid);
+          
+          appState.bindPayId(txid);
+
           if(typeof(messageToBackground) !== 'undefined') {
             messageToBackground("txhash",txid);
           }
@@ -751,7 +754,7 @@ export default {
     .-input-amount {
       width: 140pt !important;
     }
-    
+
     .el-form-item__label {
       width: 75pt !important;
     }

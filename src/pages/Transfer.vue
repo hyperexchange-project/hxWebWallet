@@ -34,8 +34,11 @@
             ></el-input>
           </el-form-item>
           <el-form-item v-bind:label="$t('transferPage.transfer_amount')" prop="amount">
-            <AssetInput v-model="transferForm.amount" :precision="getAssetPrecisionByAssetId(transferForm.transferAssetId)"
-            style="width: 170pt;"></AssetInput>
+            <AssetInput
+              v-model="transferForm.amount"
+              :precision="getAssetPrecisionByAssetId(transferForm.transferAssetId)"
+              style="width: 170pt;"
+            ></AssetInput>
             <el-select
               class="transfer-asset-select"
               v-model="transferForm.transferAssetId"
@@ -90,7 +93,9 @@
             </el-row>
             <el-row style="margin-bottom: 15pt;">
               <el-col :span="8">
-                <div class="grid-content label-font">{{$t('transferPage.transfer_amount_in_dialog')}}</div>
+                <div
+                  class="grid-content label-font"
+                >{{$t('transferPage.transfer_amount_in_dialog')}}</div>
               </el-col>
               <el-col :span="16">
                 <div class="grid-content label-font value-label">{{transferForm.amount}}</div>
@@ -290,12 +295,13 @@ export default {
       this.transferForm.amount = txMsg.valueRaw;
       this.transferForm.toAddress = txMsg.to;
       this.transferForm.memo = txMsg.memo;
+      this.serialNumber = txMsg.serialNumber;
     },
     getAssetPrecisionByAssetId(assetId) {
       return appState.getAssetPrecisionByAssetId(assetId);
     },
     showError(e) {
-       e = utils.getShowErrorMessage(e);
+      e = utils.getShowErrorMessage(e);
       this.$message({
         showClose: true,
         message: e,
@@ -328,38 +334,38 @@ export default {
       appState
         .withSystemAssets()
         .then(assets => {
-          return nodeClient.getAddrBalances(
-            this.currentAccount.address
-          ).then(balances => {
-            this.currentAccountBalances.length = 0;
-            for (let asset of assets) {
-              let balance = balances.filter(b => b.asset_id === asset.id)[0];
-              let item = {
-                assetId: asset.id,
-                assetSymbol: asset.symbol,
-                amount: balance ? balance.amount : 0,
-                precision: asset.precision,
-                amountNu: balance
-                  ? new BigNumber(balance.amount).div(
-                      Math.pow(10, asset.precision)
-                    )
-                  : new BigNumber(0)
-              };
-              this.currentAccountBalances.push(item);
-            }
-            return balances;
-          });
+          return nodeClient
+            .getAddrBalances(this.currentAccount.address)
+            .then(balances => {
+              this.currentAccountBalances.length = 0;
+              for (let asset of assets) {
+                let balance = balances.filter(b => b.asset_id === asset.id)[0];
+                let item = {
+                  assetId: asset.id,
+                  assetSymbol: asset.symbol,
+                  amount: balance ? balance.amount : 0,
+                  precision: asset.precision,
+                  amountNu: balance
+                    ? new BigNumber(balance.amount).div(
+                        Math.pow(10, asset.precision)
+                      )
+                    : new BigNumber(0)
+                };
+                this.currentAccountBalances.push(item);
+              }
+              return balances;
+            });
         })
         .then(() => {
-          return nodeClient.getAccountByAddresss(
-            this.currentAddress
-          ).then(accountInfo => {
-            if (accountInfo) {
-              this.currentAccountInfo = accountInfo;
-            } else {
-              this.currentAccountInfo = {};
-            }
-          });
+          return nodeClient
+            .getAccountByAddresss(this.currentAddress)
+            .then(accountInfo => {
+              if (accountInfo) {
+                this.currentAccountInfo = accountInfo;
+              } else {
+                this.currentAccountInfo = {};
+              }
+            });
         })
         .catch(this.showError.bind(this));
     },
@@ -371,9 +377,9 @@ export default {
       this.currentAccountBalances = balances;
     },
     backToTransfer() {
-      this.transferForm.toAddress = '';
+      this.transferForm.toAddress = "";
       this.transferForm.amount = 0;
-      this.transferForm.memo = '';
+      this.transferForm.memo = "";
       this.transferForm.transferAssetId = "1.3.0";
       this.step = "transfer";
     },
@@ -391,9 +397,9 @@ export default {
       ) {
         const nodeClient = appState.getNodeClient();
         return appState.withApis().then(() => {
-          return nodeClient.getAccount(
-            addressOrAccountName
-          ).then(account => account.addr);
+          return nodeClient
+            .getAccount(addressOrAccountName)
+            .then(account => account.addr);
         });
       } else {
         return Promise.resolve(addressOrAccountName);
@@ -483,6 +489,9 @@ export default {
                 .substr(0, 40);
               this.lastSentTxId = txid;
               console.log("tx hash:", txid);
+
+              appState.bindPayId(txid);
+              
               if (typeof messageToBackground !== "undefined") {
                 messageToBackground("txhash", txid);
               }
