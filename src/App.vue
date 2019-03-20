@@ -48,9 +48,11 @@ export default {
   },
   mounted() {
     appState.onChangeCurrentTab(this.onChangeCurrentTab);
+    appState.onConnectionClose(this.onConnectionClose);
   },
   beforeDestroy() {
     appState.offChangeCurrentTab(this.onChangeCurrentTab);
+    appState.offConnectionClose(this.onConnectionClose);
   },
   data() {
     return {
@@ -60,6 +62,13 @@ export default {
   methods: {
     onChangeCurrentTab(tabKey) {
       this.currentTabKey = tabKey;
+    },
+    onConnectionClose() {
+      this.$message({
+        showClose: true,
+        message: "Connection Closed",
+        type: "error"
+      });
     }
   }
 };

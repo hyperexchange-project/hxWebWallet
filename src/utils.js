@@ -115,7 +115,7 @@ export default {
     },
     formatTimezone(date) {
         const offset = date.getTimezoneOffset();
-        let result = new Date(
+        const result = new Date(
             date.getTime() +
             (Math.sign(offset) !== -1
                 ? -60000 * offset
@@ -128,11 +128,15 @@ export default {
         if (e && e.message) {
             e = e.message;
         }
+        const originError = e;
         e = (e || "error").toString();
-        if (!_.isString(e)) {
-            e = JSON.stringify(e);
+        if (!_.isString(originError)) {
+            e = JSON.stringify(originError);
         }
         if(e === '{"isTrusted":true}') {
+            if(originError && originError.type === 'error') {
+                return "Connection failed";
+            }
             return "Connected successfully";
         }
         return e;

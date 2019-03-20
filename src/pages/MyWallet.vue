@@ -88,6 +88,7 @@ import appState from "../appState";
 import KeystoreInput from "../components/KeystoreInput.vue";
 import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
 import AccountLockBalancesPanel from "../components/AccountLockBalancesPanel.vue";
+import utils from "../utils";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {

@@ -115,6 +115,7 @@ const changeCurrentLanguageEventName = "changeCurrentLanguage";
 const changeCurrentAccountEventName = "changeCurrentAccount";
 const changeCurrentAddressEventName = "changeCurrentAddress";
 const pushFlashTxMessageEventName = "pushFlashTxMessage";
+const connectionCloseEventName = "connectionClose";
 
 const languageConfigStorageKey = "languageConfig";
 
@@ -243,6 +244,12 @@ export default {
     offChangeCurrentAddress(listener) {
         EE.off(changeCurrentAddressEventName, listener);
     },
+    onConnectionClose(listener) {
+        EE.on(connectionCloseEventName, listener);
+    },
+    offConnectionClose(listener) {
+        EE.off(connectionCloseEventName, listener);
+    },
     getLastUsedNetwork() {
         if (typeof (localSave) === 'undefined') {
             return null;
@@ -265,6 +272,10 @@ export default {
         if (networkObj) {
             const chainRpcUrl = networkObj.url;
             state.apisInstance = Apis.instance(chainRpcUrl, true);
+            state.apisInstance.closeCb = () => {
+                EE.emit(connectionCloseEventName);
+            };
+            window.apisInstance = state.apisInstance;
             state.nodeClient = new NodeClient(state.apisInstance);
             if (typeof (localSave) !== 'undefined') {
                 localSave.setItem("networkKey", networkObj.key);
