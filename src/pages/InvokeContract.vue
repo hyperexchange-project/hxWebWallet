@@ -36,6 +36,7 @@
             <el-select
               v-model="contractForm.apiName"
               filterable
+              @change="onApiNameChange"
               v-bind:placeholder="$t('contractPage.please_input_contract_api')"
             >
               <el-option
@@ -331,6 +332,9 @@ export default {
     },
     getAssetPrecisionByAssetId(assetId) {
       return appState.getAssetPrecisionByAssetId(assetId);
+    },
+    onApiNameChange(newVal) {
+      this.$forceUpdate();
     },
     showError(e) {
       e = utils.getShowErrorMessage(e);
