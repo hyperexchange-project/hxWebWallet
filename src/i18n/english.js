@@ -16,7 +16,7 @@ export default {
         please_input_wallet_password: 'Please enter your wallet password',
     },
     keystoreInput: {
-        please_open_wallet_keystore_file: 'Please open the wallet keystore file',
+        please_open_wallet_keystore_file: 'Please open the wallet keystore/wallet.json file',
         change_wallet: 'Change Wallet',
         unlock_now: 'Unlock now',
         select_wallet: 'Select Wallet',

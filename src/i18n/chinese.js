@@ -16,7 +16,7 @@ export default {
         please_input_wallet_password: '请输入钱包密码',
     },
     keystoreInput: {
-        please_open_wallet_keystore_file: '请打开钱包Keystore文件',
+        please_open_wallet_keystore_file: '请打开钱包Keystore/wallet.json文件',
         change_wallet: '切换钱包',
         unlock_now: '立即解锁',
         select_wallet: '选择钱包',

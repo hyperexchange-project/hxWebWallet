@@ -10,6 +10,8 @@
 
 <script>
 import FileInput from "./FileInput.vue";
+import utils from "../utils";
+
 export default {
   name: "KeystoreInput",
   components: { FileInput },
@@ -25,12 +27,17 @@ export default {
     toSelectKeystoreFile(fileContent, filename) {
       try {
         let fileJson = JSON.parse(fileContent);
-        if (!fileJson || !fileJson.address) {
+        if (!fileJson) {
+          this.showError("Invalid keystore file");
+          return;
+        }
+        if(!fileJson.address && !(fileJson.chain_id && fileJson.my_accounts)) {
           this.showError("Invalid keystore file");
           return;
         }
         this.form.keystoreFileJson = fileJson;
-        this.$emit("select-file", fileJson, filename);
+        const isWalletJson = fileJson.chain_id && fileJson.my_accounts && true;
+        this.$emit("select-file", fileJson, filename, isWalletJson);
       } catch (e) {
         this.showError(e);
       }

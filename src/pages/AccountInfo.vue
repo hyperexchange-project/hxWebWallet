@@ -184,52 +184,6 @@ export default {
       this.unlockWalletForm.keystoreFileJson = fileJson;
       this.unlockWalletForm.keystoreFile = filename;
     },
-    toUnlockKeystoreFile() {
-      if (!this.unlockWalletForm.keystoreFileJson) {
-        this.showError(this.$t("keystoreInput.please_open_locked_file"));
-        return;
-      }
-      this.unlockWalletForm.password = this.unlockWalletForm.password.trim();
-      if (
-        this.unlockWalletForm.password.length < 8 ||
-        this.unlockWalletForm.password.length > 30
-      ) {
-        this.showError(this.$t("keystoreInput.wallet_password_length_invalid"));
-        return;
-      }
-      let fileJson = this.unlockWalletForm.keystoreFileJson;
-      let password = this.unlockWalletForm.password;
-      try {
-        let account = account_utils.NewAccount();
-        account.fromKey(fileJson, password);
-        account.address = null;
-        let address = account.getAddressString(appState.getAddressPrefix());
-        account.address = address;
-        appState.changeCurrentAccount(account);
-        // save to storage
-        try {
-          if (typeof localStorage !== "undefined") {
-            localStorage.setItem("keyInfo", JSON.stringify(fileJson));
-            localStorage.setItem("keyPassword", password);
-          }
-        } catch (e) {
-          console.log(e);
-        }
-        try {
-          if (typeof chrome !== "undefined" && chrome.storage) {
-            chrome.storage.local.set({ keyInfo: fileJson }, function() {
-              console.log("Value is set to " + valueJson);
-            });
-            messageToBackground("newWallet", "true");
-          }
-        } catch (e) {
-          console.log(e);
-        }
-        this.showSuccess(this.$t("dialogs.unlock_successfully"));
-      } catch (e) {
-        this.showError(e);
-      }
-    }
   }
 };
 </script>

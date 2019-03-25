@@ -34,6 +34,31 @@
               v-on:click="toUnlockKeystoreFile"
             >{{$t('myWalletPage.unlock_right_now')}}</el-button>
           </el-form-item>
+          <el-form-item
+            v-if="walletJsonAccounts && unlockWalletForm.walletAccountsToSelect"
+            label="Account"
+          >
+            <el-select
+              v-model="unlockWalletForm.selectedWalletAccount"
+              placeholder="Select Account"
+            >
+              <el-option
+                v-for="item in walletJsonAccounts"
+                :key="item.addr"
+                :label="item.address"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-if="walletJsonAccounts && unlockWalletForm.walletAccountsToSelect && unlockWalletForm.selectedWalletAccount"
+          >
+            <el-button
+              type="primary"
+              class="-unlock-keystore-file-btn"
+              v-on:click="toOpenWalletAfterSelectWalletAccount"
+            >Open</el-button>
+          </el-form-item>
         </el-form>
       </div>
     </div>
@@ -75,8 +100,13 @@
           :defaultLimit="showAccountBalancesLimit"
         ></AccountBalancesSidebar>
       </div>
-      <AccountLockBalancesPanel v-if="currentAccountInfo && currentAccountInfo.name" :currentAccount="currentAccount" 
-      :accountName="currentAccountInfo.name" :myself="true" @balance-update="toUpdateAccountBalances"></AccountLockBalancesPanel>
+      <AccountLockBalancesPanel
+        v-if="currentAccountInfo && currentAccountInfo.name"
+        :currentAccount="currentAccount"
+        :accountName="currentAccountInfo.name"
+        :myself="true"
+        @balance-update="toUpdateAccountBalances"
+      ></AccountLockBalancesPanel>
       <div class="hx-main-container hx-my-opened-wallet-container2" style="display: none;">TODO</div>
     </div>
   </div>
@@ -89,7 +119,13 @@ import KeystoreInput from "../components/KeystoreInput.vue";
 import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
 import AccountLockBalancesPanel from "../components/AccountLockBalancesPanel.vue";
 import utils from "../utils";
-let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
+let {
+  PrivateKey,
+  key,
+  TransactionBuilder,
+  TransactionHelper,
+  WalletAccountUtil
+} = hx_js;
 
 export default {
   name: "HxMyWallet",
@@ -120,8 +156,10 @@ export default {
         keystoreFile: null,
         keystoreFileInput: null,
         keystoreFileJson: null,
-        password: ""
-      }
+        password: "",
+        walletAccountsToSelect: false
+      },
+      walletJsonAccounts: []
     };
   },
   created() {
@@ -184,38 +222,38 @@ export default {
       appState
         .withSystemAssets()
         .then(assets => {
-          return nodeClient.getAddrBalances(
-            this.currentAccount.address
-          ).then(balances => {
-            this.currentAccountBalances.length = 0;
-            for (let asset of assets) {
-              let balance = balances.filter(b => b.asset_id === asset.id)[0];
-              let item = {
-                assetId: asset.id,
-                assetSymbol: asset.symbol,
-                amount: balance ? balance.amount : 0,
-                precision: asset.precision,
-                amountNu: balance
-                  ? new BigNumber(balance.amount).div(
-                      Math.pow(10, asset.precision)
-                    )
-                  : new BigNumber(0)
-              };
-              this.currentAccountBalances.push(item);
-            }
-            return balances;
-          });
+          return nodeClient
+            .getAddrBalances(this.currentAccount.address)
+            .then(balances => {
+              this.currentAccountBalances.length = 0;
+              for (let asset of assets) {
+                let balance = balances.filter(b => b.asset_id === asset.id)[0];
+                let item = {
+                  assetId: asset.id,
+                  assetSymbol: asset.symbol,
+                  amount: balance ? balance.amount : 0,
+                  precision: asset.precision,
+                  amountNu: balance
+                    ? new BigNumber(balance.amount).div(
+                        Math.pow(10, asset.precision)
+                      )
+                    : new BigNumber(0)
+                };
+                this.currentAccountBalances.push(item);
+              }
+              return balances;
+            });
         })
         .then(() => {
-          return nodeClient.getAccountByAddresss(
-            this.currentAddress
-          ).then(accountInfo => {
-            if (accountInfo) {
-              this.currentAccountInfo = accountInfo;
-            } else {
-              this.currentAccountInfo = {};
-            }
-          });
+          return nodeClient
+            .getAccountByAddresss(this.currentAddress)
+            .then(accountInfo => {
+              if (accountInfo) {
+                this.currentAccountInfo = accountInfo;
+              } else {
+                this.currentAccountInfo = {};
+              }
+            });
         })
         .catch(this.showError.bind(this));
     },
@@ -239,9 +277,47 @@ export default {
     toRegisterAccount() {
       appState.changeCurrentTab("register_account");
     },
-    onSelectKeystoreFile(fileJson, filename) {
+    onSelectKeystoreFile(fileJson, filename, isWalletJson) {
       this.unlockWalletForm.keystoreFileJson = fileJson;
       this.unlockWalletForm.keystoreFile = filename;
+      this.unlockWalletForm.isWalletJson = isWalletJson;
+    },
+    toOpenWalletAfterSelectWalletAccount() {
+      const account = this.unlockWalletForm.selectedWalletAccount;
+      if (!account) {
+        this.showError("please select account");
+        return;
+      }
+      try {
+        const password = this.unlockWalletForm.password || '';
+        const keyInfo = account.toKey(password);
+        appState.changeCurrentAccount(account);
+        this.currentAccount = account;
+        this.loadCurrentAccountInfo();
+        // save to storage
+        try {
+          if (typeof localStorage !== "undefined") {
+            localStorage.setItem("keyInfo", JSON.stringify(keyInfo));
+            localStorage.setItem("keyPassword", password);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+        try {
+          if (typeof chrome !== "undefined" && chrome.storage) {
+            chrome.storage.local.set({ keyInfo: keyInfo }, function() {
+              console.log("Value is set to " + keyInfo);
+            });
+            messageToBackground("newWallet", "false");
+          }
+        } catch (e) {
+          console.log(e);
+        }
+        this.showSuccess(this.$t("dialogs.unlock_successfully"));
+        this.opened = true;
+      } catch (e) {
+        this.showError(e);
+      }
     },
     toUnlockKeystoreFile() {
       if (!this.unlockWalletForm.keystoreFileJson) {
@@ -259,11 +335,41 @@ export default {
       let fileJson = this.unlockWalletForm.keystoreFileJson;
       let password = this.unlockWalletForm.password;
       try {
-        let account = account_utils.NewAccount();
-        account.fromKey(fileJson, password);
-        account.address = null;
-        let address = account.getAddressString(appState.getAddressPrefix());
-        account.address = address;
+        let account;
+        if (this.unlockWalletForm.isWalletJson) {
+          const wallet = WalletAccountUtil.decodeWalletJson(fileJson, password);
+          if (!wallet.my_accounts || wallet.my_accounts.length < 1) {
+            throw new Error("Can't find hx account");
+          }
+          this.walletJsonAccounts.length = 0;
+          for (const walletAccount of wallet.my_accounts) {
+            if (!walletAccount.privateKey) {
+              continue;
+            }
+            let account = account_utils.NewAccount();
+            account.setPrivateKey(walletAccount.privateKey.toBuffer());
+            account.address = null;
+            let address = account.getAddressString(appState.getAddressPrefix());
+            account.address = address;
+            this.walletJsonAccounts.push(account);
+          }
+          if (wallet.my_accounts.length < 1) {
+            throw new Error("Can't find hx account");
+          }
+          if (this.walletJsonAccounts.length > 0) {
+            this.unlockWalletForm.walletAccountsToSelect = true;
+            // then select from wallet.json accounts
+            return;
+          } else {
+            account = this.walletJsonAccounts[0];
+          }
+        } else {
+          account = account_utils.NewAccount();
+          account.fromKey(fileJson, password);
+          account.address = null;
+          let address = account.getAddressString(appState.getAddressPrefix());
+          account.address = address;
+        }
         appState.changeCurrentAccount(account);
         this.currentAccount = account;
         this.loadCurrentAccountInfo();
@@ -281,7 +387,7 @@ export default {
             chrome.storage.local.set({ keyInfo: fileJson }, function() {
               console.log("Value is set to " + valueJson);
             });
-            messageToBackground("newWallet", "true");
+            messageToBackground("newWallet", "false");
           }
         } catch (e) {
           console.log(e);
