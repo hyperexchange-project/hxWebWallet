@@ -8,6 +8,7 @@
       <RegisterAccount v-if="currentTabKey==='register_account'"></RegisterAccount>
       <Transfer v-if="currentTabKey==='transfer'"></Transfer>
       <CheckTx v-if="currentTabKey==='check_tx'"></CheckTx>
+      <SignRaw v-if="currentTabKey==='sign_raw'"></SignRaw>
       <Contract v-if="currentTabKey==='contract'"></Contract>
     </div>
     <div class="hx-footer-bar">
@@ -24,6 +25,7 @@ import RegisterAccount from "./pages/RegisterAccount.vue";
 import CreateWallet from "./pages/CreateWallet.vue";
 import Transfer from "./pages/Transfer.vue";
 import CheckTx from "./pages/CheckTx.vue";
+import SignRaw from "./pages/SignRaw.vue";
 import Contract from "./pages/Contract.vue";
 import appState from "./appState.js";
 
@@ -37,6 +39,7 @@ export default {
     RegisterAccount,
     Transfer,
     CheckTx,
+    SignRaw,
     Contract
   },
   created() {

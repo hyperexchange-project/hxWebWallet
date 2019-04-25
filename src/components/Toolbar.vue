@@ -21,11 +21,12 @@ export default {
     return {
         selectedTab: appState.getCurrentTab(),
         tabs: [
-            {label: 'toolbar.my_wallet', key: 'my_wallet', span: 5},
-            {label: 'toolbar.create_wallet', key: 'create_wallet', span: 5},
-            {label: 'toolbar.transfer', key: 'transfer', span: 5},
-            {label: 'toolbar.contract', key: 'contract', span: 5},
+            {label: 'toolbar.my_wallet', key: 'my_wallet', span: 4},
+            {label: 'toolbar.create_wallet', key: 'create_wallet', span: 4},
+            {label: 'toolbar.transfer', key: 'transfer', span: 4},
+            {label: 'toolbar.contract', key: 'contract', span: 4},
             {label: 'toolbar.check_tx', key: 'check_tx', span: 4},
+            {label: 'toolbar.sign_raw', key: 'sign_raw', span: 4},
         ]
     };
   },

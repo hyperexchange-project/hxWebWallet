@@ -4,7 +4,8 @@ export default {
         create_wallet: 'Create Wallet',
         transfer: 'Transfer',
         contract: 'Contract',
-        check_tx: 'Check Tx'
+        check_tx: 'Check Tx',
+        sign_raw: 'Sign',
     },
     myWalletPage: {
         my_address: 'My Address',
@@ -79,6 +80,11 @@ export default {
         title: 'Query',
         query_now: 'Query Now',
         please_input_txid_or_address: 'Enter tx hash/address/contract address',
+    },
+    signRawPage: {
+        title: 'Sign',
+        sign_now: "Sign",
+        please_input_content: 'Enter content to sign',
     },
     accountInfoPage: {
         my_address: 'My Address',

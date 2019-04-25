@@ -4,7 +4,8 @@ export default {
         create_wallet: '创建钱包',
         transfer: '转账',
         contract: '合约',
-        check_tx: '查询交易'
+        check_tx: '查询交易',
+        sign_raw: '签名',
     },
     myWalletPage: {
         my_address: '我的地址',
@@ -79,6 +80,11 @@ export default {
         title: '查询',
         query_now: '立即查询',
         please_input_txid_or_address: '请输入交易哈希/地址/合约地址',
+    },
+    signRawPage: {
+        title: '签名',
+        sign_now: "签名",
+        please_input_content: '请输入要签名的内容',
     },
     accountInfoPage: {
         my_address: '我的地址',

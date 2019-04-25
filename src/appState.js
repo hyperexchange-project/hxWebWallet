@@ -156,6 +156,10 @@ switch (locationHash) {
         state.currentTab = 'check_tx';
         state.currentTabParams = [];
     } break;
+    case '#sign_raw': {
+        state.currentTab = 'sign_raw';
+        state.currentTabParams = [];
+    } break;
     default: {
         if (locationHash && locationHash.indexOf('#locktocitizen=') === 0) {
             const lockToCitizenName = locationHash.substr('#locktocitizen='.length);
