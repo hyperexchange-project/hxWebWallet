@@ -143,7 +143,7 @@ export default {
         register_account_error_with_reason: 'Registration failed, the balance may not be enough to pay the registration fee, or the account name has been registered',
     },
     account_lock_balances: {
-        pledge_information: 'Pledge information',
+        pledge_information: 'Vote information',
         pledge_citizen: 'Citizen',
         pledge_currency: 'Currency',
         currency: 'Currency',
@@ -152,11 +152,11 @@ export default {
         operations: 'Operations',
         append: 'Append',
         redeem: 'Redeem',
-        pledge: 'Pledge',
+        pledge: 'Vote',
         back: 'Back',
         receive: 'Receive',
         receive_all: 'Receive All',
-        pledge_income: 'Pledge income',
+        pledge_income: 'Vote income',
     },
     forms: {
         invalid_input_format: "Invalid input format",
