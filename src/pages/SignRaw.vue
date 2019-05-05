@@ -128,6 +128,13 @@ export default {
         this.showError("Can't sign empty text");
         return;
       }
+      // only sign content with verified format, starts with '{' or '['
+      if(content[0] !== '{' && content[0] !== '[') {
+          this.showError("Content to sign must start with { or [");
+          return;
+      }
+
+
       const contentHex = TransactionHelper.bytes_to_hex(content);
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
       const pubKey = pkey.toPublicKey();
