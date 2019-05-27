@@ -92,6 +92,9 @@ export default {
         return TransactionHelper.bytes_to_hex(bytes);
     },
     hexToUtf8(s) {
+        if(TransactionHelper.hexToUtf8WithoutMemoPrefix) {
+            return TransactionHelper.hexToUtf8WithoutMemoPrefix(s);
+        }
         return TransactionHelper.hexToUtf8(s);
     },
     hexToUnicodeString(s) {

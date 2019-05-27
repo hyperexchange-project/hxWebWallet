@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import utils from "../utils";
+
 export default {
   name: "FileInput",
   data() {

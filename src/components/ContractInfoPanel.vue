@@ -97,6 +97,7 @@
 <script>
 import _ from "lodash";
 import appState from "../appState";
+import utils from "../utils";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
@@ -240,6 +241,9 @@ export default {
     color: #261932;
     font-size: 12pt;
     padding-top: 4pt;
+    overflow-x: hidden;
+    padding-left: 2px;
+    padding-right: 2px;
   }
   .-address-row {
     padding-bottom: 10px;

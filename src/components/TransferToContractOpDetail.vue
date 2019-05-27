@@ -126,6 +126,9 @@ export default {
     color: #261932;
     font-size: 12pt;
     padding-top: 4pt;
+    overflow-x: hidden;
+    padding-left: 2px;
+    padding-right: 2px;
   }
   .-info-line-row {
     padding-bottom: 10px;

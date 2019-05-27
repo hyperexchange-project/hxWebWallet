@@ -19,6 +19,9 @@
             <el-option label="Indicator" value="indicator"></el-option>
             <el-option label="localhost" value="localhost"></el-option>
             <el-option label="Regtest(localhost:60320)" value="regtest"></el-option>
+            <el-option label="Regtest121" value="regtest121"></el-option>
+            <el-option label="Testnet2" value="testnet2"></el-option>
+            <el-option label="DexTestnet" value="dexTestnet"></el-option>
           </el-select>
           <el-select
             v-model="language"

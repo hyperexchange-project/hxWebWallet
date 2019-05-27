@@ -42,6 +42,7 @@ import appState from "../appState";
 import AccountInfo from "./AccountInfo.vue";
 import ContractInfoPanel from "../components/ContractInfoPanel.vue";
 import TransactionInfo from "../components/TransactionInfo.vue";
+import utils from "../utils";
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
