@@ -542,7 +542,7 @@ export default {
     toSubmitInvokeContract() {
       this.showConfirmDialog = true;
     },
-    doSubmitInvokeContract() {
+    doSubmitInvokeContract: _.throttle(function () {
       this.showConfirmDialog = false;
       if (this.emulateState !== "success") {
         this.showError(this.$t("contractPage.please_emulate_first"));
@@ -650,7 +650,7 @@ export default {
           this.step = "contract_sent";
         })
         .catch(this.showError);
-    },
+    }, 1000),
     getTransaction(txid) {
       const nodeClient = appState.getNodeClient();
       return appState.withApis().then(() => {

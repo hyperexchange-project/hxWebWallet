@@ -445,7 +445,7 @@ export default {
     closeConfirmDialog() {
       this.showConfirmDialog = false;
     },
-    doTransfer() {
+    doTransfer: _.throttle(function() {
       this.showConfirmDialog = false;
       let form = this.transferForm;
       let toAddress = (form.toAddress || "").trim();
@@ -522,7 +522,7 @@ export default {
             .catch(this.showError);
         })
         .catch(this.showError);
-    },
+    }, 1000),
     getTransaction(txid) {
       const nodeClient = appState.getNodeClient();
       return appState.withApis().then(() => {

@@ -115,7 +115,7 @@ export default {
         type: "success"
       });
     },
-    registerAccount() {
+    registerAccount: _.throttle(function() {
       let name = (this.registerAccountForm.name || "").trim();
       if (
         name.length < 2 ||
@@ -169,7 +169,7 @@ export default {
             });
         })
         .catch(this.showError);
-    },
+    }, 1000),
     backToWallet() {
       appState.changeCurrentTab("my_wallet");
     }

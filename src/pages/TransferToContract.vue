@@ -315,7 +315,7 @@ export default {
       setTimeout(() => {
         this.contractForm.amount = txMsg.valueRaw || "";
       }, 100);
-      this.contractForm.memo = txMsg.memo;
+      this.contractForm.memo = txMsg.memo || txMsg.contractArg || '';
       this.contractForm.gasLimit = txMsg.gasLimit || 10000;
       this.contractForm.gasPrice = txMsg.gasPrice || "0.00001";
     },
@@ -502,7 +502,7 @@ export default {
     toSubmitTransferToContract() {
       this.showConfirmDialog = true;
     },
-    doSubmitTransferToContract() {
+    doSubmitTransferToContract: _.throttle(function() {
       this.showConfirmDialog = false;
       if (this.emulateState !== "success") {
         this.showError(this.$t("contractPage.please_emulate_first"));
@@ -613,7 +613,7 @@ export default {
           this.step = "contract_sent";
         })
         .catch(this.showError);
-    },
+    }, 1000),
     getTransaction(txid) {
       const nodeClient = appState.getNodeClient();
       return appState.withApis().then(() => {

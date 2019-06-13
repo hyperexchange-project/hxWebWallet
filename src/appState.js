@@ -30,6 +30,11 @@ const networkList = [
         address_prefix: "HXT",
     },
     {
+        chainId: '2c5729a8f02e0431233528a3db625a7b0f83aa7c9f561d9bd73886d993a57161', key: 'regtest121b', name: "Regtest121b",
+        url: "ws://192.168.1.121:30002",
+        address_prefix: "HXT",
+    },
+    {
         chainId: '22f71d13b03b4e83918957fddb4d1441513e830a885936def665fddc77a85ee8', key: 'testnet2',
         name: 'Testnet2', url: "ws://192.168.1.121:60038",
     },
