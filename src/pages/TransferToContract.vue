@@ -280,7 +280,8 @@ export default {
       ],
       currentAccountHxBalance: 0,
       currentAccountInfo: {},
-      emulateState: null
+      emulateState: null,
+      closeTimeoutMilli: 5000
     };
   },
   created() {
@@ -305,6 +306,11 @@ export default {
   beforeDestroy() {
     appState.offChangeCurrentAccount(this.onChangeCurrentAccount);
     appState.offPushFlashTxMessage(this.onFlashTxMessage);
+    this.destroyed = true;
+    if(this.closeTimer) {
+      clearTimeout(this.closeTimer);
+      this.closeTimer = null;
+    }
   },
   methods: {
     onFlashTxMessage(txMsg) {
@@ -544,7 +550,7 @@ export default {
       let amountNu = new BigNumber(amount);
       let assetId = this.contractForm.transferAssetId;
       let asset = appState.getAssetLocal(assetId);
-      let memo = (this.contractForm.memo || "").trim();
+      let memo = (this.contractForm.memo || "").toString().trim();
       let amountFull = parseInt(
         amountNu.multipliedBy(Math.pow(10, asset.precision)).toFixed(0)
       );
@@ -597,6 +603,14 @@ export default {
                     console.log("tx: ", tx);
                     this.step = "contract_success";
                     this.loadCurrentAccountInfo();
+                    if(utils.isChromeExtension()) {
+                      this.closeTimer = setTimeout(()=> {
+                        if(!this.destroyed) {
+                          window.close();
+                        }
+                        this.closeTimer = null;
+                      }, this.closeTimeoutMilli);
+                    };
                   })
                   .catch(e => {
                     this.step = "contract_fail";

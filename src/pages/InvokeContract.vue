@@ -289,7 +289,8 @@ export default {
       currentAccountBalances: [],
       currentAccountHxBalance: 0,
       currentAccountInfo: {},
-      emulateState: null
+      emulateState: null,
+      closeTimeoutMilli: 5000,
     };
   },
   created() {
@@ -314,6 +315,11 @@ export default {
   beforeDestroy() {
     appState.offChangeCurrentAccount(this.onChangeCurrentAccount);
     appState.offPushFlashTxMessage(this.onFlashTxMessage);
+    this.destroyed = true;
+    if(this.closeTimer) {
+      clearTimeout(this.closeTimer);
+      this.closeTimer = null;
+    }
   },
   methods: {
     onFlashTxMessage(txMsg) {
@@ -634,6 +640,15 @@ export default {
                     console.log("tx: ", tx);
                     this.step = "contract_success";
                     this.loadCurrentAccountInfo();
+
+                    if(utils.isChromeExtension()) {
+                      this.closeTimer = setTimeout(()=> {
+                        if(!this.destroyed) {
+                          window.close();
+                        }
+                        this.closeTimer = null;
+                      }, this.closeTimeoutMilli);
+                    };
                   })
                   .catch(e => {
                     this.step = "contract_fail";

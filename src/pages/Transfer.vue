@@ -262,7 +262,8 @@ export default {
         transferAssetId: "1.3.0"
       },
       currentAccountBalances: [],
-      currentAccountInfo: {}
+      currentAccountInfo: {},
+      closeTimeoutMilli: 5000
     };
   },
   created() {
@@ -288,6 +289,11 @@ export default {
   beforeDestroy() {
     appState.offChangeCurrentAccount(this.onChangeCurrentAccount);
     appState.offPushFlashTxMessage(this.onFlashTxMessage);
+    this.destroyed = true;
+    if (this.closeTimer) {
+      clearTimeout(this.closeTimer);
+      this.closeTimer = null;
+    }
   },
   methods: {
     onFlashTxMessage(txMsg) {
@@ -491,7 +497,7 @@ export default {
               console.log("tx hash:", txid);
 
               appState.bindPayId(txid);
-              
+
               if (typeof messageToBackground !== "undefined") {
                 messageToBackground("txhash", txid);
               }
@@ -503,6 +509,14 @@ export default {
                         console.log("tx: ", tx);
                         this.step = "transfer_success";
                         this.loadCurrentAccountInfo();
+                        if (utils.isChromeExtension()) {
+                          this.closeTimer = setTimeout(() => {
+                            if (!this.destroyed) {
+                              window.close();
+                            }
+                            this.closeTimer = null;
+                          }, this.closeTimeoutMilli);
+                        }
                       })
                       .catch(e => {
                         this.step = "transfer_fail";

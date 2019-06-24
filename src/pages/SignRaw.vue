@@ -71,7 +71,8 @@ export default {
       data: null,
       signedSignatureHex: null,
       currentAccountInfo: {},
-      currentAccount: null
+      currentAccount: null,
+      closeTimeoutMilli: 5000
     };
   },
   created() {
@@ -95,6 +96,11 @@ export default {
   },
   beforeDestroy() {
     appState.offPushFlashTxMessage(this.onFlashTxMessage);
+    this.destroyed = true;
+    if (this.closeTimer) {
+      clearTimeout(this.closeTimer);
+      this.closeTimer = null;
+    }
   },
   methods: {
     onFlashTxMessage(msg) {
@@ -129,11 +135,10 @@ export default {
         return;
       }
       // only sign content with verified format, starts with '{' or '['
-      if(content[0] !== '{' && content[0] !== '[') {
-          this.showError("Content to sign must start with { or [");
-          return;
+      if (content[0] !== "{" && content[0] !== "[") {
+        this.showError("Content to sign must start with { or [");
+        return;
       }
-
 
       const contentHex = TransactionHelper.bytes_to_hex(content);
       const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
@@ -148,6 +153,14 @@ export default {
       //   appState.bindPayId(rawSigHex);
       if (typeof messageToBackground !== "undefined") {
         messageToBackground("sig", rawSigHex);
+        if (utils.isChromeExtension()) {
+          this.closeTimer = setTimeout(() => {
+            if (!this.destroyed) {
+              window.close();
+            }
+            this.closeTimer = null;
+          }, this.closeTimeoutMilli);
+        }
       }
     },
     loadCurrentAccountInfo() {

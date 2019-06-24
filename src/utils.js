@@ -144,6 +144,9 @@ export default {
         }
         return e;
     },
+    isChromeExtension() {
+        return typeof(chrome) !== 'undefined' && !!(chrome.windows);
+    },
     emptyHxBalance: {
         assetId: "1.3.0",
         assetSymbol: "HX",
