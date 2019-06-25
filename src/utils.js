@@ -142,6 +142,7 @@ export default {
             }
             return "Connected successfully";
         }
+        e = e.replace(/bitshares/g, "hx");
         return e;
     },
     isChromeExtension() {
