@@ -7,7 +7,8 @@ const networkList = [
         chainId: '2e13ba07b457f2e284dcfcbd3d4a3e4d78a6ed89a61006cdb7fdad6d67ef0b12', key: 'mainnet', name: "Mainnet",
         // url: "ws://211.159.168.197:6090"
         // url: "wss://nodeapi.hxlab.org:443"
-        url: "ws://nodeapi.hxlab.org:6090"
+        // url: "ws://nodeapi.hxlab.org:6090"
+        url: "ws://211.159.168.197:6090"
     },
     { chainId: '9f3b24c962226c1cb775144e73ba7bb177f9ed0b72fac69cd38764093ab530bd', key: 'testnet', name: "Testnet", url: "ws://47.74.44.110:8090" },
     {
