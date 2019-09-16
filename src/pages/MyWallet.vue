@@ -108,6 +108,9 @@
         @balance-update="toUpdateAccountBalances"
       ></AccountLockBalancesPanel>
       <div class="hx-main-container hx-my-opened-wallet-container2" style="display: none;">TODO</div>
+      <div class="hx-panel" style="height: 60px; padding: 10px; margin-bottom: 50px;">
+        <el-button type="primary" class="-ctrl-btn hxwallet-form-btn" @click="logoutMyWallet" size="small">Logout</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -281,6 +284,29 @@ export default {
       this.unlockWalletForm.keystoreFileJson = fileJson;
       this.unlockWalletForm.keystoreFile = filename;
       this.unlockWalletForm.isWalletJson = isWalletJson;
+    },
+    logoutMyWallet() {
+      appState.changeCurrentAccount(null);
+      this.currentAccount = '';
+      this.currentAccountInfo = {};
+      try {
+          if (typeof localStorage !== "undefined") {
+            localStorage.setItem("keyInfo", '');
+            localStorage.setItem("keyPassword", '');
+          }
+        } catch (e) {
+          console.log(e);
+        }
+        try {
+          if (typeof chrome !== "undefined" && chrome.storage) {
+            chrome.storage.local.set({ keyInfo: null }, function() {
+              console.log("Value is set to " + keyInfo);
+            });
+            messageToBackground("newWallet", "false");
+          }
+        } catch (e) {
+          console.log(e);
+        }
     },
     toOpenWalletAfterSelectWalletAccount() {
       const account = this.unlockWalletForm.selectedWalletAccount;
