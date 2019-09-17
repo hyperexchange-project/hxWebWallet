@@ -8,7 +8,8 @@ const networkList = [
         // url: "ws://211.159.168.197:6090"
         // url: "wss://nodeapi.hxlab.org:443"
         // url: "ws://nodeapi.hxlab.org:6090"
-        url: "ws://211.159.168.197:6090"
+        // url: "ws://211.159.168.197:6090"
+        url: "ws://nodeapi2.hxlab.org:6090"
     },
     { chainId: '9f3b24c962226c1cb775144e73ba7bb177f9ed0b72fac69cd38764093ab530bd', key: 'testnet', name: "Testnet", url: "ws://47.74.44.110:8090" },
     {
@@ -41,6 +42,9 @@ const networkList = [
     },
     {
         chainId: '08d1d10092bbdbb68c1613c93ded434805381fe73e845c59b5a97693fa1a778e', key: 'dexTestnet', name: 'DexTestnet', url: 'ws://192.168.1.122:10055',
+    },
+    {
+        chainId: '08d1d10092bbdbb68c1613c93ded434805381fe73e845c59b5a97693fa1a778e', key: 'hdaoTestnet', name: 'HdaoTestnet', url: 'ws://114.67.86.57:60038',
     },
 ];
 
@@ -238,10 +242,14 @@ export default {
 
     changeCurrentAccount(account) {
         state.currentAccount = account;
-        if (state.currentAddress !== account.address) {
-            this.changeCurrentAddress(account.address);
+        if (account) {
+            if (state.currentAddress !== account.address) {
+                this.changeCurrentAddress(account.address);
+            }
+            EE.emit(changeCurrentAccountEventName, state.currentAccount);
+        } else {
+            this.changeCurrentAddress(null);
         }
-        EE.emit(changeCurrentAccountEventName, state.currentAccount);
     },
     getCurrentAccount() {
         return state.currentAccount;

@@ -23,6 +23,7 @@
             <el-option label="Regtest121b" value="regtest121b"></el-option>
             <el-option label="Testnet2" value="testnet2"></el-option>
             <el-option label="DexTestnet" value="dexTestnet"></el-option>
+            <el-option label="HdaoTestnet" value="hdaoTestnet"></el-option>
           </el-select>
           <el-select
             v-model="language"
