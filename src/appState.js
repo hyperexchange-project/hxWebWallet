@@ -48,6 +48,50 @@ const networkList = [
     },
 ];
 
+mergeNetworkListWithLocalNetwork();
+
+function setLocalNetwork(url, chainId) {
+    setStorage("local_network", JSON.stringify({
+        chainId: chainId,
+        key: 'local',
+        name: 'Local',
+        url: url
+    }));
+}
+
+function getLocalNetwork() {
+    const info = getStorage("local_network");
+    if (!info) {
+        return null;
+    }
+    try {
+        return JSON.parse(info);
+    } catch (e) {
+        return null;
+    }
+}
+
+function mergeNetworkListWithLocalNetwork() {
+    const network = getLocalNetwork();
+    if(!network) {
+        return networkList;
+    }
+    let found = false;
+    for(let item of networkList) {
+        if(item.key === network.key && item.url !== network.url) {
+            item.url = network.url;
+            item.chainId = network.chainId;
+            item.name = network.name;
+            found = true;
+            break;
+        }
+    }
+    if(!found) {
+        networkList.push(network);
+    }
+    return networkList;
+}
+
 function getNetworkByKey(networkKey) {
     for (let n of networkList) {
         if (n.key === networkKey) {
@@ -238,6 +282,15 @@ export default {
     },
     clearCurrentTabParams() {
         state.currentTabParams.length = 0;
+    },
+    getNetworkList() {
+        return networkList;
+    },
+    mergeNetworkListWithLocalNetwork() {
+        mergeNetworkListWithLocalNetwork();
+    },
+    setLocalNetwork(url, chainId) {
+        setLocalNetwork(url, chainId);
     },
 
     changeCurrentAccount(account) {

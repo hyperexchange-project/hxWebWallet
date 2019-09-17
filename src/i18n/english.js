@@ -86,6 +86,12 @@ export default {
         sign_now: "Sign",
         please_input_content: 'Enter content to sign',
     },
+    customizeNetworkPage: {
+        title: 'Customize Network',
+        add_network: 'Add Network',
+        please_input_chain_id: 'Please input node Chain ID',
+        please_input_node_url: 'Please input node rpc url'
+    },
     accountInfoPage: {
         my_address: 'My Address',
         account_address: 'Address',

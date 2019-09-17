@@ -10,6 +10,7 @@
       <CheckTx v-if="currentTabKey==='check_tx'"></CheckTx>
       <SignRaw v-if="currentTabKey==='sign_raw'"></SignRaw>
       <Contract v-if="currentTabKey==='contract'"></Contract>
+      <CustomizeNetwork v-if="currentTabKey==='customize_network'"></CustomizeNetwork>
     </div>
     <div class="hx-footer-bar">
       <div>@Copyright HyperExchange</div>
@@ -26,6 +27,7 @@ import CreateWallet from "./pages/CreateWallet.vue";
 import Transfer from "./pages/Transfer.vue";
 import CheckTx from "./pages/CheckTx.vue";
 import SignRaw from "./pages/SignRaw.vue";
+import CustomizeNetwork from "./pages/CustomizeNetwork.vue";
 import Contract from "./pages/Contract.vue";
 import appState from "./appState.js";
 
@@ -40,6 +42,7 @@ export default {
     Transfer,
     CheckTx,
     SignRaw,
+    CustomizeNetwork,
     Contract
   },
   created() {

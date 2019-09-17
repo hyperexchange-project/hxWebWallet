@@ -3,7 +3,7 @@
     <el-row style="max-width: 1000px; margin: 0 auto;">
       <el-col :span="12">
         <div class="grid-content">
-          <img :src="'images/header-logo.png'" class="header-logo" alt>
+          <img :src="'images/header-logo.png'" class="header-logo" alt />
         </div>
       </el-col>
       <el-col :span="12" style="text-align: right;">
@@ -14,16 +14,13 @@
             placeholder="Network"
             class="network-select hx-select"
           >
-            <el-option label="Mainnet" value="mainnet"></el-option>
-            <el-option label="Testnet" value="testnet"></el-option>
-            <el-option label="Indicator" value="indicator"></el-option>
-            <el-option label="localhost" value="localhost"></el-option>
-            <el-option label="Regtest(localhost:60320)" value="regtest"></el-option>
-            <el-option label="Regtest121" value="regtest121"></el-option>
-            <el-option label="Regtest121b" value="regtest121b"></el-option>
-            <el-option label="Testnet2" value="testnet2"></el-option>
-            <el-option label="DexTestnet" value="dexTestnet"></el-option>
-            <el-option label="HdaoTestnet" value="hdaoTestnet"></el-option>
+            <el-option
+              v-for="item in getNetworkList()"
+              :key="item.key"
+              :label="item.name"
+              :value="item.key"
+            ></el-option>
+            <el-option label="Customize" value="customize"></el-option>
           </el-select>
           <el-select
             v-model="language"
@@ -54,6 +51,12 @@ export default {
   },
   methods: {
     onChangeNetwork(network) {
+      if(network === 'customize') {
+        console.log("customize");
+        // 进入自定义network界面
+        appState.changeCurrentTab('customize_network');
+        return;
+      }
       this.network = network;
       appState.changeCurrentNetwork(this.network);
     },
@@ -63,6 +66,9 @@ export default {
       if (this.$i18n) {
         this.$i18n.locale = lang;
       }
+    },
+    getNetworkList() {
+      return appState.getNetworkList();
     }
   }
 };

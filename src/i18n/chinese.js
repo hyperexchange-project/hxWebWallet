@@ -86,6 +86,12 @@ export default {
         sign_now: "签名",
         please_input_content: '请输入要签名的内容',
     },
+    customizeNetworkPage: {
+        title: '自定义节点',
+        add_network: '添加节点',
+        please_input_chain_id: '请输入节点的Chain ID',
+        please_input_node_url: '请输入节点的RPC URL'
+    },
     accountInfoPage: {
         my_address: '我的地址',
         account_address: '地址',
