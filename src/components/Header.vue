@@ -1,13 +1,18 @@
 <template>
   <div class="header-wrapper">
     <el-row style="max-width: 1000px; margin: 0 auto;">
-      <el-col :span="12">
+      <el-col :span="8">
         <div class="grid-content">
-          <img :src="'images/header-logo.png'" class="header-logo" alt />
+          <img :src="'images/header-logo.png'" class="header-logo" style="margin-left: 10px;" alt />
         </div>
       </el-col>
-      <el-col :span="12" style="text-align: right;">
+      <el-col :span="16" style="text-align: right;">
         <div class="grid-content">
+          <div class="el-select network-select hx-select" style="font-size: 16px;">
+            <span style="color: white;">Status &nbsp;</span>
+            <span v-if="connected" class="el-icon-check" style="color: #67C23A;"></span>
+            <span v-if="!connected" class="el-icon-close" style="color: #F56C6C;"></span>
+          </div>
           <el-select
             v-model="network"
             @change="onChangeNetwork"
@@ -46,15 +51,39 @@ export default {
   data() {
     return {
       network: appState.getCurrentNetwork(),
-      language: appState.getCurrentLanguage()
+      language: appState.getCurrentLanguage(),
+      connected: false,
+      connectCheckInterval: null
     };
+  },
+  mounted() {
+    this.connectCheckInterval = setInterval(() => {
+      const nodeClient = appState.getNodeClient();
+      nodeClient.execDbApi("get_sync_mode_network_info").then(
+        data => {
+          console.log(data); // show block height
+          this.connected = true;
+          
+        },
+        err => {
+          console.log(err);
+          this.connected = false;
+        }
+      );
+    }, 3000);
+  },
+  beforeDestroy() {
+    if (this.connectCheckInterval) {
+      clearInterval(this.connectCheckInterval);
+      this.connectCheckInterval = null;
+    }
   },
   methods: {
     onChangeNetwork(network) {
-      if(network === 'customize') {
+      if (network === "customize") {
         console.log("customize");
         // 进入自定义network界面
-        appState.changeCurrentTab('customize_network');
+        appState.changeCurrentTab("customize_network");
         return;
       }
       this.network = network;
