@@ -354,6 +354,7 @@ export default {
         const networkObj = getNetworkByKey(network);
         if (networkObj) {
             const chainRpcUrl = networkObj.url;
+            Apis.setAutoReconnect(true);
             state.apisInstance = Apis.instance(chainRpcUrl, true);
             state.apisInstance.closeCb = () => {
                 EE.emit(connectionCloseEventName);
