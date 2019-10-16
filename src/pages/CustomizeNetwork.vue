@@ -67,7 +67,9 @@ export default {
   },
   data() {
     return {
-      customizeNetworkForm: {},
+      customizeNetworkForm: {
+        chainId: '2e13ba07b457f2e284dcfcbd3d4a3e4d78a6ed89a61006cdb7fdad6d67ef0b12'
+      },
 
       customizeNetworkDone: false,
       data: null,
