@@ -97,6 +97,7 @@
         <AccountBalancesSidebar
           style="margin-top: 20px;"
           :accountBalances="currentAccountBalances"
+          :accountTokenBalances="currentAccountTokenBalances"
           :defaultLimit="showAccountBalancesLimit"
         ></AccountBalancesSidebar>
       </div>
@@ -109,7 +110,12 @@
       ></AccountLockBalancesPanel>
       <div class="hx-main-container hx-my-opened-wallet-container2" style="display: none;">TODO</div>
       <div class="hx-panel" style="height: 60px; padding: 10px; margin-bottom: 50px;">
-        <el-button type="primary" class="-ctrl-btn hxwallet-form-btn" @click="logoutMyWallet" size="small">Logout</el-button>
+        <el-button
+          type="primary"
+          class="-ctrl-btn hxwallet-form-btn"
+          @click="logoutMyWallet"
+          size="small"
+        >Logout</el-button>
       </div>
     </div>
   </div>
@@ -122,6 +128,8 @@ import KeystoreInput from "../components/KeystoreInput.vue";
 import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
 import AccountLockBalancesPanel from "../components/AccountLockBalancesPanel.vue";
 import utils from "../utils";
+import tokenRpc from "../rpc/token";
+
 let {
   PrivateKey,
   key,
@@ -153,6 +161,7 @@ export default {
           amount: 0
         }
       ],
+      currentAccountTokenBalances: [],
       currentAccountInfo: {},
 
       unlockWalletForm: {
@@ -259,6 +268,24 @@ export default {
             });
         })
         .catch(this.showError.bind(this));
+
+      // load user token balances
+      if (appState.getCurrentNetwork() === 'mainnet') {
+        tokenRpc
+          .listUserTokenBalances(
+            appState.getTokenExplorerApiUrl(),
+            this.currentAddress,
+            100,
+            0
+          )
+          .then(data => {
+            const res = data.data.listUserTokenBalances;
+            console.log("listUserTokenBalances", res);
+            const tokenBalances = res.items;
+            this.currentAccountTokenBalances = tokenBalances;
+          })
+          .catch(this.showError);
+      }
     },
     onChangeCurrentAccount(account) {
       this.currentAccount = account;
@@ -287,26 +314,26 @@ export default {
     },
     logoutMyWallet() {
       appState.changeCurrentAccount(null);
-      this.currentAccount = '';
+      this.currentAccount = "";
       this.currentAccountInfo = {};
       try {
-          if (typeof localStorage !== "undefined") {
-            localStorage.setItem("keyInfo", '');
-            localStorage.setItem("keyPassword", '');
-          }
-        } catch (e) {
-          console.log(e);
+        if (typeof localStorage !== "undefined") {
+          localStorage.setItem("keyInfo", "");
+          localStorage.setItem("keyPassword", "");
         }
-        try {
-          if (typeof chrome !== "undefined" && chrome.storage) {
-            chrome.storage.local.set({ keyInfo: null }, function() {
-              console.log("Value is set to " + keyInfo);
-            });
-            messageToBackground("newWallet", "false");
-          }
-        } catch (e) {
-          console.log(e);
+      } catch (e) {
+        console.log(e);
+      }
+      try {
+        if (typeof chrome !== "undefined" && chrome.storage) {
+          chrome.storage.local.set({ keyInfo: null }, function() {
+            console.log("Value is set to " + keyInfo);
+          });
+          messageToBackground("newWallet", "false");
         }
+      } catch (e) {
+        console.log(e);
+      }
     },
     toOpenWalletAfterSelectWalletAccount() {
       const account = this.unlockWalletForm.selectedWalletAccount;
@@ -315,7 +342,7 @@ export default {
         return;
       }
       try {
-        const password = this.unlockWalletForm.password || '';
+        const password = this.unlockWalletForm.password || "";
         const keyInfo = account.toKey(password);
         appState.changeCurrentAccount(account);
         this.currentAccount = account;

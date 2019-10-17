@@ -29,6 +29,23 @@
       </div>
       <div class="clearfix"></div>
     </div>
+    <div class="-account-balances-panel" v-if="accountTokenBalances.length>0">
+      <h4 style="font-size: 16px; padding: 10px 0; color: #a99eb4;">Tokens</h4>
+      <div
+        v-for="(balance, index) in filterTokenBalances(accountTokenBalances, hideZeroAssets, showAccountBalancesLimit)"
+        class="-account-balance"
+        :key="index"
+      >
+        <div class="-asset-symbol-label">{{balance.token_symbol}}</div>
+        <div class="-asset-amount-label">{{(parseFloat(balance.amount)/balance.precision).toFixed(balance.precision.toString().length-1)}}</div>
+      </div>
+      <div
+        v-if="showAccountBalancesLimit && filterTokenBalances(accountTokenBalances, hideZeroAssets, null).length>showAccountBalancesLimit"
+      >
+        <i class="el-icon-arrow-down" v-on:click="showAllBalances" style="cursor: pointer;"></i>
+      </div>
+      <div class="clearfix"></div>
+    </div>
   </div>
 </template>
 
@@ -42,7 +59,7 @@ window.datefns = require("date-fns");
 
 export default {
   name: "AccountBalancesSidebar",
-  props: ["accountBalances", "defaultLimit"],
+  props: ["accountBalances", 'accountTokenBalances', "defaultLimit"],
   components: {},
   data() {
     return {
@@ -67,6 +84,19 @@ export default {
       }
       if(filtered.length === 0) {
           filtered = [utils.emptyHxBalance];
+      }
+      return filtered;
+    },
+    filterTokenBalances(balances, skipZero = false, limit = null) {
+      let filtered = balances;
+      if (skipZero) {
+        filtered = balances.filter(item => parseFloat(item.amount) > 0);
+      }
+      if (limit) {
+        filtered = filtered.slice(0, limit);
+      }
+      if(filtered.length === 0) {
+          filtered = [];
       }
       return filtered;
     },

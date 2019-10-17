@@ -34,6 +34,7 @@
         <AccountBalancesSidebar
             style="margin-top: 20px;"
           :accountBalances="infoAccountBalances"
+          :accountTokenBalances="infoAccountTokenBalances"
           :defaultLimit="showAccountBalancesLimit"
         ></AccountBalancesSidebar>
         
@@ -51,6 +52,8 @@ import utils from "../utils";
 import KeystoreInput from "../components/KeystoreInput.vue";
 import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
 import AccountLockBalancesPanel from "../components/AccountLockBalancesPanel.vue";
+import tokenRpc from "../rpc/token";
+
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
@@ -66,6 +69,7 @@ export default {
       infoAccountBalances: [
         utils.emptyHxBalance
       ],
+      infoAccountTokenBalances: [], // TODO
       infoAccountInfo: {},
 
       unlockWalletForm: {
@@ -163,6 +167,22 @@ export default {
           });
         })
         .catch(this.showError.bind(this));
+      if (appState.getCurrentNetwork() === 'mainnet') {
+        tokenRpc
+          .listUserTokenBalances(
+            appState.getTokenExplorerApiUrl(),
+            this.accountAddress,
+            100,
+            0
+          )
+          .then(data => {
+            const res = data.data.listUserTokenBalances;
+            console.log(this.accountAddress, "listUserTokenBalances", res);
+            const tokenBalances = res.items;
+            this.infoAccountTokenBalances = tokenBalances;
+          })
+          .catch(this.showError);
+      }
     },
     filterBalances(balances, skipZero = false, limit = null) {
       let filtered = balances;

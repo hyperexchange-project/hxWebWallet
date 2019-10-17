@@ -119,6 +119,8 @@ const state = {
 
     hxPayCallback: null,
     lastSerialNumber: null,
+
+    tokenExplorerApiUrl: 'http://106.12.185.216/graphql',
 };
 
 // TODO: read current account from chrome.storage
@@ -239,6 +241,7 @@ location.hash = '';
 export default {
     EE,
     hxPrecision: 5,
+    mainnetChainId: '2e13ba07b457f2e284dcfcbd3d4a3e4d78a6ed89a61006cdb7fdad6d67ef0b12',
     pushFlashTx(txMsg) {
         state.flashTxMessage = txMsg;
         console.log("receive flash tx message", txMsg);
@@ -483,5 +486,8 @@ export default {
     },
     getAddressPrefix() {
         return ChainConfig.address_prefix;
+    },
+    getTokenExplorerApiUrl() {
+        return state.tokenExplorerApiUrl
     }
 };
