@@ -36,6 +36,7 @@
           :accountBalances="infoAccountBalances"
           :accountTokenBalances="infoAccountTokenBalances"
           :defaultLimit="showAccountBalancesLimit"
+          :isMyWallet="myself"
         ></AccountBalancesSidebar>
         
       </div>

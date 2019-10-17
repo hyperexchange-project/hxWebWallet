@@ -34,10 +34,13 @@
       <div
         v-for="(balance, index) in filterTokenBalances(accountTokenBalances, hideZeroAssets, showAccountBalancesLimit)"
         class="-account-balance"
+        @click="toTransferToken(balance)"
         :key="index"
       >
         <div class="-asset-symbol-label">{{balance.token_symbol}}</div>
-        <div class="-asset-amount-label">{{(parseFloat(balance.amount)/balance.precision).toFixed(balance.precision.toString().length-1)}}</div>
+        <div
+          class="-asset-amount-label"
+        >{{(parseFloat(balance.amount)/balance.precision).toFixed(balance.precision.toString().length-1)}}</div>
       </div>
       <div
         v-if="showAccountBalancesLimit && filterTokenBalances(accountTokenBalances, hideZeroAssets, null).length>showAccountBalancesLimit"
@@ -46,6 +49,34 @@
       </div>
       <div class="clearfix"></div>
     </div>
+
+    <!-- begin dialogs -->
+    <el-dialog title="Transfer Token" :visible.sync="transferTokenDialogVisible" width="500px" center>
+      <div>
+        <el-form :model="transferTokenForm">
+          <el-form-item label="Token" :label-width="'120'">
+            <span>{{transferTokenForm.token_symbol}}</span>
+          </el-form-item>
+          <el-form-item label="Token Contract" :label-width="'120'">
+            <span>{{transferTokenForm.contract_addr}}</span>
+          </el-form-item>
+          <el-form-item label="To address" :label-width="'120'">
+            <el-input v-model="transferTokenForm.to" placeholder="only accept HX address" autocomplete="on"></el-input>
+          </el-form-item>
+          <el-form-item label="Amount" :label-width="'120'">
+            <el-input v-model="transferTokenForm.amount" :placeholder="'max: ' + transferTokenForm.max_amount" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="Memo" :label-width="'120'">
+            <el-input v-model="transferTokenForm.memo" autocomplete="off"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="transferTokenDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="doTransferToken(transferTokenForm)">OK</el-button>
+      </span>
+    </el-dialog>
+    <!-- end dialogs -->
   </div>
 </template>
 
@@ -59,12 +90,14 @@ window.datefns = require("date-fns");
 
 export default {
   name: "AccountBalancesSidebar",
-  props: ["accountBalances", 'accountTokenBalances', "defaultLimit"],
+  props: ["accountBalances", "accountTokenBalances", "isMyWallet", "defaultLimit"],
   components: {},
   data() {
     return {
       hideZeroAssets: true,
-      showAccountBalancesLimit: null
+      showAccountBalancesLimit: null,
+      transferTokenForm: {},
+      transferTokenDialogVisible: false
     };
   },
   created() {
@@ -74,6 +107,14 @@ export default {
   mounted() {},
   beforeDestroy() {},
   methods: {
+    showError(e) {
+      e = utils.getShowErrorMessage(e);
+      this.$message({
+        showClose: true,
+        message: e,
+        type: "error"
+      });
+    },
     filterBalances(balances, skipZero = false, limit = null) {
       let filtered = balances;
       if (skipZero) {
@@ -82,8 +123,8 @@ export default {
       if (limit) {
         filtered = filtered.slice(0, limit);
       }
-      if(filtered.length === 0) {
-          filtered = [utils.emptyHxBalance];
+      if (filtered.length === 0) {
+        filtered = [utils.emptyHxBalance];
       }
       return filtered;
     },
@@ -95,13 +136,54 @@ export default {
       if (limit) {
         filtered = filtered.slice(0, limit);
       }
-      if(filtered.length === 0) {
-          filtered = [];
+      if (filtered.length === 0) {
+        filtered = [];
       }
       return filtered;
     },
     showAllBalances() {
       this.showAccountBalancesLimit = null;
+    },
+    toTransferToken(tokenBalance) {
+      console.log("to transfer token", tokenBalance);
+      if(!this.isMyWallet) {
+        return
+      }
+      this.transferTokenForm = {
+        token_symbol: tokenBalance.token_symbol,
+        contract_addr: tokenBalance.contract_addr,
+        to: null,
+        amount: null,
+        memo: null,
+        precision: tokenBalance.precision,
+        max_amount: (parseFloat(tokenBalance.amount)/tokenBalance.precision).toFixed(tokenBalance.precision.toString().length-1)
+      }
+      this.transferTokenDialogVisible = true
+    },
+    doTransferToken(form) {
+      const to = (form.to || '').trim()
+      if(!to) {
+        this.showError('invalid to address');
+        return
+      }
+      const amount = new BigNumber(form.amount)
+      if(amount.isNaN() || amount.lte(0) ||amount.gt(form.max_amount)) {
+        this.showError('invalid amount to transfer');
+        return
+      }
+      this.transferTokenDialogVisible = false
+      console.log('to jump to invoke_contract page')
+      let contractArg = to + ',' + (amount.multipliedBy(form.precision)).toFixed(0)
+      if(form.memo) {
+        contractArg = contractArg + ',' + form.memo
+      }
+      appState.pushFlashTx({
+        to: form.contract_addr,
+        contractApi: "transfer",
+        contractArg: contractArg,
+        gasLimit: 10000
+      });
+      appState.changeCurrentTab("contract", []);
     }
   }
 };

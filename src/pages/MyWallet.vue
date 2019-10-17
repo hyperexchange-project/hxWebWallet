@@ -99,6 +99,7 @@
           :accountBalances="currentAccountBalances"
           :accountTokenBalances="currentAccountTokenBalances"
           :defaultLimit="showAccountBalancesLimit"
+          :isMyWallet="true"
         ></AccountBalancesSidebar>
       </div>
       <AccountLockBalancesPanel
