@@ -92,7 +92,7 @@ export default {
         return TransactionHelper.bytes_to_hex(bytes);
     },
     hexToUtf8(s) {
-        if(TransactionHelper.hexToUtf8WithoutMemoPrefix) {
+        if (TransactionHelper.hexToUtf8WithoutMemoPrefix) {
             return TransactionHelper.hexToUtf8WithoutMemoPrefix(s);
         }
         return TransactionHelper.hexToUtf8(s);
@@ -136,8 +136,8 @@ export default {
         if (!_.isString(originError)) {
             e = JSON.stringify(originError);
         }
-        if(e === '{"isTrusted":true}') {
-            if(originError && originError.type === 'error') {
+        if (e === '{"isTrusted":true}') {
+            if (originError && originError.type === 'error') {
                 return "Connection failed";
             }
             return "Connected successfully";
@@ -146,12 +146,35 @@ export default {
         return e;
     },
     isChromeExtension() {
-        return typeof(chrome) !== 'undefined' && !!(chrome.windows);
+        return typeof (chrome) !== 'undefined' && !!(chrome.windows);
     },
     emptyHxBalance: {
         assetId: "1.3.0",
         assetSymbol: "HX",
         amountNu: new BigNumber(0),
         amount: 0
+    },
+    localSetItem(key, value) {
+        if (window.localStorage) {
+            const network = appState.getCurrentNetwork()
+            localStorage.setItem(`${network}.${key}`, JSON.stringify(value))
+        }
+    },
+    localGetItem(key) {
+        if (window.localStorage) {
+            const network = appState.getCurrentNetwork()
+            const resultStr = localStorage.getItem(`${network}.${key}`)
+            if (!resultStr || resultStr === 'undefined') {
+                return undefined
+            }
+            if (resultStr === 'null') {
+                return null
+            }
+            try {
+                return JSON.parse(resultStr)
+            } catch (e) {
+                return undefined
+            }
+        }
     }
 };

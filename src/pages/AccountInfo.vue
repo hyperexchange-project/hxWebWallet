@@ -5,7 +5,10 @@
         <el-row class="-address-row">
           <el-col :span="4">
             <div class="grid-content label-font" v-if="myself">{{$t('accountInfoPage.my_address')}}</div>
-            <div class="grid-content label-font" v-if="!myself">{{$t('accountInfoPage.account_address')}}</div>
+            <div
+              class="grid-content label-font"
+              v-if="!myself"
+            >{{$t('accountInfoPage.account_address')}}</div>
           </el-col>
           <el-col :span="8">
             <div class="grid-content label-font">
@@ -32,16 +35,20 @@
           </el-col>
         </el-row>
         <AccountBalancesSidebar
-            style="margin-top: 20px;"
+          style="margin-top: 20px;"
           :accountBalances="infoAccountBalances"
           :accountTokenBalances="infoAccountTokenBalances"
           :defaultLimit="showAccountBalancesLimit"
           :isMyWallet="myself"
         ></AccountBalancesSidebar>
-        
       </div>
-      <AccountLockBalancesPanel v-if="infoAccountInfo && infoAccountInfo.name" :currentAccount="myself?infoAccount:null"
-       :accountName="infoAccountInfo.name" :myself="myself" @balance-update="toUpdateAccountBalances"></AccountLockBalancesPanel>
+      <AccountLockBalancesPanel
+        v-if="infoAccountInfo && infoAccountInfo.name"
+        :currentAccount="myself?infoAccount:null"
+        :accountName="infoAccountInfo.name"
+        :myself="myself"
+        @balance-update="toUpdateAccountBalances"
+      ></AccountLockBalancesPanel>
     </div>
   </div>
 </template>
@@ -60,16 +67,18 @@ let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 export default {
   name: "AccountInfo",
   props: ["accountAddress", "myself"],
-  components: { KeystoreInput, AccountBalancesSidebar, AccountLockBalancesPanel },
+  components: {
+    KeystoreInput,
+    AccountBalancesSidebar,
+    AccountLockBalancesPanel
+  },
   data() {
     return {
       infoAccount: "",
       hideZeroAssets: false,
       showAccountBalancesLimit: 5,
 
-      infoAccountBalances: [
-        utils.emptyHxBalance
-      ],
+      infoAccountBalances: [utils.emptyHxBalance],
       infoAccountTokenBalances: [], // TODO
       infoAccountInfo: {},
 
@@ -130,56 +139,31 @@ export default {
       if (!this.accountAddress) {
         return;
       }
-      const nodeClient = appState.getNodeClient();
-      appState
-        .withSystemAssets()
-        .then(assets => {
-          return nodeClient.getAddrBalances(
-            this.accountAddress
-          ).then(balances => {
-            this.infoAccountBalances.length = 0;
-            for (let asset of assets) {
-              let balance = balances.filter(b => b.asset_id === asset.id)[0];
-              let item = {
-                assetId: asset.id,
-                assetSymbol: asset.symbol,
-                amount: balance ? balance.amount : 0,
-                precision: asset.precision,
-                amountNu: balance
-                  ? new BigNumber(balance.amount).div(
-                      Math.pow(10, asset.precision)
-                    )
-                  : new BigNumber(0)
-              };
-              this.infoAccountBalances.push(item);
-            }
-            return balances;
-          });
+
+      this.$store
+        .dispatch("account/getAccountInfo", this.accountAddress)
+        .then(accountInfo => {
+          if (accountInfo) {
+            this.infoAccountInfo = accountInfo;
+          } else {
+            this.infoAccountInfo = {};
+          }
         })
-        .then(() => {
-          return nodeClient.getAccountByAddresss(
-            this.accountAddress
-          ).then(accountInfo => {
-            if (accountInfo) {
-              this.infoAccountInfo = accountInfo;
-            } else {
-              this.infoAccountInfo = {};
-            }
-          });
+        .catch(this.showError);
+
+      this.$store
+        .dispatch("account/getAddressBalances", this.accountAddress)
+        .then(accountBalances => {
+          console.log("accountBalances from vuex is", accountBalances);
+          this.infoAccountBalances = accountBalances;
         })
-        .catch(this.showError.bind(this));
-      if (appState.getCurrentNetwork() === 'mainnet') {
-        tokenRpc
-          .listUserTokenBalances(
-            appState.getTokenExplorerApiUrl(),
-            this.accountAddress,
-            100,
-            0
-          )
-          .then(data => {
-            const res = data.data.listUserTokenBalances;
-            console.log(this.accountAddress, "listUserTokenBalances", res);
-            const tokenBalances = res.items;
+        .catch(this.showError);
+
+      if (appState.getCurrentNetwork() === "mainnet") {
+        this.$store
+          .dispatch("account/getAddressTokenBalances", this.accountAddress)
+          .then(tokenBalances => {
+            console.log("listUserTokenBalances from vuex", tokenBalances);
             this.infoAccountTokenBalances = tokenBalances;
           })
           .catch(this.showError);
@@ -204,7 +188,7 @@ export default {
     onSelectKeystoreFile(fileJson, filename) {
       this.unlockWalletForm.keystoreFileJson = fileJson;
       this.unlockWalletForm.keystoreFile = filename;
-    },
+    }
   }
 };
 </script>
@@ -275,14 +259,14 @@ export default {
     margin-left: -80pt;
   }
   .hx-account-balances-side-bar {
-      .-balance-title-panel {
-          text-align: left;
-          padding-left: 50pt;
-      }
-      .-switch-panel {
-          text-align: right;
-          padding-right: 50pt;
-      }
+    .-balance-title-panel {
+      text-align: left;
+      padding-left: 50pt;
+    }
+    .-switch-panel {
+      text-align: right;
+      padding-right: 50pt;
+    }
   }
 }
 </style>

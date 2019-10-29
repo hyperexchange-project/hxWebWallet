@@ -124,6 +124,7 @@
 
 <script>
 import _ from "lodash";
+import { mapState } from "vuex";
 import appState from "../appState";
 import KeystoreInput from "../components/KeystoreInput.vue";
 import AccountBalancesSidebar from "../components/AccountBalancesSidebar.vue";
@@ -153,7 +154,6 @@ export default {
       currentAccount: "",
       hideZeroAssets: false,
       showAccountBalancesLimit: 5,
-
       currentAccountBalances: [
         {
           assetId: "1.3.0",
@@ -186,6 +186,7 @@ export default {
       this.opened = false;
     }
   },
+  computed: {},
   mounted() {
     appState.onChangeCurrentAccount(this.onChangeCurrentAccount);
   },
@@ -231,58 +232,37 @@ export default {
       if (!this.currentAccount) {
         return;
       }
-      const nodeClient = appState.getNodeClient();
-      appState
-        .withSystemAssets()
-        .then(assets => {
-          return nodeClient
-            .getAddrBalances(this.currentAccount.address)
-            .then(balances => {
-              this.currentAccountBalances.length = 0;
-              for (let asset of assets) {
-                let balance = balances.filter(b => b.asset_id === asset.id)[0];
-                let item = {
-                  assetId: asset.id,
-                  assetSymbol: asset.symbol,
-                  amount: balance ? balance.amount : 0,
-                  precision: asset.precision,
-                  amountNu: balance
-                    ? new BigNumber(balance.amount).div(
-                        Math.pow(10, asset.precision)
-                      )
-                    : new BigNumber(0)
-                };
-                this.currentAccountBalances.push(item);
-              }
-              return balances;
-            });
+
+      this.$store
+        .dispatch("account/getAccountInfo", this.currentAccount.address)
+        .then(accountInfo => {
+          console.log("accountInfo from vuex is", accountInfo);
+          this.$nextTick(() => {
+            if (accountInfo) {
+              this.currentAccountInfo = accountInfo;
+            } else {
+              this.currentAccountInfo = {};
+            }
+          });
         })
-        .then(() => {
-          return nodeClient
-            .getAccountByAddresss(this.currentAddress)
-            .then(accountInfo => {
-              if (accountInfo) {
-                this.currentAccountInfo = accountInfo;
-              } else {
-                this.currentAccountInfo = {};
-              }
-            });
+        .catch(this.showError);
+
+      this.$store
+        .dispatch("account/getAddressBalances", this.currentAccount.address)
+        .then(accountBalances => {
+          console.log("accountBalances from vuex is", accountBalances);
+          this.$nextTick(() => {
+            this.currentAccountBalances = accountBalances;
+          });
         })
-        .catch(this.showError.bind(this));
+        .catch(this.showError);
 
       // load user token balances
-      if (appState.getCurrentNetwork() === 'mainnet') {
-        tokenRpc
-          .listUserTokenBalances(
-            appState.getTokenExplorerApiUrl(),
-            this.currentAddress,
-            100,
-            0
-          )
-          .then(data => {
-            const res = data.data.listUserTokenBalances;
-            console.log("listUserTokenBalances", res);
-            const tokenBalances = res.items;
+      if (appState.getCurrentNetwork() === "mainnet") {
+        this.$store
+          .dispatch("account/getAddressTokenBalances", this.currentAddress)
+          .then(tokenBalances => {
+            console.log("listUserTokenBalances", tokenBalances);
             this.currentAccountTokenBalances = tokenBalances;
           })
           .catch(this.showError);
