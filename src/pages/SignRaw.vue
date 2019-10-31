@@ -19,6 +19,14 @@
               style="width: 100pt;"
             ></el-input>
           </div>
+          <div style="margin: 20px 0;">
+            <el-switch
+              style="width: 290px;"
+              v-model="signRawForm.isTx"
+              active-text="交易签名"
+              inactive-text="文本签名"
+            ></el-switch>
+          </div>
           <div style="margin-top: 30pt;">
             <AddressOrSelectWalletInput
               :currentAddress="currentAccount && currentAccount.address"
@@ -65,7 +73,9 @@ export default {
   },
   data() {
     return {
-      signRawForm: {},
+      signRawForm: {
+        isTx: false
+      },
 
       signRawDone: false,
       data: null,
@@ -126,41 +136,58 @@ export default {
       });
     },
     toSignRaw(content) {
-      if (!this.currentAccount) {
-        this.showError("Please open wallet first");
-        return;
-      }
-      if (!content || content.length < 1) {
-        this.showError("Can't sign empty text");
-        return;
-      }
-      // only sign content with verified format, starts with '{' or '['
-      if (content[0] !== "{" && content[0] !== "[") {
-        this.showError("Content to sign must start with { or [");
-        return;
-      }
-
-      const contentHex = TransactionHelper.bytes_to_hex(content);
-      const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
-      const pubKey = pkey.toPublicKey();
-
-      const rawSig = TransactionHelper.signHex(contentHex, pkey, pubKey);
-      const rawSigHex = rawSig.toHex();
-      console.log("rawSig", rawSigHex);
-      this.signRawForm.signedSignatureHex = rawSigHex;
-      this.signRawDone = true;
-
-      //   appState.bindPayId(rawSigHex);
-      if (typeof messageToBackground !== "undefined") {
-        messageToBackground("sig", rawSigHex);
-        if (utils.isChromeExtension()) {
-          this.closeTimer = setTimeout(() => {
-            if (!this.destroyed) {
-              window.close();
-            }
-            this.closeTimer = null;
-          }, this.closeTimeoutMilli);
+      try {
+        if (!this.currentAccount) {
+          this.showError("Please open wallet first");
+          return;
         }
+        if (!content || content.length < 1) {
+          this.showError("Can't sign empty text");
+          return;
+        }
+        const isTx = !!this.signRawForm.isTx;
+        if (!isTx) {
+          // only sign content with verified format, starts with '{' or '['
+          if (content[0] !== "{" && content[0] !== "[") {
+            this.showError("Content to sign must start with { or [");
+            return;
+          }
+        }
+
+        let contentHex = TransactionHelper.bytes_to_hex(content);
+        const pkey = PrivateKey.fromBuffer(this.currentAccount.getPrivateKey());
+        const pubKey = pkey.toPublicKey();
+
+        // TODO: if isTx, contentHex should be serialized tx hex(from json)
+        if (isTx) {
+          contentHex = content; // now just use content as serialized hex
+        }
+
+        // if isTx, sign chainIdHex + contentHex
+        const networkObj = appState.getCurrentNetworkObj();
+        const chainId = networkObj.chainId || "";
+        const toSignHex = isTx ? chainId + contentHex : contentHex;
+
+        const rawSig = TransactionHelper.signHex(toSignHex, pkey, pubKey);
+        const rawSigHex = rawSig.toHex();
+        console.log("rawSig", rawSigHex);
+        this.signRawForm.signedSignatureHex = rawSigHex;
+        this.signRawDone = true;
+
+        //   appState.bindPayId(rawSigHex);
+        if (typeof messageToBackground !== "undefined") {
+          messageToBackground("sig", rawSigHex);
+          if (utils.isChromeExtension()) {
+            this.closeTimer = setTimeout(() => {
+              if (!this.destroyed) {
+                window.close();
+              }
+              this.closeTimer = null;
+            }, this.closeTimeoutMilli);
+          }
+        }
+      } catch (e) {
+        this.showError("some error happen. maybe invalid tx hex");
       }
     },
     loadCurrentAccountInfo() {
@@ -244,6 +271,9 @@ export default {
     font-size: 10pt;
     padding: 5pt;
     word-break: break-all;
+  }
+  .el-switch__core {
+    width: 40px !important;
   }
 }
 

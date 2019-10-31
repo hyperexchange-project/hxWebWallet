@@ -4,6 +4,7 @@
       <el-form-item
         v-bind:label="$t('keystoreInput.from_address')"
         ng-if="false"
+        class="-address-select-panel"
         prop="currentAddress"
         style="text-align: left;"
       >
@@ -258,6 +259,13 @@ export default {
     color: #a64eb5;
     float: left;
     padding-left: 10pt;
+  }
+  .-address-select-panel {
+    text-align: center !important;
+    .el-form-item__content {
+      display: inline-block;
+      margin-left: 0 !important;
+    }
   }
 }
 @media (max-width: 600px) {

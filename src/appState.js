@@ -470,6 +470,10 @@ export default {
     getCurrentNetwork() {
         return state.currentNetwork;
     },
+    getCurrentNetworkObj() {
+        const networkKey = this.getCurrentNetwork();
+        return getNetworkByKey(networkKey);
+    },
     changeCurrentLanguage(lang) {
         state.currentLanguage = lang;
         setStorage(languageConfigStorageKey, lang);
