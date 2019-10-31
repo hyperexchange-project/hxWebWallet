@@ -155,6 +155,7 @@ export default {
         amount: 0
     },
     localSetItem(key, value) {
+        // TODO: 本地缓存记录存储时间，用于短期cache的时候太早数据不使用
         if (window.localStorage) {
             const network = appState.getCurrentNetwork()
             localStorage.setItem(`${network}.${key}`, JSON.stringify(value))

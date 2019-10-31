@@ -360,11 +360,11 @@ export default {
         this.loadSystemCitizens();
       }
       this.mortgageForm = {
-        amount: '',
+        amount: "",
         citizenId: selectedCitizenId,
         assetId: assetId
       };
-      this.mortgageFormAmount = '';
+      this.mortgageFormAmount = "";
       this.step = "mortgage";
     },
     receivePayBack(payBacks) {
@@ -440,13 +440,17 @@ export default {
                   })
                   .catch(e => {
                     console.log("take paybacks error", e);
-                    this.showError("take paybacks failed, maybe too little to receive once");
+                    this.showError(
+                      "take paybacks failed, maybe too little to receive once"
+                    );
                   });
               }, 6000);
             })
             .catch(e => {
               console.log("take paybacks error", e);
-              this.showError("take paybacks failed, maybe too little to receive once");
+              this.showError(
+                "take paybacks failed, maybe too little to receive once"
+              );
             });
         })
         .catch(this.showError);
@@ -524,13 +528,13 @@ export default {
                   })
                   .catch(e => {
                     console.log("mortgage error", e);
-                    this.showError("Mortgage failed " +e.toString());
+                    this.showError("Mortgage failed " + e.toString());
                   });
               }, 6000);
             })
             .catch(e => {
               console.log("mortgage error", e);
-              this.showError("Mortgage failed " +e.toString());
+              this.showError("Mortgage failed " + e.toString());
             });
         })
         .catch(this.showError);
@@ -626,9 +630,9 @@ export default {
       this.redeemForm = {
         amount: null,
         citizenId: citizenId,
-        assetId: assetId,
+        assetId: assetId
       };
-      this.redeemFormAmount = '';
+      this.redeemFormAmount = "";
       this.step = "redeem";
     },
     getTransaction(txid) {
@@ -644,91 +648,71 @@ export default {
       if (!this.accountName) {
         return;
       }
-      const nodeClient = appState.getNodeClient();
-      appState
-        .withSystemAssets()
-        .then(assets => {
-          this.systemAssets = assets;
-          return nodeClient.getAccountByName(this.accountName).then(account => {
+
+      this.$store
+        .dispatch("account/getAccountByName", this.accountName)
+        .then(account => {
+          console.log(
+            `get account of name ${this.accountName} from vuex`,
+            account
+          );
+          this.accountInfo = account;
+          this.$nextTick(() => {
             this.accountInfo = account;
-            nodeClient
-              .getAccountLockBalances(account.id)
-              .then(balances => {
-                this.accountLockBalances.length = 0;
-                const usingCitizenIds = [];
-                for (let item of balances) {
-                  const asset = this.assetById(item.lock_asset_id);
-                  if (!asset) {
-                    continue;
-                  }
-                  item.lock_asset_amount_nu = new BigNumber(
-                    item.lock_asset_amount
-                  ).div(Math.pow(10, asset.precision));
-                  item.lock_asset_amount_str = item.lock_asset_amount_nu.toFixed(
-                    asset.precision
-                  );
-                  this.accountLockBalances.push(item);
-                  if (usingCitizenIds.indexOf(item.lockto_miner_account) < 0) {
-                    usingCitizenIds.push(item.lockto_miner_account);
-                  }
-                }
-                return usingCitizenIds;
-              })
-              .then(usingCitizenIds => {
-                for (const citizenId of usingCitizenIds) {
-                  if (this.citizensAccountCache[citizenId]) {
-                    continue;
-                  }
-                  nodeClient
-                    .getCitizen(citizenId)
-                    .then(citizen => {
-                      return nodeClient.getAccount(citizen.miner_account);
-                    })
-                    .then(account => {
-                      this.$set(this.citizensAccountCache, citizenId, account);
-                    })
-                    .catch(e => {
-                      console.log("load citizen error ", e);
-                    });
-                }
-              })
-              .catch(this.showError.bind(this));
-            nodeClient
-              .getAddressPayBackBalance(account.addr)
-              .then(payBacks => {
-                this.accountPayBacks = [];
-                for (let item of payBacks) {
-                  const assetId = item[1].asset_id;
-                  const asset = this.assetById(assetId);
-                  if (!asset) {
-                    continue;
-                  }
-                  const amount = item[1].amount;
-                  const amountBn = new BigNumber(amount).div(
-                    Math.pow(10, asset.precision)
-                  );
-                  const amountBnStr = amountBn.toFixed(asset.precision);
-                  const obj = {
-                    citizenName: item[0],
-                    asset: asset,
-                    assetId: assetId,
-                    amount: amount,
-                    amountBn: amountBn,
-                    amountBnStr: amountBnStr
-                  };
-                  this.accountPayBacks.push(obj);
-                }
-                console.log("payBacks", payBacks);
-              })
-              .catch(err => {
-                console.log("get address payBack balances error ", err);
-                // this.showError.bind(this)
-              });
-            return account;
           });
+          return account;
         })
-        .then(() => {})
-        .catch(this.showError.bind(this));
+        .then(account => {
+          this.$store
+            .dispatch("account/getAccountLockBalances", account.id)
+            .then(lockBalances => {
+              console.log(`lock balances from vuex is`, lockBalances);
+              this.accountLockBalances = lockBalances;
+              const usingCitizenIds = [];
+              for (const item of lockBalances) {
+                if (usingCitizenIds.indexOf(item.lockto_miner_account) < 0) {
+                  usingCitizenIds.push(item.lockto_miner_account);
+                }
+              }
+              this.$nextTick(() => {
+                this.accountLockBalances = lockBalances;
+              });
+              return usingCitizenIds;
+            })
+            .then(usingCitizenIds => {
+              for (const citizenId of usingCitizenIds) {
+                if (this.citizensAccountCache[citizenId]) {
+                  continue;
+                }
+                this.$store
+                  .dispatch("account/getCitizenInfo", citizenId)
+                  .then(citizen => {
+                    return this.$store.dispatch(
+                      "account/getAccountById",
+                      citizen.miner_account
+                    );
+                  })
+                  .then(account => {
+                    this.$set(this.citizensAccountCache, citizenId, account);
+                  })
+                  .catch(e => {
+                    console.log("load citizen error ", e);
+                  });
+              }
+            })
+            .catch(this.showError);
+          this.$store
+            .dispatch("account/getAddressPayBackBalances", account.addr)
+            .then(payBacks => {
+              console.log("payBacks from vuex", payBacks);
+              this.accountPayBacks = payBacks;
+            })
+            .catch(this.showError);
+        })
+        .catch(this.showError);
+      appState.withSystemAssets().then(assets => {
+        this.systemAssets = assets;
+      });
     },
     backToList() {
       this.step = "list";
