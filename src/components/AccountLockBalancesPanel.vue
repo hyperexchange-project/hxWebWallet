@@ -707,9 +707,14 @@ export default {
               console.log("payBacks from vuex", payBacks);
               this.accountPayBacks = payBacks;
             })
-            .catch(this.showError);
+            .catch(err => {
+              console.log('getAddressPayBackBalances error', err);
+              this.accountPayBacks = [];
+            });
         })
         .catch(this.showError);
+
+      // TODO: move assets to vuex and offline mode
       appState.withSystemAssets().then(assets => {
         this.systemAssets = assets;
       });
