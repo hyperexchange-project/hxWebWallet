@@ -86,6 +86,11 @@ export default {
         sign_now: "Sign",
         please_input_content: 'Enter content to sign',
     },
+    broadcastTxPage: {
+        title: 'Broadcast',
+        broadcast_now: 'Broadcast',
+        please_input_content: 'Enter content to broadcast',
+    },
     customizeNetworkPage: {
         title: 'Customize Network',
         add_network: 'Add Network',

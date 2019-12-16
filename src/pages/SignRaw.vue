@@ -39,8 +39,11 @@
               class="hxwallet-form-btn"
               v-on:click="toSignRaw(signRawForm.content)"
             >{{$t('signRawPage.sign_now')}}</el-button>
+            
+          <el-button type="primary" class="hxwallet-form-btn" @click="toBroadcastPage()">{{$t('broadcastTxPage.broadcast_now')}}</el-button>
           </div>
         </el-form>
+        
       </div>
       <div v-if="signRawDone" class="hx-sign-raw-done-container">
         <div class="-sign-raw-title">Signature:</div>
@@ -214,6 +217,9 @@ export default {
       this.currentAccount = account;
       this.currentAddress = account.address;
       this.loadCurrentAccountInfo();
+    },
+    toBroadcastPage() {
+      appState.changeCurrentTab('broadcast_tx');
     }
   }
 };

@@ -9,6 +9,7 @@
       <Transfer v-if="currentTabKey==='transfer'"></Transfer>
       <CheckTx v-if="currentTabKey==='check_tx'"></CheckTx>
       <SignRaw v-if="currentTabKey==='sign_raw'"></SignRaw>
+      <BroadcastTx v-if="currentTabKey === 'broadcast_tx'"></BroadcastTx>
       <Contract v-if="currentTabKey==='contract'"></Contract>
       <CustomizeNetwork v-if="currentTabKey==='customize_network'"></CustomizeNetwork>
     </div>
@@ -27,6 +28,7 @@ import CreateWallet from "./pages/CreateWallet.vue";
 import Transfer from "./pages/Transfer.vue";
 import CheckTx from "./pages/CheckTx.vue";
 import SignRaw from "./pages/SignRaw.vue";
+import BroadcastTx from "./pages/BroadcastTx.vue";
 import CustomizeNetwork from "./pages/CustomizeNetwork.vue";
 import Contract from "./pages/Contract.vue";
 import appState from "./appState.js";
@@ -42,6 +44,7 @@ export default {
     Transfer,
     CheckTx,
     SignRaw,
+    BroadcastTx,
     CustomizeNetwork,
     Contract
   },

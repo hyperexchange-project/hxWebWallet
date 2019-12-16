@@ -86,6 +86,11 @@ export default {
         sign_now: "签名",
         please_input_content: '请输入要签名的内容',
     },
+    broadcastTxPage: {
+        title: '广播',
+        broadcast_now: '广播',
+        please_input_content: '请输入要广播的内容',
+    },
     customizeNetworkPage: {
         title: '自定义节点',
         add_network: '添加节点',
