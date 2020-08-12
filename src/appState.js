@@ -8,7 +8,8 @@ const networkList = [
         // url: "ws://211.159.168.197:6090"
         // url: "wss://nodeapi.hxlab.org:443"
         // url: "ws://nodeapi.hxlab.org:6090"
-        url: "ws://211.159.168.197:6090"
+        url: "ws://nodeapi.hx.team:6090"
+        // url: "ws://211.159.168.197:6090"
         // url: "ws://nodeapi2.hxlab.org:6090"
     },
     { chainId: '9f3b24c962226c1cb775144e73ba7bb177f9ed0b72fac69cd38764093ab530bd', key: 'testnet', name: "Testnet", url: "ws://47.74.44.110:8090" },
