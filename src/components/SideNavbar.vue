@@ -41,7 +41,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .hx-nav-side {
   background: white;
   .hx-nav-item {

@@ -51,6 +51,8 @@ export default {
         please_set_password: '请设置钱包密码',
         set_wallet_password: '设置钱包密码',
         find_wallet_file_in_download_directory: '下载完成后请到浏览器的下载文件夹查看',
+        import_raw_private_key: '导入私钥(可选)',
+        import_private_key_placeholder: '输入私钥明文',
     },
     transferPage: {
         account_name: '账户名称',

@@ -270,7 +270,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-tx-info-panel,
 .hx-tx-details-panel {
   .label-font {

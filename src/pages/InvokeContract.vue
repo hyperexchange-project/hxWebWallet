@@ -686,7 +686,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-invoke-contract-container {
   min-width: 400px;
   min-height: 381pt;

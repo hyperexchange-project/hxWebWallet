@@ -239,7 +239,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-address-or-select-wallet-input {
   .-unlock-keystore-file-btn {
     width: 150pt;

@@ -116,6 +116,82 @@ export default {
         const str = String.fromCharCode.apply(null, bytes);
         return str;
     },
+    isHexString(hexStr) {
+        for (let i = 0; i < hexStr.length; i++) {
+            const c = hexStr[i]
+            if (c >= '0' && c <= '9') {
+                continue
+            }
+            if (c >= 'a' && c <= 'f') {
+                continue
+            }
+            if (c >= 'A' && c <= 'F') {
+                continue
+            }
+            return false
+        }
+        return true
+    },
+    base58ToBytes(S) {
+        // 把base58格式字符串转换成bytes
+        // @param S base58格式的字符串
+        const A = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+        var d = [],   //the array for storing the stream of decoded bytes
+            b = [],   //the result byte array that will be returned
+            i,        //the iterator variable for the base58 string
+            j,        //the iterator variable for the byte array (d)
+            c,        //the carry amount variable that is used to overflow from the current byte to the next byte
+            n;        //a temporary placeholder variable for the current byte
+        for (i in S) { //loop through each base58 character in the input string
+            j = 0,                             //reset the byte iterator
+                c = A.indexOf(S[i]);             //set the initial carry amount equal to the current base58 digit
+            if (c < 0)                          //see if the base58 digit lookup is invalid (-1)
+                return undefined;              //if invalid base58 digit, bail out and return undefined
+            c || b.length ^ i ? i : b.push(0); //prepend the result array with a zero if the base58 digit is zero and non-zero characters haven't been seen yet (to ensure correct decode length)
+            while (j in d || c) {               //start looping through the bytes until there are no more bytes and no carry amount
+                n = d[j];                      //set the placeholder for the current byte
+                n = n ? n * 58 + c : c;        //shift the current byte 58 units and add the carry amount (or just add the carry amount if this is a new byte)
+                c = n >> 8;                    //find the new carry amount (1-byte shift of current byte value)
+                d[j] = n % 256;                //reset the current byte to the remainder (the carry amount will pass on the overflow)
+                j++                            //iterate to the next byte
+            }
+        }
+        while (j--)               //since the byte array is backwards, loop through it in reverse order
+            b.push(d[j]);      //append each byte to the result
+        return new Uint8Array(b) //return the final byte array in Uint8Array format
+    },
+    isSameBuffer(buffer1, buffer2) {
+        if(buffer1.length !== buffer2.length) {
+            return false
+        }
+        for(let i=0;i<buffer1.length;i++) {
+            const b1 = buffer1[i]
+            const b2 = buffer2[i]
+            if(b1!==b2) {
+                return false
+            }
+        }
+        return true
+    },
+    wifToHex(wifStr) {
+        // WIF格式私钥转换成hex格式私钥
+        // WIF格式是base58+4位checksum,checksum是私钥bytes的两次sha256
+        if (!wifStr || wifStr.length < 4) {
+            throw new Error('invalid WIF format')
+        }
+        const rawBytes = this.base58ToBytes(wifStr)
+        const privateKeyBytesWithPrefix = rawBytes.subarray(0, rawBytes.length - 4)
+        const privateKeyBytes = rawBytes.subarray(1, rawBytes.length-4)
+        const checksumBytes = rawBytes.subarray(rawBytes.length - 4)
+        const tr = new TransactionBuilder()
+        const checksum1 = tr.sha256(privateKeyBytesWithPrefix)
+        const checksum2 = tr.sha256(checksum1)
+        const checksum = checksum2.subarray(0, 4)
+        if(!this.isSameBuffer(checksumBytes, checksum)) {
+            throw new Error('invalid WIF checksum')
+        }
+        return TransactionHelper.bytes_to_hex(privateKeyBytes)
+    },
     formatTimezone(date) {
         const offset = date.getTimezoneOffset();
         const result = new Date(

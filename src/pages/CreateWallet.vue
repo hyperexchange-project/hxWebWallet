@@ -9,7 +9,11 @@
         label-width="100pt"
         class="hx-create-wallet-inner-container"
       >
-        <el-form-item v-bind:label="$t('createWalletPage.set_wallet_password')" class="-password-panel" prop="password">
+        <el-form-item
+          v-bind:label="$t('createWalletPage.set_wallet_password')"
+          class="-password-panel"
+          prop="password"
+        >
           <el-input
             class="-input-password"
             v-bind:placeholder="$t('createWalletPage.please_set_password')"
@@ -23,6 +27,16 @@
             <p>{{$t('createWalletPage.passworld_length_notice')}}</p>
           </div>
         </el-form-item>
+        <el-form-item :label="$t('createWalletPage.import_raw_private_key')">
+          <el-input
+            class="-input-password"
+            v-bind:placeholder="$t('createWalletPage.import_private_key_placeholder')"
+            type="text"
+            v-model="createWalletForm.importRawPrivateKey"
+            autocomplete="off"
+            style="width: 100pt;"
+          ></el-input>
+        </el-form-item>
         <el-form-item>
           <el-button
             type="primary"
@@ -35,7 +49,9 @@
     </div>
     <!-- when wallet created -->
     <div v-if="created" class="hx-main-container hx-create-wallet-container">
-      <div class="-create-wallet-title">{{$t('createWalletPage.now_please_download_wallet_keystore_file')}}</div>
+      <div
+        class="-create-wallet-title"
+      >{{$t('createWalletPage.now_please_download_wallet_keystore_file')}}</div>
       <div>
         <div class="hx-create-wallet-done-inner-container">
           <div style="margin-bottom: 5pt;">
@@ -65,6 +81,7 @@
 <script>
 import _ from "lodash";
 import appState from "../appState";
+import utils from '../utils'
 let { PrivateKey, key, TransactionBuilder, TransactionHelper } = hx_js;
 
 export default {
@@ -107,7 +124,30 @@ export default {
         return;
       }
       this.created = true;
-      let account = account_utils.NewAccount();
+      let account;
+      if(this.createWalletForm.importRawPrivateKey && this.createWalletForm.importRawPrivateKey.trim()) {
+        // 导入现有明文私钥
+        const importRawPrivateKey = this.createWalletForm.importRawPrivateKey.trim()
+        // 判断是WIF格式(base58+checksum)还是hex格式，都需要可以可以导入成账户
+        if(importRawPrivateKey.length===64 && utils.isHexString(importRawPrivateKey)) {
+          // hex格式私钥
+          account = account_utils.NewAccount();
+          account.setPrivateKey(importRawPrivateKey)
+        } else {
+          // WIF格式私钥
+          try{
+            const privateKeyHex = utils.wifToHex(importRawPrivateKey)
+            account = account_utils.NewAccount();
+            account.setPrivateKey(privateKeyHex)
+          } catch(e) {
+            this.showError('invalid WIF private key')
+            this.created = false
+            return
+          }
+        }
+      } else {
+        account = account_utils.NewAccount();
+      }
       this.createdAccount = account;
       account.address = null;
       let address = account.getAddressString(appState.getAddressPrefix());
@@ -128,7 +168,9 @@ export default {
       document.body.appendChild(i);
       i.click();
       document.body.removeChild(i);
-      this.showInfo(this.$t("createWalletPage.find_wallet_file_in_download_directory"));
+      this.showInfo(
+        this.$t("createWalletPage.find_wallet_file_in_download_directory")
+      );
     },
     openKeystoreWallet() {
       appState.changeCurrentAccount(this.createdAccount);
@@ -138,7 +180,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-create-wallet-container1 {
   .label-font {
     color: #a99eb4;

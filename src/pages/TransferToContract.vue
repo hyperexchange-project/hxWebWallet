@@ -648,7 +648,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-transfer-contract-container {
   min-width: 400px;
   min-height: 381pt;

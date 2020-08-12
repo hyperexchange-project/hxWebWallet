@@ -193,7 +193,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-account-info-panel {
   .label-font {
     color: #a99eb4;

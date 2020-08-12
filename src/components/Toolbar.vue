@@ -39,7 +39,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .toolbar-wrapper {
     height: 29pt;
     line-height: 27pt;

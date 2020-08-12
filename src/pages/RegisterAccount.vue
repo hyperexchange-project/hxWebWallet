@@ -177,7 +177,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-register-account-container1 {
   .label-font {
     color: #a99eb4;

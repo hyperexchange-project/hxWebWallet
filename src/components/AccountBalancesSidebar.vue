@@ -189,7 +189,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-account-balances-side-bar {
   .-account-balances-panel {
     position: relative;

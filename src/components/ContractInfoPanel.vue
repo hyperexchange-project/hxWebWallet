@@ -227,7 +227,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-contract-info-panel {
   .label-font {
     color: #a99eb4;

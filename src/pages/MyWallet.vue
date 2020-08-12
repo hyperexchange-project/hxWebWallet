@@ -436,7 +436,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-my-opened-wallet-container1 {
   .label-font {
     color: #a99eb4;

@@ -82,7 +82,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .asset-input-wrapper {
   position: relative;
   display: inline-block;

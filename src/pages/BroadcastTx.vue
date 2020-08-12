@@ -162,7 +162,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-broadcast-tx-container1 {
   .label-font {
     color: #a99eb4;

@@ -747,7 +747,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-account-lock-balances-panel {
   .-table-header-row {
     .label-font {

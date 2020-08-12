@@ -144,7 +144,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-check-tx-container1 {
   .label-font {
     color: #a99eb4;

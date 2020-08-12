@@ -55,7 +55,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hx-tx-details-panel {
   .label-font {
     color: #a99eb4;
